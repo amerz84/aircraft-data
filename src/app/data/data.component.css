@@ -1,7 +1,7 @@
 .bg-image {
-    background: url("src\assets\aircraft_bg.jpg");
+    background-image: url("src\assets\aircraft_bg.jpg");
     filter: blur(10px);
-    height: 100vh;
+    height: 100%;
     background-position: top center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -50,7 +50,8 @@
   }
   
   #drop_zone.isDragover {
-    background-color: rgb(133, 172, 214);
+    background-color: rgb(19, 55, 94);
+    color: white;
     transition: all 0.2s;
   }
   
@@ -64,6 +65,7 @@
     padding: 6px 12px;
     cursor: pointer;
     border-radius: 5px;
+    color: black;
     font-family: inherit;
     font-weight: 500;
     margin-left: 1.5vw;
