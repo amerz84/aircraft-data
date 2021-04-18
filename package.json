@@ -11,6 +11,7 @@
   },
   "private": true,
   "dependencies": {
+    "-": "0.0.1",
     "@angular/animations": "~11.2.1",
     "@angular/cdk": "^11.2.9",
     "@angular/common": "~11.2.1",
@@ -24,7 +25,9 @@
     "@fortawesome/angular-fontawesome": "^0.8.2",
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
+    "angular-cli-ghpages": "^1.0.0-rc.1",
     "rxjs": "~6.6.0",
+    "save-dev": "0.0.1-security",
     "tslib": "^2.0.0",
     "xlsx": "^0.16.9",
     "zone.js": "~0.11.3"
