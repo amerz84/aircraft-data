@@ -1,0 +1,100 @@
+.bg-image {
+    background: url("src\assets\aircraft_bg.jpg");
+    filter: blur(10px);
+    height: 100vh;
+    background-position: top center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    transform: scale(1.1);
+    position: relative;
+  }
+  
+  body {
+    max-width: 90%;
+  }
+  
+  button {
+    margin-right: 5px;
+  }
+  
+  button:hover {
+    outline: 0;
+    box-shadow: 0 0 3px 3px rgba(19,106,205,0.2);
+    border-color: transparent;
+    background-color: rgb(210,210,210);
+    transition: all 0.25s;
+  }
+  
+  .container {
+    position: relative;
+    margin-top: -90vh;
+    background: transparent;
+  }
+  
+  #drop_zone {
+    outline: 2px dashed black;
+    outline-offset: -5px;
+    width:  20vw;
+    height: 15vh;
+    background-color:lightgray;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    z-index: 1;
+    font-weight: 500;
+    font-size: 0.8vw;
+    margin: auto;
+    position: relative;
+  
+  }
+  
+  #drop_zone.isDragover {
+    background-color: rgb(133, 172, 214);
+    transition: all 0.2s;
+  }
+  
+  fa-icon {
+    margin-right: 10px;
+  }
+  
+  .file-upload {
+    border: 1px solid #ccc;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-family: inherit;
+    font-weight: 500;
+    margin-left: 1.5vw;
+    margin-right: 5vw;
+  }
+  
+  
+  input {
+    font-size: inherit;
+  }
+  
+  input[type="file"] {
+    display: none;
+    position: absolute;
+  }
+  
+  label {
+    box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),0px 2px 2px 0px rgba(0, 0, 0, 0.14),0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+    background-color: rgb(238,238,238);
+  }
+  
+  label:hover {
+    background-color: rgb(210,210,210);
+    transition: all 0.25s;
+  }
+  
+  table {
+    width: 100%;
+    margin-top: 10px;
+  }
+  
+  th, td {
+    font-size: 0.8vw;
+  }
