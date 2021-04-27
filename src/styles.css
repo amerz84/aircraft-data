@@ -2,6 +2,7 @@
 
 body, html {
     height: 100%;
+    width: 100%;
     margin: auto;
 }
 
@@ -9,6 +10,10 @@ body {
     background: linear-gradient(to bottom, #2b2d30, #2a2a2b);
 }
 
+.dialog-text {
+  float: right;
+  font-weight: 500;
+}
 
 /* Fluid font size */
 html {

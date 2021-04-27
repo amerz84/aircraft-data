@@ -1,6 +1,4 @@
 <div class="bg-image"></div>
-  
-
       
   <body class="container">
     <div id="drop_zone" (drop)="onDrop($event);onDragEnd()" (dragover)="onDragOver($event)" (dragleave)="onDragEnd()">
@@ -10,34 +8,380 @@
       <input type="file" class="form-control-file" id="fileItem" (change)="refresh($event)"> Or Drop Here
     </div>
     
-    <button mat-raised-button (click)="applyFilter()">Filter High Salary</button>
-    <button mat-raised-button (click)="clearFilter()">Clear Filters</button>
-    <button mat-raised-button (click)="downloadTableAsCSV('csv-table')">Save Table as File</button>
+    <div class="buttons">
+      <button mat-raised-button (click)="applyFilter()">Filter High Salary</button>
+      <button mat-raised-button (click)="clearFilter()">Clear Filters</button>
+      <button mat-raised-button [disabled]="!isTableLoaded" (click)="downloadTableAsCSV('csv-table')">Save Table as File</button>
+      <data-dialog [isTableLoaded]="isTableLoaded"></data-dialog>
+  </div>
     
-    <table mat-table id="csv-table" [dataSource]="this.dataSource" class="mat-elevation-z8">
+    <mat-table #table id="csv-table" [dataSource]="this.dataSource" class="mat-elevation-z8">
 
       <!--- Note that these columns can be defined in any order.
             The actual rendered columns are set as a property on the row definition" -->
 
-      <!-- Name Column -->
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef> Name </th>
-        <td mat-cell *matCellDef="let element"> {{element.Name}} </td>
+      <ng-container matColumnDef="LocalDate">
+        <th mat-header-cell *matHeaderCellDef> Local Date </th>
+        <td mat-cell *matCellDef="let element"> {{element.LocalDate}} </td>
       </ng-container>
 
-      <!-- Weight Column -->
-      <ng-container matColumnDef="salary">
-        <th mat-header-cell *matHeaderCellDef> Salary </th>
-        <td mat-cell *matCellDef="let element"> {{element.Salary}} </td>
+      <ng-container matColumnDef="LocalTime">
+        <th mat-header-cell *matHeaderCellDef> Local Time (hh:mm:ss) </th>
+        <td mat-cell *matCellDef="let element"> {{element.LocalTime}} </td>
       </ng-container>
 
-      <!-- Symbol Column -->
-      <ng-container matColumnDef="age">
-        <th mat-header-cell *matHeaderCellDef> Age </th>
-        <td mat-cell *matCellDef="let element"> {{element.Age}} </td>
+      <ng-container matColumnDef="UTCOffset">
+        <th mat-header-cell *matHeaderCellDef> UTC Offset (hh:mm) </th>
+        <td mat-cell *matCellDef="let element"> {{element.UTCOffset}} </td>
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <ng-container matColumnDef="AtvWpt">
+        <th mat-header-cell *matHeaderCellDef> AtvWpt </th>
+        <td mat-cell *matCellDef="let element"> {{element.AtvWpt}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="Lat">
+        <th mat-header-cell *matHeaderCellDef> Latitude (deg)</th>
+        <td mat-cell *matCellDef="let element"> {{element.Lat}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="Long">
+        <th mat-header-cell *matHeaderCellDef> Longitude (deg) </th>
+        <td mat-cell *matCellDef="let element"> {{element.Long}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="AltB">
+        <th mat-header-cell *matHeaderCellDef> AltB (ft Baro) </th>
+        <td mat-cell *matCellDef="let element"> {{element.AltB}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="BaroA">
+        <th mat-header-cell *matHeaderCellDef> BaroA (in) </th>
+        <td mat-cell *matCellDef="let element"> {{element.BaroA}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="AltMSL">
+        <th mat-header-cell *matHeaderCellDef> AltMSL (ft msl) </th>
+        <td mat-cell *matCellDef="let element"> {{element.AltMSL}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="OAT">
+        <th mat-header-cell *matHeaderCellDef> OAT (deg C) </th>
+        <td mat-cell *matCellDef="let element"> {{element.OAT}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="IAS">
+        <th mat-header-cell *matHeaderCellDef> IAS (kt) </th>
+        <td mat-cell *matCellDef="let element"> {{element.IAS}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="GndSpd">
+        <th mat-header-cell *matHeaderCellDef> GndSpd (kt) </th>
+        <td mat-cell *matCellDef="let element"> {{element.GndSpd}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="VSpd">
+        <th mat-header-cell *matHeaderCellDef> VSpd (fpm) </th>
+        <td mat-cell *matCellDef="let element"> {{element.VSpd}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="Pitch">
+        <th mat-header-cell *matHeaderCellDef> Pitch (deg) </th>
+        <td mat-cell *matCellDef="let element"> {{element.Pitch}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="Roll">
+        <th mat-header-cell *matHeaderCellDef> Roll (deg) </th>
+        <td mat-cell *matCellDef="let element"> {{element.Roll}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="LatAc">
+        <th mat-header-cell *matHeaderCellDef> LatAc (G) </th>
+        <td mat-cell *matCellDef="let element"> {{element.LatAc}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="NormAc">
+        <th mat-header-cell *matHeaderCellDef> NormAc (G) </th>
+        <td mat-cell *matCellDef="let element"> {{element.NormAc}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="HDG">
+        <th mat-header-cell *matHeaderCellDef> HDG (deg) </th>
+        <td mat-cell *matCellDef="let element"> {{element.HDG}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="TRK">
+        <th mat-header-cell *matHeaderCellDef> TRK (deg) </th>
+        <td mat-cell *matCellDef="let element"> {{element.TRK}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="volt1">
+        <th mat-header-cell *matHeaderCellDef> volt1 (volts) </th>
+        <td mat-cell *matCellDef="let element"> {{element.volt1}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="volt2">
+        <th mat-header-cell *matHeaderCellDef> volt2 (volts) </th>
+        <td mat-cell *matCellDef="let element"> {{element.volt2}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="amp1">
+        <th mat-header-cell *matHeaderCellDef> amp1 (amps)</th>
+        <td mat-cell *matCellDef="let element"> {{element.amp1}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="FQtyL">
+        <th mat-header-cell *matHeaderCellDef> FQtyL (gal) </th>
+        <td mat-cell *matCellDef="let element"> {{element.FQtyL}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="FQtyR">
+        <th mat-header-cell *matHeaderCellDef> FQtyR (gal) </th>
+        <td mat-cell *matCellDef="let element"> {{element.FQtyR}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="E1FFlow">
+        <th mat-header-cell *matHeaderCellDef> E1 FFlow (gph) </th>
+        <td mat-cell *matCellDef="let element"> {{element.E1FFlow}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="E1OilT">
+        <th mat-header-cell *matHeaderCellDef> E1 OilT (deg F) </th>
+        <td mat-cell *matCellDef="let element"> {{element.E1OilT}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="E1OilP">
+        <th mat-header-cell *matHeaderCellDef> E1 OilP (psi) </th>
+        <td mat-cell *matCellDef="let element"> {{element.E1OilP}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="E1MAP">
+        <th mat-header-cell *matHeaderCellDef> E1 MAP (Hg) </th>
+        <td mat-cell *matCellDef="let element"> {{element.E1MAP}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="E1RPM">
+        <th mat-header-cell *matHeaderCellDef> E1 RPM (rpm) </th>
+        <td mat-cell *matCellDef="let element"> {{element.E1RPM}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="E1%Pwr">
+        <th mat-header-cell *matHeaderCellDef> E1 %Pwr (%) </th>
+        <td mat-cell *matCellDef="let element"> {{element.E1%Pwr}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="E1CHT1">
+        <th mat-header-cell *matHeaderCellDef> E1 CHT1 (deg F) </th>
+        <td mat-cell *matCellDef="let element"> {{element.E1CHT1}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="E1CHT2">
+        <th mat-header-cell *matHeaderCellDef> E1 CHT2 (deg F) </th>
+        <td mat-cell *matCellDef="let element"> {{element.E1CHT2}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="E1CHT3">
+        <th mat-header-cell *matHeaderCellDef> E1 CHT3 (deg F) </th>
+        <td mat-cell *matCellDef="let element"> {{element.E1CHT3}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="E1CHT4">
+        <th mat-header-cell *matHeaderCellDef> E1 CHT4 (deg F) </th>
+        <td mat-cell *matCellDef="let element"> {{element.E1CHT4}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="E1CHT5">
+        <th mat-header-cell *matHeaderCellDef> E1 CHT5 (deg F) </th>
+        <td mat-cell *matCellDef="let element"> {{element.E1CHT5}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="E1CHT6">
+        <th mat-header-cell *matHeaderCellDef> E1 CHT6 (deg F) </th>
+        <td mat-cell *matCellDef="let element"> {{element.E1CHT6}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="E1EGT1">
+        <th mat-header-cell *matHeaderCellDef> E1 EGT1 (deg F) </th>
+        <td mat-cell *matCellDef="let element"> {{element.E1CHT1}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="E1EGT2">
+        <th mat-header-cell *matHeaderCellDef> E1 EGT2 (deg F) </th>
+        <td mat-cell *matCellDef="let element"> {{element.E1CHT2}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="E1EGT3">
+        <th mat-header-cell *matHeaderCellDef> E1 EGT3 (deg F) </th>
+        <td mat-cell *matCellDef="let element"> {{element.E1CHT3}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="E1EGT4">
+        <th mat-header-cell *matHeaderCellDef> E1 EGT4 (deg F) </th>
+        <td mat-cell *matCellDef="let element"> {{element.E1CHT4}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="E1EGT5">
+        <th mat-header-cell *matHeaderCellDef> E1 EGT5 (deg F) </th>
+        <td mat-cell *matCellDef="let element"> {{element.E1CHT5}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="E1EGT6">
+        <th mat-header-cell *matHeaderCellDef> E1 EGT6 (deg F) </th>
+        <td mat-cell *matCellDef="let element"> {{element.E1CHT6}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="E1TIT1">
+        <th mat-header-cell *matHeaderCellDef> E1 TIT1 (deg) </th>
+        <td mat-cell *matCellDef="let element"> {{element.E1TIT1}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="E1TIT2">
+        <th mat-header-cell *matHeaderCellDef> E1 TIT2 (deg) </th>
+        <td mat-cell *matCellDef="let element"> {{element.E1TIT2}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="AltGPS">
+        <th mat-header-cell *matHeaderCellDef> AltGPS (ft wgs) </th>
+        <td mat-cell *matCellDef="let element"> {{element.AltGPS}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="TAS">
+        <th mat-header-cell *matHeaderCellDef> TAS (kt) </th>
+        <td mat-cell *matCellDef="let element"> {{element.TAS}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="HSIS">
+        <th mat-header-cell *matHeaderCellDef> HSIS (enum) </th>
+        <td mat-cell *matCellDef="let element"> {{element.HSIS}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="CRS">
+        <th mat-header-cell *matHeaderCellDef> CRS (deg) </th>
+        <td mat-cell *matCellDef="let element"> {{element.CRS}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="NAV1">
+        <th mat-header-cell *matHeaderCellDef> NAV1 (MHz) </th>
+        <td mat-cell *matCellDef="let element"> {{element.NAV1}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="NAV2">
+        <th mat-header-cell *matHeaderCellDef> NAV2 (MHz) </th>
+        <td mat-cell *matCellDef="let element"> {{element.NAV2}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="COM1">
+        <th mat-header-cell *matHeaderCellDef> COM1 (MHz) </th>
+        <td mat-cell *matCellDef="let element"> {{element.COM1}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="COM2">
+        <th mat-header-cell *matHeaderCellDef> COM2 (MHz) </th>
+        <td mat-cell *matCellDef="let element"> {{element.COM2}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="HCDI">
+        <th mat-header-cell *matHeaderCellDef> HCDI (fsd) </th>
+        <td mat-cell *matCellDef="let element"> {{element.HCDI}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="VCDI">
+        <th mat-header-cell *matHeaderCellDef> VCDI (fsd) </th>
+        <td mat-cell *matCellDef="let element"> {{element.VCDI}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="WndSpd">
+        <th mat-header-cell *matHeaderCellDef> WndSpd (kt) </th>
+        <td mat-cell *matCellDef="let element"> {{element.WndSpd}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="WndDr">
+        <th mat-header-cell *matHeaderCellDef> WndDr (deg) </th>
+        <td mat-cell *matCellDef="let element"> {{element.WndDr}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="WptDst">
+        <th mat-header-cell *matHeaderCellDef> WptDst (nm) </th>
+        <td mat-cell *matCellDef="let element"> {{element.WptDst}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="WptBrg">
+        <th mat-header-cell *matHeaderCellDef> WptBrg (deg) </th>
+        <td mat-cell *matCellDef="let element"> {{element.WptBrg}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="MagVar">
+        <th mat-header-cell *matHeaderCellDef> MagVar (deg) </th>
+        <td mat-cell *matCellDef="let element"> {{element.MagVar}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="AfcsOn">
+        <th mat-header-cell *matHeaderCellDef> AfcsOn (bool) </th>
+        <td mat-cell *matCellDef="let element"> {{element.AfcsOn}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="RollM">
+        <th mat-header-cell *matHeaderCellDef> RollM (enum) </th>
+        <td mat-cell *matCellDef="let element"> {{element.RollM}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="PitchM">
+        <th mat-header-cell *matHeaderCellDef> PitchM (enum) </th>
+        <td mat-cell *matCellDef="let element"> {{element.PitchM}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="RollC">
+        <th mat-header-cell *matHeaderCellDef> RollC (deg) </th>
+        <td mat-cell *matCellDef="let element"> {{element.RollC}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="PitchC">
+        <th mat-header-cell *matHeaderCellDef> PitchC (deg) </th>
+        <td mat-cell *matCellDef="let element"> {{element.PitchC}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="VSpdG">
+        <th mat-header-cell *matHeaderCellDef> VSpdG (fpm) </th>
+        <td mat-cell *matCellDef="let element"> {{element.VSpdG}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="GPSfix">
+        <th mat-header-cell *matHeaderCellDef> GPSfix (enum) </th>
+        <td mat-cell *matCellDef="let element"> {{element.GPSfix}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="HAL">
+        <th mat-header-cell *matHeaderCellDef> HAL (mt) </th>
+        <td mat-cell *matCellDef="let element"> {{element.HAL}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="VAL">
+        <th mat-header-cell *matHeaderCellDef> VAL (mt) </th>
+        <td mat-cell *matCellDef="let element"> {{element.VAL}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="HPLwas">
+        <th mat-header-cell *matHeaderCellDef> HPLwas (mt) </th>
+        <td mat-cell *matCellDef="let element"> {{element.HPLwas}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="HPLfd">
+        <th mat-header-cell *matHeaderCellDef> HPLfd (mt) </th>
+        <td mat-cell *matCellDef="let element"> {{element.HPLfd}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="VPLwas">
+        <th mat-header-cell *matHeaderCellDef> VPLwas (mt) </th>
+        <td mat-cell *matCellDef="let element"> {{element.VPLwas}} </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
+    </mat-table>
+
+    <mat-paginator #paginator
+      [pageSize]="100"
+      [pageSizeOptions]="[100, 200, 400]"
+      [showFirstLastButtons]="true">
+  </mat-paginator>
   </body>

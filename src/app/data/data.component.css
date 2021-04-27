@@ -2,10 +2,10 @@
     background-image: url("src\assets\aircraft_bg.jpg");
     filter: blur(10px);
     height: 100%;
+    width: 100%;
     background-position: top center;
     background-repeat: no-repeat;
     background-size: cover;
-    transform: scale(1.1);
     position: relative;
   }
   
@@ -15,6 +15,7 @@
   
   button {
     margin-right: 5px;
+    float: left;
   }
   
   button:hover {
@@ -23,6 +24,10 @@
     border-color: transparent;
     background-color: rgb(210,210,210);
     transition: all 0.25s;
+  }
+
+  .buttons {
+    clear: both;
   }
   
   .container {
@@ -45,6 +50,7 @@
     font-weight: 500;
     font-size: 0.8vw;
     margin: auto;
+    margin-bottom: 2em;
     position: relative;
   
   }
@@ -72,7 +78,6 @@
     margin-right: 5vw;
   }
   
-  
   input {
     font-size: inherit;
   }
@@ -91,10 +96,24 @@
     background-color: rgb(210,210,210);
     transition: all 0.25s;
   }
-  
-  table {
+
+  .mat-raised-button[disabled] {
+    color: rgb(165, 165, 165);
+  }
+
+  .mat-table {
+    overflow: auto; 
     width: 100%;
+    max-height: 60vh;
     margin-top: 10px;
+  }
+
+  .mat-header-cell, .mat-cell {
+    min-width: 5vw;
+  }
+
+  .mat-header-cell {
+    padding: 10px;
   }
   
   th, td {

@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { faFileUpload } from '@fortawesome/free-solid-svg-icons';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { DataService, Person } from '../data.service';
+import { DataService } from '../data.service';
+import { MatPaginator } from '@angular/material/paginator';
+import { headers } from '../shared/header-names';
+import { Person } from '../shared/person';
 
 
 @Component({
@@ -11,16 +13,25 @@ import { DataService, Person } from '../data.service';
   styleUrls: ['./data.component.css']
 })
 export class DataComponent {
+  headerValues = [];
+  _isTableLoaded: boolean;
   // Mat Table directives
   dataSource: MatTableDataSource<Person>;
-  displayedColumns: string[] = ['name', 'salary', 'age']; //Table headers (initial row)
+  displayedColumns: string[] = headers; //Table headers (initial row)
+
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  static isTableLoaded: boolean;
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+  }
   
   tempSource: MatTableDataSource<Person>; //Used to repopulate original file data after clearFilter() called
   faFileUpload = faFileUpload; //binding for the file upload icon
 
-  constructor(private uploadService: DataService, private _snackBar: MatSnackBar) {
+  constructor(private uploadService: DataService) {
     this.dataSource = new MatTableDataSource<Person>([]);
     this.tempSource = new MatTableDataSource<Person>([]);
+    this._isTableLoaded = false;
   }
 
   //Call on data-upload service to load file
@@ -31,6 +42,7 @@ export class DataComponent {
       this.dataSource.data = data;
       this.tempSource.data = data;      
       this.dataSource.connect();
+      this._isTableLoaded = true;
     });
   }
 
@@ -56,12 +68,7 @@ export class DataComponent {
     document.getElementById('drop_zone').classList.remove('isDragover');
   }
 
-  openSnackBar(message: string, action: string) {
-    this._snackBar.open(message, action, {
-      duration: 3000,
-    });
-  }
-
+  //
   applyFilter() {
     const matchFilter = [];
     
@@ -77,19 +84,21 @@ export class DataComponent {
     this.dataSource.data = matchFilter;
   }
 
+  //Clear all table filters and display original data
   clearFilter() {
     this.dataSource.data = this.tempSource.data;
   }
 
-  downloadTableAsCSV(table_id) {
-    const table = <HTMLTableElement>document.getElementById(table_id);
+  //Save file
+  downloadTableAsCSV(table_id: string) {
+    this.uploadService.saveFile(table_id);
+  }
 
-    // Change to "< 1" if not using table headers
-    if (table.rows.length < 2) {
-      this.openSnackBar("Please upload a file before saving", "OK");
-    }
-    else {
-      this.uploadService.saveFile(table_id);
-    }
+  getHeaderValues(index: number) {
+    return this.uploadService.getFormattedHeaderData(index);
+  }
+
+  get isTableLoaded() {
+    return this._isTableLoaded;
   }
 }

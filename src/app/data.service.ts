@@ -2,12 +2,15 @@ import { Injectable } from '@angular/core';
 import { Subscriber } from 'rxjs';
 import { Observable } from 'rxjs';
 import * as XLSX from 'xlsx';
+import { headers } from './shared/header-names';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
-  excelData: Array<Person>;
+  //Aircraft header data info
+  headerArray = [];
+  formattedHeaderArray = [];
 
   //Convert file data into Observable array for table display
   onFileChange(event: any, isFromDropZone = false): Observable<any> {
@@ -32,11 +35,21 @@ export class DataService {
         const workbook: XLSX.WorkBook = XLSX.read(binaryStr, { type: 'binary' });
         const sheetName: string = workbook.SheetNames[0];
         const worksheet: XLSX.WorkSheet = workbook.Sheets[sheetName];
-        // Format the raw data string into 2-d array with headers in row 1
-        const excelData = (XLSX.utils.sheet_to_json(worksheet));
+
+        // Store value of cells in row A for header/identification data 
+        for (let i=0; i<7; i++) {
+          let cell = worksheet[this.nextChar(i+1) + 1];
+          console.log(cell.v);
+          this.headerArray[i] = (cell ? cell.v : undefined);
+        }
+        //Remove "noise" from header cells and store only the actual values in formatted array
+        this.formatHeaderData();
+
+        // Format the raw data string into 2-d array starting from cell A3. Dates formatted. Headers taken from header-names.ts
+        const excelData = (XLSX.utils.sheet_to_json(worksheet, {range:3, header:headers,raw:false,dateNF:'yyyy-mm-dd'}));
 
         observer.next(excelData);
-        observer.complete();        
+        observer.complete(); 
       }
     });
   }
@@ -73,11 +86,34 @@ export class DataService {
     link.click();
     document.body.removeChild(link);
   }
+
+  //Get next sequential ASCII character
+  //Used in return statement of onFileChange() to iterate over first row of csv data (ex. cell A1, B1, C1, etc.)
+  nextChar(index: number) {
+    return String.fromCharCode('A'.charCodeAt(0) + index);
+  }
+
+  //Parse out the important data from the csv header row.
+  //Example input/output:
+  //unit_software_version="14.04" -------> "14.04"
+  formatHeaderData() {
+    for (let i=0; i<this.headerArray.length; i++) {
+      //Take substring value in between quotation marks in string
+      if (this.headerArray[i].indexOf('"') != -1) {
+        this.formattedHeaderArray[i] = this.headerArray[i].match(/"([^']+)"/)[1];
+        
+      }
+      //Last value does not contain quotes in string, instead take substring value AFTER "="
+      else {
+        this.formattedHeaderArray[i] = this.headerArray[i].substring(this.headerArray[i].indexOf('=') + 1);
+      }
+      console.log(this.formattedHeaderArray[i]);
+    }
+  }
+
+  //Send formatted string values back to component 
+  getFormattedHeaderData(index: number) {
+    return this.formattedHeaderArray[index];
+  }
 }
 
-export class Person {
-  id: number;
-  name: string;
-  salary: number;
-  age: number;
-}
