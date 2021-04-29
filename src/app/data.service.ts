@@ -12,6 +12,8 @@ export class DataService {
   headerArray = [];
   formattedHeaderArray = [];
 
+  //Test comment
+
   //Convert file data into Observable array for table display
   onFileChange(event: any, isFromDropZone = false): Observable<any> {
     const target: DataTransfer = <DataTransfer>(event.target);
