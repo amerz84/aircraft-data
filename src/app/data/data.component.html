@@ -9,7 +9,8 @@
     </div>
     
     <div class="buttons">
-      <button mat-raised-button (click)="applyFilter()">Filter High Salary</button>
+      <button mat-raised-button (click)="applyGPSFilter()">Filter GPSfix</button>
+      <button mat-raised-button (click)="applyTemperatureFilter()">High CHT/EGT</button>
       <button mat-raised-button (click)="clearFilter()">Clear Filters</button>
       <button mat-raised-button [disabled]="!isTableLoaded" (click)="downloadTableAsCSV('csv-table')">Save Table as File</button>
       <data-dialog [isTableLoaded]="isTableLoaded"></data-dialog>

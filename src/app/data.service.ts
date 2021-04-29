@@ -39,7 +39,6 @@ export class DataService {
         // Store value of cells in row A for header/identification data 
         for (let i=0; i<7; i++) {
           let cell = worksheet[this.nextChar(i+1) + 1];
-          console.log(cell.v);
           this.headerArray[i] = (cell ? cell.v : undefined);
         }
         //Remove "noise" from header cells and store only the actual values in formatted array
@@ -107,7 +106,6 @@ export class DataService {
       else {
         this.formattedHeaderArray[i] = this.headerArray[i].substring(this.headerArray[i].indexOf('=') + 1);
       }
-      console.log(this.formattedHeaderArray[i]);
     }
   }
 

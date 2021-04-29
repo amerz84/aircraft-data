@@ -69,17 +69,76 @@ export class DataComponent {
   }
 
   //
-  applyFilter() {
+  applyGPSFilter() {
     const matchFilter = [];
     
     this.dataSource.data.forEach(obj => {
       Object.entries(obj).forEach(([key, value]) => {
-          if(key == "Salary" && value > "10000") {
+          if(key == "GPSfix" && (value.trim() == "3D" || value.trim() == "3DDiff")) {
             //console.log(`${key} ${value}`);
             matchFilter.push(obj);
           }
       });
       
+    });
+    this.dataSource.data = matchFilter;
+  }
+
+  applyTemperatureFilter() {
+    const matchFilter = [];
+    
+    this.dataSource.data.forEach(obj => {
+      for (const [key, value] of Object.entries(obj)) {
+          if(key == "E1CHT1" && parseInt(value.trim()) >= 1100) {
+            console.log(`${key} ${value}`);
+            matchFilter.push(obj);
+            return;
+          }
+          if(key == "E1CHT2" && parseInt(value.trim()) >= 1100) {
+            matchFilter.push(obj);
+            return;
+          }
+          if(key == "E1CHT3" && parseInt(value.trim()) >= 1100) {
+            matchFilter.push(obj);
+            return;
+          }
+          if(key == "E1CHT4" && parseInt(value.trim()) >= 1100) {
+            matchFilter.push(obj);
+            return;
+          }
+          if(key == "E1CHT5" && parseInt(value.trim()) >= 1100) {
+            matchFilter.push(obj);
+            return;
+          }
+          if(key == "E1CHT6" && parseInt(value.trim()) >= 1100) {
+            matchFilter.push(obj);
+            return;
+          }
+          if(key == "E1EGT1" && parseInt(value.trim()) >= 1100) {
+            matchFilter.push(obj);
+            return;
+          }
+          if(key == "E1EGT2" && parseInt(value.trim()) >= 1100) {
+            matchFilter.push(obj);
+            return;
+          }
+          if(key == "E1EGT3" && parseInt(value.trim()) >= 1100) {
+            matchFilter.push(obj);
+            return;
+          }
+          if(key == "E1EGT4" && parseInt(value.trim()) >= 1100) {
+            matchFilter.push(obj);
+            return;
+          }
+          if(key == "E1EGT5" && parseInt(value.trim()) >= 1100) {
+            matchFilter.push(obj);
+            return;
+          }
+          if(key == "E1EGT6" && parseInt(value.trim()) >= 1100) {
+            matchFilter.push(obj);
+            return;
+          }
+      }      
     });
     this.dataSource.data = matchFilter;
   }
