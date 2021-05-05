@@ -3,7 +3,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { faFileUpload } from '@fortawesome/free-solid-svg-icons';
 import { DataService } from '../data.service';
 import { MatPaginator } from '@angular/material/paginator';
-import { headers } from '../shared/header-names';
+import { headers, headersUnusedRemoved } from '../shared/header-names';
 import { Person } from '../shared/person';
 
 
@@ -14,6 +14,7 @@ import { Person } from '../shared/person';
 })
 export class DataComponent {
   headerValues = [];
+  isToggled: boolean;
   _isTableLoaded: boolean;
   // Mat Table directives
   dataSource: MatTableDataSource<Person>;
@@ -32,6 +33,7 @@ export class DataComponent {
     this.dataSource = new MatTableDataSource<Person>([]);
     this.tempSource = new MatTableDataSource<Person>([]);
     this._isTableLoaded = false;
+    this.isToggled = false;
   }
 
   //Call on data-upload service to load file
@@ -146,6 +148,22 @@ export class DataComponent {
   //Clear all table filters and display original data
   clearFilter() {
     this.dataSource.data = this.tempSource.data;
+  }
+
+  //Toggle display of unimportant columns. Boolean is toggled in onClick method in html file
+  //Initial display shows ALL columns
+  //NOTE: Downloaded table still shows all columns
+  toggleColumns() {
+    const button = document.getElementById("columnToggler");
+
+    if(this.isToggled) {
+      this.displayedColumns = headersUnusedRemoved;
+      button.classList.add("column-toggle");
+    }
+    else {
+      this.displayedColumns = headers;
+      button.classList.remove("column-toggle");
+    }
   }
 
   //Save file

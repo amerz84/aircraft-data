@@ -1,0 +1,22 @@
+@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
+
+@import "~@angular/material/theming";
+
+
+
+//Custom theme
+
+/* $app-primary: mat-palette($mat-blue, 600);
+$app-accent: mat-palette($mat-blue-gray, 500);
+$app-warn: mat-palette($mat-red, 300);
+
+$app-theme: mat-light-theme($app-primary, $app-accent, $app-warn);
+
+@include angular-material-theme($app-theme); */
+
+//Custom typography
+$app-typography: mat-typography-config(
+    $font-family: '"Open Sans", "Helvetica Neue", sans-serif'
+);
+
+@include mat-core($app-typography);

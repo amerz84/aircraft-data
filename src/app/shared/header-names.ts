@@ -24,3 +24,15 @@ export const headers = [
     "HAL", "VAL", "HPLwas",
     "HPLfd", "VPLwas"
 ];
+
+export const headersUnusedRemoved = [
+    "LocalDate", "LocalTime", "UTCOffset",
+    "AtvWpt", "Lat", "Long",
+    "AltB", "BaroA", "AltMSL",
+    "OAT", "IAS", "GndSpd",
+    "VSpd", "Pitch", "Roll",
+    "LatAc", "NormAc", "HDG",
+    "TRK", "volt1", "volt2",
+    "amp1", "FQtyL", "FQtyR",
+    "E1FFlow", "E1OilT", "E1OilP"
+]
