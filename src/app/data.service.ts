@@ -56,7 +56,7 @@ export class DataService {
   //Save currently displayed table data (with header) as .csv file
   saveFile(table_id: string, separator = ',') {
     // Select rows from table_id
-    const rows = document.querySelectorAll('table#' + table_id + ' tr');
+    const rows = document.querySelectorAll('#' + table_id + ' tr');
     // Structure and fill out data table
     const csv = [];
     for (let i = 0; i < rows.length; i++) {
