@@ -14,8 +14,8 @@ import { Person } from '../shared/person';
 })
 export class DataComponent {
   headerValues = [];
-  isToggled: boolean;
-  _isTableLoaded: boolean;
+  isToggled: boolean; // Check for "toggle" status of columns displayed. False = columns not hidden, True = columns hidden
+  _isTableLoaded: boolean; // Check for data loaded into HTML table from spreadsheet
   // Mat Table directives
   dataSource: MatTableDataSource<Person>;
   displayedColumns: string[] = headers; //Table headers (initial row)
@@ -57,6 +57,7 @@ export class DataComponent {
       this.dataSource.data = data;
       this.tempSource.data = data;      
       this.dataSource.connect();
+      this._isTableLoaded = true;
     });
   }
 
