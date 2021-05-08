@@ -2,17 +2,15 @@ import { Injectable } from '@angular/core';
 import { Subscriber } from 'rxjs';
 import { Observable } from 'rxjs';
 import * as XLSX from 'xlsx';
-import { headers } from './shared/header-names';
+import { headersAll } from './shared/column-arrays';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
   //Aircraft header data info
-  headerArray = [];
+  firstRowDataArray = [];
   formattedHeaderArray = [];
-
-  //Test comment
 
   //Convert file data into Observable array for table display
   onFileChange(event: any, isFromDropZone = false): Observable<any> {
@@ -29,11 +27,8 @@ export class DataService {
     }
 
     return new Observable((observer: Subscriber<any[]>): void => {
-      // .onload needs to be defined prior to firing event from .readAsBinaryString
       reader.onload = (e: any) => {
-        // Store result of reader.readAsBinaryString
-        const binaryStr: string = e.target.result;
-
+        const binaryStr: string = e.target.result; // Store result of reader.readAsBinaryString
         const workbook: XLSX.WorkBook = XLSX.read(binaryStr, { type: 'binary' });
         const sheetName: string = workbook.SheetNames[0];
         const worksheet: XLSX.WorkSheet = workbook.Sheets[sheetName];
@@ -41,20 +36,19 @@ export class DataService {
         // Store value of cells in row A for header/identification data 
         for (let i=0; i<7; i++) {
           let cell = worksheet[this.nextChar(i+1) + 1];
-          this.headerArray[i] = (cell ? cell.v : undefined);
+          this.firstRowDataArray[i] = (cell ? cell.v : undefined);
         }
         //Remove "noise" from header cells and store only the actual values in formatted array
-        this.formatHeaderData();
-
-        // Format the raw data string into 2-d array starting from cell A3. Dates formatted. Headers taken from header-names.ts
-        const excelData = (XLSX.utils.sheet_to_json(worksheet, {range:3, header:headers,raw:false,dateNF:'yyyy-mm-dd'}));
-
+        this.formatFirstRowData();
+        // Format the raw data string into 2-d array starting from cell A3. Dates formatted. Headers taken from column-arrays.ts
+        const excelData = (XLSX.utils.sheet_to_json(worksheet, {range:3, header:headersAll,raw:false,dateNF:'yyyy-mm-dd'}));
         observer.next(excelData);
         observer.complete(); 
       }
     });
   }
 
+  /////////////////////////////////////////////////
   //Save currently displayed table data (with header) as .csv file
   saveFile(table_id: string, separator = ',') {
     // Select rows from table_id
@@ -88,30 +82,32 @@ export class DataService {
     document.body.removeChild(link);
   }
 
+  /////////////////////////////////////////////////
   //Get next sequential ASCII character
   //Used in return statement of onFileChange() to iterate over first row of csv data (ex. cell A1, B1, C1, etc.)
   nextChar(index: number) {
     return String.fromCharCode('A'.charCodeAt(0) + index);
   }
 
+  /////////////////////////////////////////////////
   //Parse out the important data from the csv header row.
   //Example input/output:
   //unit_software_version="14.04" -------> "14.04"
-  formatHeaderData() {
-    for (let i=0; i<this.headerArray.length; i++) {
+  formatFirstRowData() {
+    for (let i=0; i<this.firstRowDataArray.length; i++) {
       //Take substring value in between quotation marks in string
-      if (this.headerArray[i].indexOf('"') != -1) {
-        this.formattedHeaderArray[i] = this.headerArray[i].match(/"([^']+)"/)[1];
-        
+      if (this.firstRowDataArray[i].indexOf('"') != -1) {
+        this.formattedHeaderArray[i] = this.firstRowDataArray[i].match(/"([^']+)"/)[1];        
       }
       //Last value does not contain quotes in string, instead take substring value AFTER "="
       else {
-        this.formattedHeaderArray[i] = this.headerArray[i].substring(this.headerArray[i].indexOf('=') + 1);
+        this.formattedHeaderArray[i] = this.firstRowDataArray[i].substring(this.firstRowDataArray[i].indexOf('=') + 1);
       }
     }
   }
 
-  //Send formatted string values back to component 
+  /////////////////////////////////////////////////
+  //Send formatted string values back to dialog component
   getFormattedHeaderData(index: number) {
     return this.formattedHeaderArray[index];
   }

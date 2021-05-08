@@ -35,12 +35,6 @@
     justify-self: end;
   }
 
-  .column-snackbar {
-    max-width: 100% !important;
-    align-items: center !important;
-    background: purple;
-  }
-
   .column-toggle {
     outline: 0;
     box-shadow: 0 0 3px 3px rgba(19,106,205,0.2);

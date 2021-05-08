@@ -12,7 +12,7 @@ import { AppComponent } from './app.component';
 import { DataComponent } from './data/data.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { headers } from './shared/header-names';
+import { headersAll } from './shared/column-arrays';
 import { DataDialogComponent, DataDialogDialog } from './data-dialog/data-dialog.component';
 
 @NgModule({
@@ -35,7 +35,7 @@ import { DataDialogComponent, DataDialogDialog } from './data-dialog/data-dialog
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [
-    {provide: 'HEADERS', useValue:headers}
+    {provide: 'HEADERS', useValue:headersAll}
   ],
   bootstrap: [AppComponent]
 })

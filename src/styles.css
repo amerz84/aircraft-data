@@ -29,6 +29,7 @@ button:hover {
 .dialog-text {
   float: right;
   font-weight: 700;
+  margin-left: 10px;
 }
 
 /* Fluid font size */

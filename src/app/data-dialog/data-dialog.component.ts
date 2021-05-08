@@ -18,27 +18,34 @@ export class DataDialogComponent {
 
   @Input('isTableLoaded') isTableLoaded: boolean;
   constructor(public dialog: MatDialog, private uploadService: DataService) {
-   }
+  }
 
+  //////////////////////////////////////////////
   openDialog() {
     const dialogConfig = new MatDialogConfig();
 
+    //Set data property to include formatted first row data
+    //Needs to be injected into the MatDialogRef class below
     dialogConfig.data = {
-        logVersion: this.getHeaderValues(0),
-        airframeName: this.getHeaderValues(1),
-        unitSoftwarePN: this.getHeaderValues(2),
-        unitSoftwareVer: this.getHeaderValues(3),
-        sysSoftwarePN: this.getHeaderValues(4),
-        sysID: this.getHeaderValues(5),
-        mode: this.getHeaderValues(6)
+        logVersion: this.getFormattedFirstRowData(0),
+        airframeName: this.getFormattedFirstRowData(1),
+        unitSoftwarePN: this.getFormattedFirstRowData(2),
+        unitSoftwareVer: this.getFormattedFirstRowData(3),
+        sysSoftwarePN: this.getFormattedFirstRowData(4),
+        sysID: this.getFormattedFirstRowData(5),
+        mode: this.getFormattedFirstRowData(6)
       }
       this.dialog.open(DataDialogDialog, dialogConfig);
   }
-  getHeaderValues(index: number) {
+
+  //////////////////////////////////////////////
+  //Return formatted values for "aircraft info" (e.g. values for software version, system ID, etc.)
+  getFormattedFirstRowData(index: number) {
     return this.uploadService.getFormattedHeaderData(index);
   }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
 @Component({
   selector: 'data-dialog-dialog',
   templateUrl: 'data-dialog-dialog.html',
@@ -52,6 +59,7 @@ export class DataDialogDialog {
   unitSoftwareVer: string;
   sysID: string;
 
+  //Bind the formatted first row data
   constructor(
     private dialogRef: MatDialogRef<DataDialogDialog>,
     @Inject(MAT_DIALOG_DATA) data) {
@@ -64,6 +72,8 @@ export class DataDialogDialog {
       this.sysID = data.sysID;    
   }
 
+  //////////////////////////////////////////////
+  // Close dialog button
   close() {
     this.dialogRef.close();
   }

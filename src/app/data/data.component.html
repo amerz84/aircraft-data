@@ -5,18 +5,18 @@
       <label class="file-upload"for="fileItem">
         <fa-icon [icon]="faFileUpload" size="lg"></fa-icon>Upload File        
       </label>
-      <input type="file" class="form-control-file" id="fileItem" (change)="refresh($event)"> Or Drop Here
+      <input type="file" class="form-control-file" id="fileItem" (change)="refreshTableData($event)"> Or Drop Here
     </div>
     
     <div class="button-grid">
       <div id="button-grid-filters">
         <button mat-raised-button (click)="applyGPSFilter()">Filter GPSfix</button>
-        <button mat-raised-button (click)="applyTemperatureFilter()">High CHT/EGT</button>
+        <button mat-raised-button (click)="applyHighEgtOrChtFilter()">High CHT/EGT</button>
         <button mat-raised-button (click)="clearFilter()">Clear Filters</button>
       </div> 
       <div id="button-grid-menu">
         <button mat-raised-button id="columnToggler" (click)=" isToggled = !isToggled; toggleColumns()">Toggle Columns</button>
-        <button mat-raised-button [disabled]="!isTableLoaded" (click)="downloadTableAsCSV('csv-table')">Save Table as File</button>
+        <!-- <button mat-raised-button [disabled]="!isTableLoaded" (click)="downloadTableAsCSV('csv-table')">Save Table as File</button> -->
         <data-dialog [isTableLoaded]="isTableLoaded"></data-dialog>
       </div>
   </div>
