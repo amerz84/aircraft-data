@@ -1,10 +1,12 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { faFileUpload } from '@fortawesome/free-solid-svg-icons';
 import { DataService } from '../data.service';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { headers, headersUnusedRemoved } from '../shared/header-names';
 import { Person } from '../shared/person';
+import { CdkTextColumn } from '@angular/cdk/table';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 
 @Component({
@@ -21,6 +23,9 @@ export class DataComponent {
   displayedColumns: string[] = headers; //Table headers (initial row)
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
+  @Output() page: EventEmitter<PageEvent>;
+  currentPage: number; //Paginator page index
+  
   static isTableLoaded: boolean;
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
@@ -29,11 +34,13 @@ export class DataComponent {
   tempSource: MatTableDataSource<Person>; //Used to repopulate original file data after clearFilter() called
   faFileUpload = faFileUpload; //binding for the file upload icon
 
-  constructor(private uploadService: DataService) {
+  constructor(private uploadService: DataService, private _snackBar: MatSnackBar) {
     this.dataSource = new MatTableDataSource<Person>([]);
     this.tempSource = new MatTableDataSource<Person>([]);
     this._isTableLoaded = false;
     this.isToggled = false;
+    this.page = new EventEmitter();
+    this.currentPage = 0;
   }
 
   //Call on data-upload service to load file
@@ -46,6 +53,24 @@ export class DataComponent {
       this.dataSource.connect();
       this._isTableLoaded = true;
     });
+  }
+
+  //If paginator index has changed, reset the vertical scroll to position 0
+  resetTableScroll(event: PageEvent) {
+    if (event.pageIndex != this.currentPage) {
+      const table = document.getElementById('csv-table');
+      table.scrollTop = 0;
+      this.currentPage = event.pageIndex;
+    }
+  }
+
+  showColumnName(colName: string) {
+    this._snackBar.open(colName, null, {duration: 1000, panelClass: "column-snackbar"});
+  }
+
+  handleDelayedMouseover(event: MouseEvent) {
+    console.log("column name test");
+    console.log(event.type);
   }
 
   onDrop(event: any) {

@@ -31,8 +31,14 @@
   }
 
   #button-grid-menu {
-    grid-column-start: 3;
+    grid-column-start: 3 ;
     justify-self: end;
+  }
+
+  .column-snackbar {
+    max-width: 100% !important;
+    align-items: center !important;
+    background: purple;
   }
 
   .column-toggle {
@@ -114,21 +120,18 @@
     color: rgb(165, 165, 165);
   }
 
-  .mat-table {
-    overflow: auto; 
-    width: 100%;
+  .mat-table { 
     max-height: 60vh;
     margin-top: 10px;
+    overflow: auto;
   }
 
   .mat-header-cell, .mat-cell {
     min-width: 5vw;
-  }
-
-  .mat-header-cell {
     padding: 10px;
   }
   
   th, td {
     font-size: 0.8vw;
+    border-right: 1px solid #f2f2f2;
   }

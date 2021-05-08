@@ -17,6 +17,15 @@ button:hover {
   transition: all 0.25s;
 }
 
+.column-snackbar {
+  background: rgba( 110, 140, 190, 0.5);
+  box-shadow: 0 8px 10px 0 rgba( 31, 38, 135, 0.37 );
+  border-radius: 10px;
+  border: 1px solid rgba( 255, 255, 255, 0.18 );
+  color: #000;
+  font-weight: 600;
+}
+
 .dialog-text {
   float: right;
   font-weight: 700;

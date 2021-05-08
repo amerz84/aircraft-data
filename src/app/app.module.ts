@@ -6,6 +6,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonToggleModule } from '@angular/material/button-toggle'; 
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { AppComponent } from './app.component';
 import { DataComponent } from './data/data.component';
@@ -29,6 +30,7 @@ import { DataDialogComponent, DataDialogDialog } from './data-dialog/data-dialog
     MatPaginatorModule,
     MatDialogModule,
     MatButtonToggleModule,
+    MatSnackBarModule,
     BrowserAnimationsModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
