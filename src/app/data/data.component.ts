@@ -65,7 +65,7 @@ export class DataComponent {
   }
 
   showColumnName(colName: string) {
-    this._snackBar.open(colName, null, {duration: 1000, panelClass: "column-snackbar"});
+    this._snackBar.open(colName, null, {duration: 1500, panelClass: "column-snackbar"});
   }
 
   handleDelayedMouseover(event: MouseEvent) {
