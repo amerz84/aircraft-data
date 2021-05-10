@@ -15,9 +15,14 @@
         <button mat-raised-button (click)="clearFilter()">Clear Filters</button>
       </div> 
       <div id="button-grid-menu">
-        <button mat-raised-button id="columnToggler" (click)=" isToggled = !isToggled; toggleColumns()">Toggle Columns</button>
+        <mat-button-toggle-group class="column-toggle-group" #toggleGroup="matButtonToggleGroup" name="columnToggler" aria-label="Toggle Columns Shown">
+          <mat-button-toggle value="engine" (change)="toggleColumnDisplay($event.value)">Engine Data</mat-button-toggle>
+          <mat-button-toggle value="avionics" (change)="toggleColumnDisplay($event.value)">Avionics Data</mat-button-toggle>
+          <mat-button-toggle (change)="toggleColumnDisplay()">Show All</mat-button-toggle>
+        </mat-button-toggle-group>
+       
         <!-- <button mat-raised-button [disabled]="!isTableLoaded" (click)="downloadTableAsCSV('csv-table')">Save Table as File</button> -->
-        <data-dialog [isTableLoaded]="isTableLoaded"></data-dialog>
+        <data-dialog class="dialog-button" [isTableLoaded]="isTableLoaded"></data-dialog>
       </div>
   </div>
     

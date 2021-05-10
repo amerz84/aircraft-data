@@ -9,6 +9,12 @@ body {
     font-family: 'Open Sans';
 }
 
+.mat-button-toggle-group {
+  height: 36px;
+  align-items: center;
+  border: 0px;
+}
+
 button:hover {
   outline: 0;
   box-shadow: 0 0 3px 3px rgba(19,106,205,0.2);

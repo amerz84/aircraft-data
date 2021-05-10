@@ -1,3 +1,4 @@
+import { avionicsHeaders } from './../shared/column-arrays';
 import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { faFileUpload } from '@fortawesome/free-solid-svg-icons';
@@ -151,16 +152,19 @@ export class DataComponent {
   //Toggle display of unimportant columns. Boolean is toggled in onClick method in html file
   //Initial display shows ALL columns
   //NOTE: Downloaded table still shows all columns
-  toggleColumns() {
+  toggleColumnDisplay(eventValue?: string) {
     const button = document.getElementById("columnToggler");
 
-    if(this.isToggled) {
+    if(eventValue == "engine") {
       this.displayedColumns = engineHeaders;
       button.classList.add("column-toggle");
     }
+    else if (eventValue == "avionics") {
+      this.displayedColumns = avionicsHeaders;
+      button.classList.remove("column-toggle");
+    }
     else {
       this.displayedColumns = headersAll;
-      button.classList.remove("column-toggle");
     }
   }
 
