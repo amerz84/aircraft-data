@@ -5,7 +5,6 @@ import { faFileUpload } from '@fortawesome/free-solid-svg-icons';
 import { DataService } from '../data.service';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { headersAll, engineHeaders, egtHeaders, chtHeaders } from '../shared/column-arrays';
-import { Person } from '../shared/person';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 
@@ -19,10 +18,12 @@ export class DataComponent {
   isToggled: boolean; // Check for "toggle" status of columns displayed. False = columns not hidden, True = columns hidden
   _isTableLoaded: boolean; // Check for data loaded into HTML table from spreadsheet
   faFileUpload = faFileUpload; //binding for the file upload icon
-  tempSource: MatTableDataSource<Person>; //Used to repopulate original/unfiltered file data after clearFilter() called
+  tempSource: MatTableDataSource<String>; //Used to repopulate original/unfiltered file data after clearFilter() called
+
 
   // Mat Table directives //
-  dataSource: MatTableDataSource<Person>; 
+  dataSource: MatTableDataSource<String>; 
+  dummyDataSource: MatTableDataSource<String>; //Null/empty table to display "sticky" header - workaround for Edge/Chrome
   displayedColumns: string[] = headersAll; //Table headers (first row), initiated to full column list
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
@@ -33,12 +34,14 @@ export class DataComponent {
 
   /////////////////////////////////////////////
   constructor(private uploadService: DataService, private _snackBar: MatSnackBar) {
-    this.dataSource = new MatTableDataSource<Person>([]);
-    this.tempSource = new MatTableDataSource<Person>([]);
+    this.dataSource = new MatTableDataSource<String>([]);
+    this.tempSource = new MatTableDataSource<String>([]);
+    this.dummyDataSource = new MatTableDataSource<String>(null);
     this._isTableLoaded = false;
     this.isToggled = false;
     this.page = new EventEmitter();
     this.currentPage = 0;
+ 
   }
 
   /////////////////////////////////////////////////
@@ -50,7 +53,7 @@ export class DataComponent {
   //Call on data-upload service to load file into table
   refreshTableData(event: any) {
     //Listen for changes to loaded file data and populate table with data from dataSource
-    this.uploadService.onFileChange(event).subscribe((data: Person[]) => {      
+    this.uploadService.onFileChange(event).subscribe((data: String[]) => {      
       this.dataSource.data = data;
       this.tempSource.data = data;      
       this.dataSource.connect();
@@ -81,7 +84,7 @@ export class DataComponent {
     event.stopPropagation();
     event.preventDefault();
 
-    this.uploadService.onFileChange(event, true).subscribe((data: Person[]) => {      
+    this.uploadService.onFileChange(event, true).subscribe((data: String[]) => {      
       this.dataSource.data = data;
       this.tempSource.data = data;      
       this.dataSource.connect();

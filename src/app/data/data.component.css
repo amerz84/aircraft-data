@@ -113,10 +113,16 @@
     color: rgb(165, 165, 165);
   }
 
-  .mat-table { 
-    max-height: 60vh;
+  #csv-table, #table-header{
+    overflow:auto;
+  }
+
+  #table-header{
+    overflow:hidden;
     margin-top: 10px;
-    overflow: auto;
+  }
+  .mat-table { 
+    max-height: 50vh;
   }
 
   .mat-header-cell, .mat-cell {
