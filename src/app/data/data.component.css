@@ -105,6 +105,10 @@
     transition: all 0.25s;
   }
 
+  th.mat-header-cell:last-of-type {
+    min-width: 12vw;
+  }
+
   .mat-button-toggle-checked {
     background-color: rgb(165, 165, 165);
   }
