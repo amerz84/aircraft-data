@@ -16,12 +16,11 @@ View Live Demo [here](https://amerz84.github.io/aircraft-data/)
 
 ### Filtering Columns
 
-
+![Applying Column Filters](https://github.com/amerz84/aircraft-data/blob/4cf4dab5e92a9b87ae5da539a064ba5eb85c86e8/readme_assets/filter_columns.gif)
 
 ### Aircraft File Info Dialog Box
 
-
-
+![Displaying Aircraft Info Dialog Box](https://github.com/amerz84/aircraft-data/blob/4cf4dab5e92a9b87ae5da539a064ba5eb85c86e8/readme_assets/info_dialog.PNG)
 
 ## Development server
 
