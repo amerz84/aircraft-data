@@ -9,18 +9,18 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { AppComponent } from './app.component';
-import { DataComponent } from './data/data.component';
+import { TableUploadComponent } from './table-upload/table-upload.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { headersAll } from './shared/column-arrays';
-import { DataDialogComponent, DataDialogDialog } from './data-dialog/data-dialog.component';
+import { InfoDialogComponent, InfoDialogDialog } from './info-dialog/info-dialog.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    DataComponent,
-    DataDialogComponent,
-    DataDialogDialog
+    TableUploadComponent,
+    InfoDialogComponent,
+    InfoDialogDialog
   ],
   imports: [
     BrowserModule,

@@ -1,6 +1,27 @@
-# AircraftData
+# Aircraft Data Manipulation Tool
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.2.1.
+
+## Description
+
+This is a spreadsheet tool that allows a user to load a fixed-column-size .csv file and perform various filters on the data, presented in a table format.
+
+## Live Demo
+
+View Live Demo [here](https://amerz84.github.io/aircraft-data/)
+
+[Demo file](https://github.com/amerz84/aircraft-data/blob/27ba5458ebddc4ff2715e40c3b4f39b45435731d/demofile.csv) available in root folder - demofile.csv
+
+## Examples
+
+### Filtering Columns
+
+
+
+### Aircraft File Info Dialog Box
+
+
+
 
 ## Development server
 
