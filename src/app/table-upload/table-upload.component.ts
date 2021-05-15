@@ -6,6 +6,7 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { headersAll, engineHeaders, egtHeaders, chtHeaders } from '../shared/column-arrays';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DataService } from '../services/data.service';
+import { gsap } from 'gsap';
 
 
 @Component({
@@ -19,7 +20,7 @@ export class TableUploadComponent {
   _isTableLoaded: boolean; // Check for data loaded into HTML table from spreadsheet
   faFileUpload = faFileUpload; //binding for the file upload icon
   tempSource: MatTableDataSource<String>; //Used to repopulate original/unfiltered file data after clearFilter() called
-
+  timeline; //GSAP animation timeline
 
   // Mat Table directives //
   dataSource: MatTableDataSource<String>; 
@@ -41,7 +42,7 @@ export class TableUploadComponent {
     this.isToggled = false;
     this.page = new EventEmitter();
     this.currentPage = 0;
- 
+    this.timeline = gsap.timeline();
   }
 
   /////////////////////////////////////////////////
@@ -50,42 +51,27 @@ export class TableUploadComponent {
   }
 
   /////////////////////////////////////////////////
-  //Call on data-upload service to load file into table
-  refreshTableData(event: any) {
+  //Call on file upload through use of the drop area browse button
+  onFileSelect(event: any) {
+    this.animatePageElements(); //Start page animation
     //Listen for changes to loaded file data and populate table with data from dataSource
-    this.uploadService.onFileChange(event).subscribe((data: String[]) => {      
-      this.dataSource.data = data;
-      this.tempSource.data = data;      
-      this.dataSource.connect();
-      this._isTableLoaded = true;
-    });
-
-    const fileUploadDiv = document.getElementById("")
+    this.callFileUploader(event);   
   }
 
   /////////////////////////////////////////////////
-  //If paginator index has changed, reset the vertical scroll to position 0
-  resetTableScroll(event: PageEvent) {
-    if (event.pageIndex != this.currentPage) {
-      const table = document.getElementById('csv-table');
-      table.scrollTop = 0;
-      this.currentPage = event.pageIndex;
-    }
-  }
-
-  /////////////////////////////////////////////////
-  //Display column name in snackbar when td cell is clicked
-  showColumnName(colName: string) {
-    this._snackBar.open(colName, null, {duration: 1500, panelClass: "column-snackbar"});
-  }
-
-  /////////////////////////////////////////////////
-  //Handle file drop onto drop zone
-  onDrop(event: any) {
+  //Call on file upload through use of the drop zone (drag and drop)
+  onFileDrop(event: any) {
     //Override browser handler functionality
     event.stopPropagation();
     event.preventDefault();
 
+    this.animatePageElements(); //Start page animation
+    this.callFileUploader(event);
+  }
+
+  //////////////////////////////////////////////////
+  // Call on data.service to convert csv file into table data
+  callFileUploader(event: any) {
     this.uploadService.onFileChange(event, true).subscribe((data: String[]) => {      
       this.dataSource.data = data;
       this.tempSource.data = data;      
@@ -174,6 +160,16 @@ export class TableUploadComponent {
   }
 
   /////////////////////////////////////////////////
+  //If paginator index has changed, reset the vertical scroll to position 0
+  resetTableScrollPosition(event: PageEvent) {
+    if (event.pageIndex != this.currentPage) {
+      const table = document.getElementById('csv-table');
+      table.scrollTop = 0;
+      this.currentPage = event.pageIndex;
+    }
+  }
+
+  /////////////////////////////////////////////////
   //Save file
   downloadTableAsCSV(table_id: string) {
     this.uploadService.saveFile(table_id);
@@ -183,5 +179,18 @@ export class TableUploadComponent {
   //Boolean check for existence of table data
   get isTableLoaded() {
     return this._isTableLoaded;
+  }
+
+  /////////////////////////////////////////////////
+  // Call on GSAP timeline to apply animations to dropzone and filters/table elements
+  animatePageElements() {
+    this.timeline.to("#drop-zone-initial", {duration: 1, width: "20vw", height: "15vh"});
+    this.timeline.to("#button-table-container", {duration: 0.5, visibility: "visible"});    
+  }
+  
+  /////////////////////////////////////////////////
+  //Display column name in snackbar when td cell is clicked
+  showColumnName(colName: string) {
+    this._snackBar.open(colName, null, {duration: 1500, panelClass: "column-snackbar"});
   }
 }

@@ -26,6 +26,7 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "angular-cli-ghpages": "^1.0.0-rc.1",
+    "gsap": "^3.6.1",
     "rxjs": "~6.6.0",
     "save-dev": "0.0.1-security",
     "tslib": "^2.0.0",

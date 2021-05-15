@@ -1,11 +1,11 @@
 <div class="bg-image"></div>
       
 <body class="content-container">
-  <div id="drop-zone-initial" (drop)="onDrop($event);onDragEnd()" (dragover)="onDragOver($event)" (dragleave)="onDragEnd()">
+  <div id="drop-zone-initial" (drop)="onFileDrop($event);onDragEnd()" (dragover)="onDragOver($event)" (dragleave)="onDragEnd()">
     <label class="file-upload"for="fileItem">
       <fa-icon [icon]="faFileUpload" size="lg"></fa-icon>Upload File        
     </label>
-    <input type="file" class="form-control-file" id="fileItem" (change)="refreshTableData($event)">
+    <input type="file" class="form-control-file" id="fileItem" (change)="onFileSelect($event)">
     <span id="drop-zone-text">Or Drop Here</span> 
   </div>
   
@@ -759,7 +759,7 @@
       [pageSize]="200"
       [pageSizeOptions]="[100, 200, 400]"
       [showFirstLastButtons]="true"
-      (page)="resetTableScroll($event)">
+      (page)="resetTableScrollPosition($event)">
     </mat-paginator>
   </div>
 
