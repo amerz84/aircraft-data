@@ -59,6 +59,8 @@ export class TableUploadComponent {
       this.dataSource.connect();
       this._isTableLoaded = true;
     });
+
+    const fileUploadDiv = document.getElementById("")
   }
 
   /////////////////////////////////////////////////
@@ -97,13 +99,13 @@ export class TableUploadComponent {
   onDragOver(event: any) {
     event.stopPropagation();
     event.preventDefault();
-    document.getElementById('drop_zone').classList.add('isDragover');
+    document.getElementById('drop-zone-initial').classList.add('isDragover');
   }
 
   /////////////////////////////////////////////////
   //Remove class when file is dragged away from drop zone
   onDragEnd() {
-    document.getElementById('drop_zone').classList.remove('isDragover');
+    document.getElementById('drop-zone-initial').classList.remove('isDragover');
   }
 
   /////////////////////////////////////////////////
