@@ -52,10 +52,10 @@ export class TableUploadComponent {
 
   /////////////////////////////////////////////////
   //Call on file upload through use of the drop area browse button
-  onFileSelect(event: any) {
-    this.animatePageElements(); //Start page animation
+  onFileSelect(event: any) {    
     //Listen for changes to loaded file data and populate table with data from dataSource
-    this.callFileUploader(event);   
+    this.callFileUploader(event);  
+    this.animatePageElements(); //Start page animation 
   }
 
   /////////////////////////////////////////////////
@@ -66,13 +66,13 @@ export class TableUploadComponent {
     event.preventDefault();
 
     this.animatePageElements(); //Start page animation
-    this.callFileUploader(event);
+    this.callFileUploader(event, true);
   }
 
   //////////////////////////////////////////////////
   // Call on data.service to convert csv file into table data
-  callFileUploader(event: any) {
-    this.uploadService.onFileChange(event, true).subscribe((data: String[]) => {      
+  callFileUploader(event: any, isFromDropZone = false) {
+    this.uploadService.onFileChange(event, isFromDropZone).subscribe((data: String[]) => {      
       this.dataSource.data = data;
       this.tempSource.data = data;      
       this.dataSource.connect();
@@ -184,7 +184,7 @@ export class TableUploadComponent {
   /////////////////////////////////////////////////
   // Call on GSAP timeline to apply animations to dropzone and filters/table elements
   animatePageElements() {
-    this.timeline.to("#drop-zone-initial", {duration: 1, width: "20vw", height: "15vh"});
+    this.timeline.to("#drop-zone-initial", {duration: 0.5, width: "20vw", height: "15vh"});
     this.timeline.to("#button-table-container", {duration: 0.5, visibility: "visible"});    
   }
   
