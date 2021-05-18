@@ -45,3 +45,8 @@ Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protrac
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+
+## Works Cited
+
+### Favicon base image
+>Baumgartner, Josh. "Airplane GA Black.svg" *Wikipedia.com*. 20 September, 2013. https://en.m.wikipedia.org/wiki/File:Airplane_GA_Black.svg. Accessed 17 May 2021.
