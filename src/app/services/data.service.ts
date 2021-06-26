@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Subscriber } from 'rxjs';
+import { Subscriber, throwError } from 'rxjs';
 import { Observable } from 'rxjs';
 import * as XLSX from 'xlsx';
 import { headersAll } from '../shared/column-arrays';
@@ -21,7 +21,13 @@ export class DataService {
     // Read raw binary contents from selected file. Will fire OnLoad event upon completion
     // If drop zone used to upload file, DataTransfer class won't work
     if (isFromDropZone) {
+      //Check for invalid drops
+      try {
       reader.readAsBinaryString(event.dataTransfer.items[0].getAsFile());
+      }
+      catch(error) {
+        return throwError(error);
+      }
     }
     else {
     reader.readAsBinaryString(target.files[0]);
@@ -39,10 +45,11 @@ export class DataService {
           let cell = worksheet[this.nextChar(i+1) + 1];
           this.firstRowDataArray[i] = (cell ? cell.v : undefined);
         }
-        //Remove "noise" from header cells and store only the actual values in formatted array
+        //Remove "noise" from header cells and store only the desired values in formatted array for the "View File Info" component
         this.formatFirstRowData();
+
         // Format the raw data string into 2-d array starting from cell A3. Dates formatted. Headers taken from column-arrays.ts
-        const excelData = (XLSX.utils.sheet_to_json(worksheet, {range:3, header:headersAll,raw:false,dateNF:'yyyy-mm-dd'}));
+        const excelData = (XLSX.utils.sheet_to_json(worksheet, {range:3, header:headersAll, raw:false, dateNF:'yyyy-mm-dd'}));
         observer.next(excelData);
         observer.complete(); 
       }

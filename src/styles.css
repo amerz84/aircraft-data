@@ -24,12 +24,17 @@ button:hover {
 }
 
 .column-snackbar {
-  background: rgba( 110, 140, 190);
+  background: rgb(51, 53, 58);
   box-shadow: 0 8px 10px 0 rgba( 31, 38, 135, 0.37 );
   border-radius: 10px;
   border: 1px solid rgba( 255, 255, 255, 0.18 );
-  color: #000;
+  color: #fff;
   font-weight: 600;
+}
+
+.mat-simple-snackbar-action {
+  color:rgb(51, 53, 58);
+  background-color: #fff;
 }
 
 .dialog-text {

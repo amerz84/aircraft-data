@@ -1,12 +1,12 @@
-import { avionicsHeaders } from '../shared/column-arrays';
 import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { faFileUpload } from '@fortawesome/free-solid-svg-icons';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
-import { headersAll, engineHeaders, egtHeaders, chtHeaders } from '../shared/column-arrays';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { DataService } from '../services/data.service';
 import { gsap } from 'gsap';
+
+import { DataService } from '../services/data.service';
+import { avionicsHeaders, chtHeaders, egtHeaders, engineHeaders, headersAll } from '../shared/column-arrays';
 
 
 @Component({
@@ -77,7 +77,12 @@ export class TableUploadComponent {
       this.tempSource.data = data;      
       this.dataSource.connect();
       this._isTableLoaded = true;
+      this.storeLatAndLong(); //Store lat and long values into separate array
+    }, error => {
+      this._snackBar.open("Upload failed --- " + error.message, "OK", {panelClass: "column-snackbar"});
+      return;
     });
+
   }
 
   /////////////////////////////////////////////////
@@ -192,5 +197,24 @@ export class TableUploadComponent {
   //Display column name in snackbar when td cell is clicked
   showColumnName(colName: string) {
     this._snackBar.open(colName, null, {duration: 1500, panelClass: "column-snackbar"});
+  }
+
+  ///////////////////////////////////////////////////////
+  //Iterate through data table (not the original uploaded file) and map lat and long values to positionArray
+  storeLatAndLong() {
+    const latArray = [];
+    const longArray = [];
+
+    this.dataSource.data.forEach(obj => {
+      for (const [key, value] of Object.entries(obj)) {
+        if(key === "Lat" && parseInt(value.trim())) {
+          latArray.push(value);
+        }
+        if (key === "Long" && parseInt(value.trim())) {
+          longArray.push(value);
+        }    
+      };
+    });
+    const positionArray = latArray.map((latitude, index) => ({latitude, longitude: longArray[index]}));
   }
 }
