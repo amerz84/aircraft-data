@@ -23,7 +23,7 @@
           <mat-button-toggle (change)="toggleColumnDisplay()">Show All</mat-button-toggle>
         </mat-button-toggle-group>       
         <!-- <button mat-raised-button [disabled]="!isTableLoaded" (click)="downloadTableAsCSV('csv-table')">Save Table as File</button> -->
-        <info-dialog class="dialog-button" [isTableLoaded]="isTableLoaded"></info-dialog>
+        <table-info class="dialog-button" [isTableLoaded]="isTableLoaded"></table-info>
       </div>
     </div>
 

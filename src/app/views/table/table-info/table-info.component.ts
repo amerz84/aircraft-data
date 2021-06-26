@@ -1,13 +1,14 @@
 import { Component, Inject, Input } from '@angular/core';
-import { MatDialog, MatDialogConfig, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { DataService } from '../services/data.service';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
+
+import { DataService } from '../../../services/data.service';
 
 @Component({
-  selector: 'info-dialog',
-  templateUrl: './info-dialog.component.html',
-  styleUrls: ['./info-dialog.component.css']
+  selector: 'table-info',
+  templateUrl: './table-info.component.html',
+  styleUrls: ['./table-info.component.css']
 })
-export class InfoDialogComponent {
+export class TableInfoComponent {
   logVersion: string;
   airframeName: string;
   unitSoftwarePN: string;
@@ -35,7 +36,7 @@ export class InfoDialogComponent {
         sysID: this.getFormattedFirstRowData(5),
         mode: this.getFormattedFirstRowData(6)
       }
-      this.dialog.open(InfoDialogDialog, dialogConfig);
+      this.dialog.open(TableInfoDialog, dialogConfig);
   }
 
   //////////////////////////////////////////////
@@ -47,10 +48,10 @@ export class InfoDialogComponent {
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 @Component({
-  selector: 'info-dialog-dialog',
-  templateUrl: 'info-dialog-dialog.html',
+  selector: 'table-info-dialog',
+  templateUrl: 'table-info-dialog.html',
 })
-export class InfoDialogDialog {
+export class TableInfoDialog {
   logVersion: string;
   airframeName: string;
   sysSoftwarePN: string;
@@ -61,7 +62,7 @@ export class InfoDialogDialog {
 
   //Bind the formatted first row data
   constructor(
-    private dialogRef: MatDialogRef<InfoDialogDialog>,
+    private dialogRef: MatDialogRef<TableInfoDialog>,
     @Inject(MAT_DIALOG_DATA) data) {
       this.logVersion = data.logVersion;
       this.airframeName = data.airframeName;

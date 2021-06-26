@@ -5,16 +5,16 @@ import { MatTableDataSource } from '@angular/material/table';
 import { faFileUpload } from '@fortawesome/free-solid-svg-icons';
 import { gsap } from 'gsap';
 
-import { DataService } from '../services/data.service';
-import { avionicsHeaders, chtHeaders, egtHeaders, engineHeaders, headersAll } from '../shared/column-arrays';
+import { DataService } from '../../services/data.service';
+import { avionicsHeaders, chtHeaders, egtHeaders, engineHeaders, headersAll } from '../../shared/column-arrays';
 
 
 @Component({
-  selector: 'table-upload',
-  templateUrl: './table-upload.component.html',
-  styleUrls: ['./table-upload.component.css']
+  selector: 'table-view',
+  templateUrl: './table.component.html',
+  styleUrls: ['./table.component.css']
 })
-export class TableUploadComponent {
+export class TableComponent {
   headerValues = []; //Placeholder to determine displayed column list
   isToggled: boolean; // Check for "toggle" status of columns displayed. False = columns not hidden, True = columns hidden
   _isTableLoaded: boolean; // Check for data loaded into HTML table from spreadsheet

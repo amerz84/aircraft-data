@@ -1,26 +1,31 @@
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTableModule } from '@angular/material/table'; 
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatButtonToggleModule } from '@angular/material/button-toggle'; 
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTableModule } from '@angular/material/table';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { AppComponent } from './app.component';
-import { TableUploadComponent } from './table-upload/table-upload.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
+import { HeaderComponent } from './header/header/header.component';
 import { headersAll } from './shared/column-arrays';
-import { InfoDialogComponent, InfoDialogDialog } from './info-dialog/info-dialog.component';
+import { ChartComponent } from './views/chart/chart.component';
+import { MapComponent } from './views/map/map.component';
+import { TableInfoComponent, TableInfoDialog } from './views/table/table-info/table-info.component';
+import { TableComponent } from './views/table/table.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    TableUploadComponent,
-    InfoDialogComponent,
-    InfoDialogDialog
+    TableComponent,
+    TableInfoComponent,
+    TableInfoDialog,
+    MapComponent,
+    ChartComponent,
+    HeaderComponent
   ],
   imports: [
     BrowserModule,
