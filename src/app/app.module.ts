@@ -10,6 +10,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouteReuseStrategy, RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { HttpClientModule, HttpClientJsonpModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header/header.component';
@@ -21,6 +22,7 @@ import { TableComponent } from './views/table/table.component';
 import { NotFoundComponent } from './views/not-found/not-found.component';
 import { ChartsModule } from 'ng2-charts';
 import { CustomReuseStrategy } from './reuse-strategy';
+import { GoogleMapsModule } from '@angular/google-maps';
 
 @NgModule({
   declarations: [
@@ -37,6 +39,9 @@ import { CustomReuseStrategy } from './reuse-strategy';
     BrowserModule,
     ChartsModule,
     FontAwesomeModule,
+    GoogleMapsModule,
+    HttpClientModule,
+    HttpClientJsonpModule,
     MatButtonModule,
     MatTableModule,
     MatPaginatorModule,
