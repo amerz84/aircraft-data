@@ -8,7 +8,7 @@ import { headersAll } from '../shared/column-arrays';
 @Injectable({
   providedIn: 'root'
 })
-export class DataService {
+export class DataImportService {
   //Aircraft header data info
   firstRowDataArray = [];
   formattedHeaderArray = [];

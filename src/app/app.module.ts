@@ -1,3 +1,4 @@
+import { DataSharingService } from './services/data-sharing.service';
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -7,7 +8,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { RouterModule } from '@angular/router';
+import { RouteReuseStrategy, RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { AppComponent } from './app.component';
@@ -18,6 +19,8 @@ import { MapComponent } from './views/map/map.component';
 import { TableInfoComponent, TableInfoDialog } from './views/table/table-info/table-info.component';
 import { TableComponent } from './views/table/table.component';
 import { NotFoundComponent } from './views/not-found/not-found.component';
+import { ChartsModule } from 'ng2-charts';
+import { CustomReuseStrategy } from './reuse-strategy';
 
 @NgModule({
   declarations: [
@@ -32,6 +35,7 @@ import { NotFoundComponent } from './views/not-found/not-found.component';
   ],
   imports: [
     BrowserModule,
+    ChartsModule,
     FontAwesomeModule,
     MatButtonModule,
     MatTableModule,
@@ -49,7 +53,9 @@ import { NotFoundComponent } from './views/not-found/not-found.component';
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [
-    {provide: 'HEADERS', useValue:headersAll}
+    {provide: 'HEADERS', useValue:headersAll},
+    {provide: RouteReuseStrategy, useClass: CustomReuseStrategy},
+    DataSharingService
   ],
   bootstrap: [AppComponent]
 })

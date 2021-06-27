@@ -1,11 +1,12 @@
-import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Output, ViewChild, Input, OnInit } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { faFileUpload } from '@fortawesome/free-solid-svg-icons';
 import { gsap } from 'gsap';
+import { DataSharingService } from 'src/app/services/data-sharing.service';
 
-import { DataService } from '../../services/data.service';
+import { DataImportService } from '../../services/data-import.service';
 import { avionicsHeaders, chtHeaders, egtHeaders, engineHeaders, headersAll } from '../../shared/column-arrays';
 
 
@@ -14,13 +15,14 @@ import { avionicsHeaders, chtHeaders, egtHeaders, engineHeaders, headersAll } fr
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.css']
 })
-export class TableComponent {
+export class TableComponent implements OnInit {
   headerValues = []; //Placeholder to determine displayed column list
   isToggled: boolean; // Check for "toggle" status of columns displayed. False = columns not hidden, True = columns hidden
-  _isTableLoaded: boolean; // Check for data loaded into HTML table from spreadsheet
+  @Input('isTableLoaded') _isTableLoaded: boolean; // Variable for data loaded into HTML table from spreadsheet
   faFileUpload = faFileUpload; //binding for the file upload icon
   tempSource: MatTableDataSource<String>; //Used to repopulate original/unfiltered file data after clearFilter() called
   timeline; //GSAP animation timeline
+  @Output() positionArray: { latitude: any; longitude: any; }[];
 
   // Mat Table directives //
   dataSource: MatTableDataSource<String>; 
@@ -32,10 +34,22 @@ export class TableComponent {
   // Paginator variables //
   @Output() page: EventEmitter<PageEvent>; //Event for paginator page change
   currentPage: number; //Paginator page index
+  
 
   /////////////////////////////////////////////
-  constructor(private uploadService: DataService, private _snackBar: MatSnackBar) {
-    this.dataSource = new MatTableDataSource<String>([]);
+  constructor(private importService: DataImportService, private _snackBar: MatSnackBar, private sharingService: DataSharingService) {
+    if (this.sharingService.positionArray.getValue()) {
+      this.sharingService.positionArray$.subscribe(res => {
+        console.log(res);
+      });
+    } 
+
+
+  
+  }
+
+  ngOnInit() {
+    this.dataSource =  new MatTableDataSource<String>([]);
     this.tempSource = new MatTableDataSource<String>([]);
     this.dummyDataSource = new MatTableDataSource<String>(null);
     this._isTableLoaded = false;
@@ -44,7 +58,6 @@ export class TableComponent {
     this.currentPage = 0;
     this.timeline = gsap.timeline();
   }
-
   /////////////////////////////////////////////////
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
@@ -72,11 +85,14 @@ export class TableComponent {
   //////////////////////////////////////////////////
   // Call on data.service to convert csv file into table data
   callFileUploader(event: any, isFromDropZone = false) {
-    this.uploadService.onFileChange(event, isFromDropZone).subscribe((data: String[]) => {      
+    this.importService.onFileChange(event, isFromDropZone).subscribe((data: String[]) => {      
       this.dataSource.data = data;
       this.tempSource.data = data;      
-      this.dataSource.connect();
+
       this._isTableLoaded = true;
+      this.sharingService.toggleIsTableLoaded(this._isTableLoaded);
+
+      this.dataSource.connect();
       this.storeLatAndLong(); //Store lat and long values into separate array
     }, error => {
       this._snackBar.open("Upload failed --- " + error.message, "OK", {panelClass: "column-snackbar"});
@@ -177,7 +193,7 @@ export class TableComponent {
   /////////////////////////////////////////////////
   //Save file
   downloadTableAsCSV(table_id: string) {
-    this.uploadService.saveFile(table_id);
+    this.importService.saveFile(table_id);
   }
 
   /////////////////////////////////////////////////
@@ -215,6 +231,7 @@ export class TableComponent {
         }    
       };
     });
-    const positionArray = latArray.map((latitude, index) => ({latitude, longitude: longArray[index]}));
+    this.positionArray = latArray.map((latitude, index) => ({latitude, longitude: longArray[index]}));
+    this.sharingService.positionArray.next(this.positionArray);
   }
 }

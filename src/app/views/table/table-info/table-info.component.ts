@@ -1,7 +1,7 @@
 import { Component, Inject, Input } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 
-import { DataService } from '../../../services/data.service';
+import { DataImportService } from '../../../services/data-import.service';
 
 @Component({
   selector: 'table-info',
@@ -18,7 +18,7 @@ export class TableInfoComponent {
   mode: string;
 
   @Input('isTableLoaded') isTableLoaded: boolean;
-  constructor(public dialog: MatDialog, private uploadService: DataService) {
+  constructor(public dialog: MatDialog, private uploadService: DataImportService) {
   }
 
   //////////////////////////////////////////////
