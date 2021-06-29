@@ -22,7 +22,7 @@ export class TableComponent implements OnInit {
   faFileUpload = faFileUpload; //binding for the file upload icon
   tempSource: MatTableDataSource<String>; //Used to repopulate original/unfiltered file data after clearFilter() called
   timeline; //GSAP animation timeline
-  @Output() positionArray: { latitude: any; longitude: any; }[];
+  @Output() positionArray: { lat: number; lng: number; }[];
 
   // Mat Table directives //
   dataSource: MatTableDataSource<String>; 
@@ -38,13 +38,6 @@ export class TableComponent implements OnInit {
 
   /////////////////////////////////////////////
   constructor(private importService: DataImportService, private _snackBar: MatSnackBar, private sharingService: DataSharingService) {
-    if (this.sharingService.positionArray.getValue()) {
-      this.sharingService.positionArray$.subscribe(res => {
-        console.log(res);
-      });
-    } 
-
-
   
   }
 
@@ -161,7 +154,7 @@ export class TableComponent implements OnInit {
   }
 
   /////////////////////////////////////////////////
-  //Toggle display of unimportant columns. Boolean is toggled in onClick method in html file
+  //Toggle display of undesired columns. Boolean is toggled in onClick method in html file
   //Initial display shows ALL columns
   //NOTE: Downloaded table still shows all columns
   toggleColumnDisplay(eventValue?: string) {
@@ -192,9 +185,9 @@ export class TableComponent implements OnInit {
 
   /////////////////////////////////////////////////
   //Save file
-  downloadTableAsCSV(table_id: string) {
+/*   downloadTableAsCSV(table_id: string) {
     this.importService.saveFile(table_id);
-  }
+  } */
 
   /////////////////////////////////////////////////
   //Boolean check for existence of table data
@@ -210,7 +203,9 @@ export class TableComponent implements OnInit {
   }
   
   /////////////////////////////////////////////////
-  //Display column name in snackbar when td cell is clicked
+  // Display column name in snackbar when td cell is clicked 
+  // Redundant workaround for sticky headers bug
+  // If sticky headers fixed for mat table, this can be deprecated
   showColumnName(colName: string) {
     this._snackBar.open(colName, null, {duration: 1500, panelClass: "column-snackbar"});
   }
@@ -231,7 +226,15 @@ export class TableComponent implements OnInit {
         }    
       };
     });
-    this.positionArray = latArray.map((latitude, index) => ({latitude, longitude: longArray[index]}));
+
+    //Store min and max coordinates for determining map size
+    this.sharingService.setMinCoordinate(latArray, 'lat');
+    this.sharingService.setMinCoordinate(longArray, 'long');
+    this.sharingService.setMaxCoordinate(latArray, 'lat');
+    this.sharingService.setMaxCoordinate(longArray, 'long');
+    
+    //Convert coordinate data into number (required for google.maps.polyline) and store in service
+    this.positionArray = latArray.map((lat, index) => ({lat: parseFloat(lat), lng: parseFloat(longArray[index])}));
     this.sharingService.positionArray.next(this.positionArray);
   }
 }

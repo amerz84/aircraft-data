@@ -1,7 +1,7 @@
 import { ActivatedRouteSnapshot, DetachedRouteHandle, RouteReuseStrategy } from '@angular/router';
 
 export class CustomReuseStrategy implements RouteReuseStrategy {
-    routesToCache: string[] = [""];
+    routesToCache: string[] = ["table"];
     storedRouteHandles = new Map<string, DetachedRouteHandle>();
    
     // Decides if the route should be stored

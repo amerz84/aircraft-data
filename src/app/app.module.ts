@@ -50,11 +50,12 @@ import { GoogleMapsModule } from '@angular/google-maps';
     MatSnackBarModule,
     BrowserAnimationsModule,
     RouterModule.forRoot([
-      { path: '', component: TableComponent },
+      { path: '', redirectTo: '/table', pathMatch: 'full' },
+      { path: 'table', component: TableComponent },
       { path: 'chart', component: ChartComponent },
-      { path: 'map', component: MapComponent },
+      { path: 'map', component: MapComponent, },
       { path: '**', component: NotFoundComponent }
-    ])
+    ], {onSameUrlNavigation: "reload"})
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [
