@@ -1,0 +1,21 @@
+body {
+    max-width: 90%;
+}
+
+.content-container {
+    position: relative;
+    margin-top: -90vh;
+    background: transparent;
+}
+
+/* Page background */
+.bg-image {
+    background-image: url('src\assets\aircraft_bg.jpg');
+    filter: blur(10px);
+    height: 100%;
+    width: 100%;
+    background-position: top center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+}

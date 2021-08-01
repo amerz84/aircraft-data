@@ -1,0 +1,18 @@
+<div class="bg-image"></div>
+
+<body class="content-container">
+    <div>
+        <google-map 
+            height="400px"
+            width="750px"
+            [center]="center"
+            (mapClick)="moveMap($event)"
+            (mapMousemove)="move($event)">
+            <map-polyline [path]="flightPath"></map-polyline>
+        </google-map>
+
+<div>Latitude: {{display?.lat}}</div>
+<div>Longitude: {{display?.lng}}</div>
+      </div>
+
+</body>

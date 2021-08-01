@@ -1,6 +1,26 @@
-# AircraftData
+# Aircraft Data Manipulation Tool
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.2.1.
+
+## Description
+
+This is a spreadsheet tool that allows a user to load a fixed-column-size .csv file and perform various filters on the data, presented in a table format.
+
+## Live Demo
+
+View Live Demo [here](https://amerz84.github.io/aircraft-data/)
+
+[Demo file](https://github.com/amerz84/aircraft-data/blob/27ba5458ebddc4ff2715e40c3b4f39b45435731d/demofile.csv) available in root folder - demofile.csv
+
+## Examples
+
+### Filtering Columns
+
+![Applying Column Filters](https://github.com/amerz84/aircraft-data/blob/4cf4dab5e92a9b87ae5da539a064ba5eb85c86e8/readme_assets/filter_columns.gif)
+
+### Aircraft File Info Dialog Box
+
+![Displaying Aircraft Info Dialog Box](https://github.com/amerz84/aircraft-data/blob/4cf4dab5e92a9b87ae5da539a064ba5eb85c86e8/readme_assets/info_dialog.PNG)
 
 ## Development server
 
@@ -25,3 +45,8 @@ Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protrac
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+
+## Works Cited
+
+### Favicon base image
+>Baumgartner, Josh. "Airplane GA Black.svg" *Wikipedia.com*. 20 September, 2013. https://en.m.wikipedia.org/wiki/File:Airplane_GA_Black.svg. Accessed 17 May 2021.
