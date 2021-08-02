@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subscriber, throwError } from 'rxjs';
+import { DataSharingService } from 'src/app/services/data-sharing.service';
 import * as XLSX from 'xlsx';
+import { headersAll } from '../utils/column-arrays';
 
-import { headersAll } from '../shared/column-arrays';
 
 
 @Injectable({
@@ -12,6 +13,8 @@ export class DataImportService {
   //Aircraft header data info
   firstRowDataArray = [];
   formattedHeaderArray = [];
+
+  constructor(private sharingService: DataSharingService) {}
 
   //Convert file data into Observable array for table display
   onFileChange(event: any, isFromDropZone = false): Observable<any> {
@@ -47,6 +50,15 @@ export class DataImportService {
         }
         //Remove "noise" from header cells and store only the desired values in formatted array for the "View File Info" component
         this.formatFirstRowData();
+
+
+        //Send CHT and EGT data to data-sharing.service for chart data
+        const chtData = (XLSX.utils.sheet_to_json(worksheet, {range:"AE3:AJ45000", blankrows:false}));
+        this.sharingService.setCHTData(chtData);
+
+        const egtData = (XLSX.utils.sheet_to_json(worksheet, {range:"AK3:AP45000", blankrows:false}));
+        this.sharingService.setEGTData(egtData);
+
 
         // Format the raw data string into 2-d array starting from cell A3. Dates formatted. Headers taken from column-arrays.ts
         const excelData = (XLSX.utils.sheet_to_json(worksheet, {range:3, header:headersAll, raw:false, dateNF:'yyyy-mm-dd'}));

@@ -1,13 +1,13 @@
-import { Component, EventEmitter, Output, ViewChild, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { faFileUpload } from '@fortawesome/free-solid-svg-icons';
 import { gsap } from 'gsap';
 import { DataSharingService } from 'src/app/services/data-sharing.service';
-
 import { DataImportService } from '../../services/data-import.service';
-import { avionicsHeaders, chtHeaders, egtHeaders, engineHeaders, headersAll } from '../../shared/column-arrays';
+import { avionicsHeaders, chtHeaders, egtHeaders, engineHeaders, headersAll } from '../../utils/column-arrays';
+
 
 
 @Component({

@@ -29,7 +29,7 @@
 
     <!--- This table is for Edge/Chrome workaround where sticky headers wasn't working as intended.
         It connects to a NULL data source (so no data displayed) and just shows a persistent header.
-        When you scroll up/down on the data, it is actually the 2nd table being scrolled -->
+        When you scroll up/down on the data, it is actually the 2nd table (id="csv-table") being scrolled -->
     <div id="table-header" #scrollHeader (scroll)="scrollData.scrollLeft = scrollHeader.scrollLeft">
       <mat-table #table id="mat-header" [dataSource]="this.dummyDataSource" >
         <ng-container matColumnDef="LocalDate">
