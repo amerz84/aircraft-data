@@ -1,7 +1,7 @@
 <div class="bg-image"></div>
 
-<body class="content-container">
-    <div class="chart-wrapper" *ngIf="isDataAvailable">
+<div class="grid-container">
+    <div class="chart-wrapper grid-box" *ngIf="isDataAvailable">
         <canvas baseChart 
             [datasets]="lineChartData" 
             [options]="lineChartOptions"
@@ -11,5 +11,8 @@
             [plugins]="lineChartPlugins">
         </canvas>
     </div>
+    <div class="grid-box"></div>
+    <div class="grid-box"></div>
+    <div class="grid-box"></div>
 
-</body>
+</div>
