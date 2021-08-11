@@ -124,7 +124,7 @@ export class DataSharingService {
 
   //Called by chart.component.ts - returns data source for EGT Line chart
   getCHTVals() {
-    return this.chtValuesArray;
+    return this.reduceArraySize(this.chtValuesArray);
   }
 
   //Convert array of string:number key-value pairs to array of array of values
@@ -172,6 +172,27 @@ export class DataSharingService {
 
   //Called by chart.component.ts - returns data source for EGT Line chart
   getEGTVals() {
-    return this.egtValuesArray;
+    return this.reduceArraySize(this.egtValuesArray);
+  }
+
+  reduceArraySize(inputArray) {
+    const size = 100;
+    let resultArray = new Array(inputArray.length).fill(0).map(() => new Array(size));
+
+    if (inputArray[0].length < size) return inputArray;
+
+    const spacing = inputArray[0].length / size;
+
+    for(let outerElement = 0; outerElement < inputArray.length; outerElement++) {
+      let innerElement = -1;
+      while(++innerElement < size) {
+
+        resultArray[outerElement][innerElement] = (inputArray[outerElement][Math.round(innerElement * spacing)]);
+        
+      }
+
+    }
+    console.log(resultArray);
+    return resultArray;
   }
 }
