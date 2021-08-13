@@ -1,12 +1,16 @@
+import { DataImportService } from './data-import.service';
 import { BehaviorSubject } from 'rxjs';
-import { Injectable } from '@angular/core';
+import { Injectable, OnInit } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
 })
-export class DataSharingService {
+export class DataSharingService implements OnInit{
+  chtRawData = [];
+  egtRawData = [];
   chtValuesArray = [];
   egtValuesArray = [];
+  originalRecordCount;      //Number of rows in original file (prior to reduceArraySize() for chart display)
 
   //Data from table.component -> header.component
   private isTableLoaded = new BehaviorSubject(false);
@@ -22,6 +26,18 @@ export class DataSharingService {
   maxLat;
   minLong;
   maxLong;
+
+  constructor(private importService: DataImportService) {
+  }
+
+  ngOnInit() {
+    this.originalRecordCount = this.importService.originalRecordCount;
+    this.chtRawData = this.importService.chtData;
+    this.egtRawData = this.importService.egtData;
+
+    this.setCHTData();
+    this.setEGTData();
+  }
   
   toggleIsTableLoaded(isTableLoaded) {
     this.isTableLoaded.next(isTableLoaded);
@@ -68,22 +84,22 @@ export class DataSharingService {
   //Ex:
   //  Object { "E1 CHT1": 263.98, "E1 CHT2": 264.12, ...}
   //This JSON array is then passed to setCHTVals() to strip out the values from the key-val pairs
-  setCHTData(data: any[]) {
+/*   setCHTData(data: any[]) {
     this.setCHTVals([...data]);
-  }
+  } */
 
   //data is coming from EGT1-EGT6 range of parsed spreadsheet data (from data-import.service.onFileChange())
   //  Object { "E1 EGT1": 263.98, "E1 EGT2": 264.12, ...}
   //This JSON array is then passed to setEGTVals() to strip out the values from the key-val pairs
-  setEGTData(data: any[]) {
+/*   setEGTData(data: any[]) {
     this.setEGTVals([...data]);
-  }
+  } */
 
   //Convert array of string:number key-value pairs to array of array of values
   //    [ {CHT 1: 100, CHT 2: 200, CHT 3: 300},             [ [100, 101, 102], 
   //      {CHT 1: 101, CHT 2: 201, CHT 3: 301},     -->       [200, 201, 202],
   //      {CHT 1: 102, CHT 2: 202, CHT 3: 302} ]              [300, 301, 302] ] 
-  setCHTVals(chtArray : any[]) {
+  setCHTData() {
     const cht1ValArray = [];
     const cht2ValArray = [];
     const cht3ValArray = [];
@@ -91,7 +107,7 @@ export class DataSharingService {
     const cht5ValArray = [];
     const cht6ValArray = [];
 
-    chtArray.forEach(obj => {
+    this.chtRawData.forEach(obj => {
       for (const [key, value] of Object.entries(obj)) {
         if(key.trim() === "E1 CHT1") {
           cht1ValArray.push(value);
@@ -123,15 +139,15 @@ export class DataSharingService {
   }
 
   //Called by chart.component.ts - returns data source for EGT Line chart
-  getCHTVals() {
-    return this.reduceArraySize(this.chtValuesArray);
+  getCHTVals(sampleSize: number) {
+    return this.reduceArraySize(this.chtValuesArray, sampleSize);
   }
 
   //Convert array of string:number key-value pairs to array of array of values
   //    [ {EGT 1: 100, EGT 2: 200, EGT 3: 300},             [ [100, 101, 102], 
   //      {EGT 1: 101, EGT 2: 201, EGT 3: 301},     -->       [200, 201, 202],
   //      {EGT 1: 102, EGT 2: 202, EGT 3: 302} ]              [300, 301, 302] ] 
-  setEGTVals(egtArray: any[]) {
+  setEGTData() {
     const egt1ValArray = [];
     const egt2ValArray = [];
     const egt3ValArray = [];
@@ -139,7 +155,7 @@ export class DataSharingService {
     const egt5ValArray = [];
     const egt6ValArray = [];
 
-    egtArray.forEach(obj => {
+    this.egtRawData.forEach(obj => {
       for (const [key, value] of Object.entries(obj)) {
         if(key.trim() === "E1 EGT1") {
           egt1ValArray.push(value);
@@ -171,21 +187,20 @@ export class DataSharingService {
   }
 
   //Called by chart.component.ts - returns data source for EGT Line chart
-  getEGTVals() {
-    return this.reduceArraySize(this.egtValuesArray);
+  getEGTVals(sampleSize: number) {
+    return this.reduceArraySize(this.egtValuesArray, sampleSize);
   }
 
-  reduceArraySize(inputArray) {
-    const size = 100;
-    let resultArray = new Array(inputArray.length).fill(0).map(() => new Array(size));
+  reduceArraySize(inputArray: any[], sampleSize: number) {
+    let resultArray = new Array(inputArray.length).fill(0).map(() => new Array(sampleSize));
 
-    if (inputArray[0].length < size) return inputArray;
+    if (inputArray[0].length < sampleSize) return inputArray;
 
-    const spacing = inputArray[0].length / size;
+    const spacing = inputArray[0].length / sampleSize;
 
     for(let outerElement = 0; outerElement < inputArray.length; outerElement++) {
       let innerElement = -1;
-      while(++innerElement < size) {
+      while(++innerElement < sampleSize) {
 
         resultArray[outerElement][innerElement] = (inputArray[outerElement][Math.round(innerElement * spacing)]);
         

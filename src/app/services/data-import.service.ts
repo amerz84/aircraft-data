@@ -10,11 +10,15 @@ import { headersAll } from '../utils/column-arrays';
   providedIn: 'root'
 })
 export class DataImportService {
+  //Data arrays for chart component
+  chtData: any[] = [];
+  egtData: any[] = [];
+  flightTimeData: any[] = [];
+
+  public originalRecordCount: number; //# of rows of (non-header) data on spreadsheet
   //Aircraft header data info
   firstRowDataArray = [];
   formattedHeaderArray = [];
-
-  constructor(private sharingService: DataSharingService) {}
 
   //Convert file data into Observable array for table display
   onFileChange(event: any, isFromDropZone = false): Observable<any> {
@@ -51,18 +55,24 @@ export class DataImportService {
         //Remove "noise" from header cells and store only the desired values in formatted array for the "View File Info" component
         this.formatFirstRowData();
 
-
         //Send CHT and EGT data to data-sharing.service for chart data
-        const chtData = (XLSX.utils.sheet_to_json(worksheet, {range:"AE3:AJ45000", blankrows:false}));
-        this.sharingService.setCHTData(chtData);
+        this.chtData = (XLSX.utils.sheet_to_json(worksheet, {range:"AE3:AJ45000", blankrows:false}));
+        this.egtData = (XLSX.utils.sheet_to_json(worksheet, {range:"AK3:AP45000", blankrows:false}));
 
-        const egtData = (XLSX.utils.sheet_to_json(worksheet, {range:"AK3:AP45000", blankrows:false}));
-        this.sharingService.setEGTData(egtData);
-
+        //Get local time column to determine duration of flight
+        const localTimeColumn = (XLSX.utils.sheet_to_json(worksheet, {range:"B3:B45000", blankrows:false}));
+        this.flightTimeData.push(localTimeColumn[0]);
+        this.flightTimeData.push(localTimeColumn.slice(-1)[0]);
+        console.log(this.flightTimeData);
 
         // Format the raw data string into 2-d array starting from cell A3. Dates formatted. Headers taken from column-arrays.ts
         const excelData = (XLSX.utils.sheet_to_json(worksheet, {range:3, header:headersAll, raw:false, dateNF:'yyyy-mm-dd'}));
         observer.next(excelData);
+
+        //Store number of data rows from spreadsheet
+        //// Used by chart component for determining flight length
+        this.originalRecordCount = excelData.length;
+
         observer.complete(); 
       }
     });
@@ -130,6 +140,18 @@ export class DataImportService {
   //Send formatted string values back to dialog component
   getFormattedHeaderData(index: number) {
     return this.formattedHeaderArray[index];
+  }
+
+  ////////////////////////////////////////////
+  //Return 2D array of CHT data
+  getCHTData() {
+    return this.chtData;
+  }
+
+  ////////////////////////////////////////////
+  //Return 2D array of EGT data
+  getEGTData() {
+    return this.egtData;
   }
 }
 

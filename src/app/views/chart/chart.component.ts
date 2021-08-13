@@ -14,6 +14,8 @@ export class ChartComponent implements OnInit {
   @ViewChild(BaseChartDirective) chtChart: BaseChartDirective;
   chtDataset: any[];
   lineChartData: ChartDataSets[];
+  markers: number = 100;              // number of data points for each line in chart
+  recordCount: number;                // number of rows of original spreadsheet
   isDataAvailable: boolean = false;
 
   lineChartLabels: Label[] = [];
@@ -34,13 +36,14 @@ export class ChartComponent implements OnInit {
   lineChartType = 'line';
   
   constructor(private sharingService: DataSharingService, private converter: DateTimeConversion) {
+    this.recordCount = this.sharingService.originalRecordCount;
     this.lineChartData = [
-      { data: this.sharingService.getCHTVals()[0], label: 'CHT 1' },
-      { data: this.sharingService.getCHTVals()[1], label: 'CHT 2' },
-      { data: this.sharingService.getCHTVals()[2], label: 'CHT 3' },
-      { data: this.sharingService.getCHTVals()[3], label: 'CHT 4' },
-      { data: this.sharingService.getCHTVals()[4], label: 'CHT 5' },
-      { data: this.sharingService.getCHTVals()[5], label: 'CHT 6' },
+      { data: this.sharingService.getCHTVals(this.markers)[0], label: 'CHT 1' },
+      { data: this.sharingService.getCHTVals(this.markers)[1], label: 'CHT 2' },
+      { data: this.sharingService.getCHTVals(this.markers)[2], label: 'CHT 3' },
+      { data: this.sharingService.getCHTVals(this.markers)[3], label: 'CHT 4' },
+      { data: this.sharingService.getCHTVals(this.markers)[4], label: 'CHT 5' },
+      { data: this.sharingService.getCHTVals(this.markers)[5], label: 'CHT 6' },
     ];
     this.lineChartLabels.length = 0;
     this.lineChartLabels.push(...this.getLabels());
@@ -51,20 +54,18 @@ export class ChartComponent implements OnInit {
         this.chtChart.chart.update();
       }
     }, 50);
+
+    
   }
 
   ngOnInit(): void {   
-
-
-
-
     this.isDataAvailable = true; 
   }
 
   getLabels() {
     const labels: string[] = [];
-    for (let i = 0; i < this.sharingService.getCHTVals()[0].length; i++) {
-      labels.push(this.converter.toSeconds(i + 1));
+    for (let i = 0; i < this.markers; i++) {
+      labels.push(this.converter.toSeconds(i + (this.recordCount / this.markers)));
     }
     return labels;
   }
