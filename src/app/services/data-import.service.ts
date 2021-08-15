@@ -13,7 +13,7 @@ export class DataImportService {
   //Data arrays for chart component
   chtData: any[] = [];
   egtData: any[] = [];
-  flightTimeData: any[] = [];
+  flightTimesArray: any[] = [];
 
   public originalRecordCount: number; //# of rows of (non-header) data on spreadsheet
   //Aircraft header data info
@@ -59,11 +59,11 @@ export class DataImportService {
         this.chtData = (XLSX.utils.sheet_to_json(worksheet, {range:"AE3:AJ45000", blankrows:false}));
         this.egtData = (XLSX.utils.sheet_to_json(worksheet, {range:"AK3:AP45000", blankrows:false}));
 
-        //Get local time column to determine duration of flight
+        //Get local time values from first and last rows to determine duration of flight
         const localTimeColumn = (XLSX.utils.sheet_to_json(worksheet, {range:"B3:B45000", blankrows:false}));
-        this.flightTimeData.push(localTimeColumn[0]);
-        this.flightTimeData.push(localTimeColumn.slice(-1)[0]);
-        console.log(this.flightTimeData);
+        this.flightTimesArray.push(localTimeColumn[0][" Lcl Time"].trim());
+        this.flightTimesArray.push(localTimeColumn.slice(-1)[0][" Lcl Time"].trim());
+        console.log(this.flightTimesArray);
 
         // Format the raw data string into 2-d array starting from cell A3. Dates formatted. Headers taken from column-arrays.ts
         const excelData = (XLSX.utils.sheet_to_json(worksheet, {range:3, header:headersAll, raw:false, dateNF:'yyyy-mm-dd'}));
@@ -76,6 +76,10 @@ export class DataImportService {
         observer.complete(); 
       }
     });
+  }
+
+  getFlightTimes() {
+    return this.flightTimesArray;
   }
 
   /////////////////////////////////////////////////

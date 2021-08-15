@@ -1,11 +1,12 @@
+import { DateTimeConversion } from './../utils/datetime-utils';
 import { DataImportService } from './data-import.service';
 import { BehaviorSubject } from 'rxjs';
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
 })
-export class DataSharingService implements OnInit{
+export class DataSharingService {
   chtRawData = [];
   egtRawData = [];
   chtValuesArray = [];
@@ -27,17 +28,7 @@ export class DataSharingService implements OnInit{
   minLong;
   maxLong;
 
-  constructor(private importService: DataImportService) {
-  }
-
-  ngOnInit() {
-    this.originalRecordCount = this.importService.originalRecordCount;
-    this.chtRawData = this.importService.chtData;
-    this.egtRawData = this.importService.egtData;
-
-    this.setCHTData();
-    this.setEGTData();
-  }
+  constructor(private importService: DataImportService, private converter: DateTimeConversion) {}
   
   toggleIsTableLoaded(isTableLoaded) {
     this.isTableLoaded.next(isTableLoaded);
@@ -100,6 +91,7 @@ export class DataSharingService implements OnInit{
   //      {CHT 1: 101, CHT 2: 201, CHT 3: 301},     -->       [200, 201, 202],
   //      {CHT 1: 102, CHT 2: 202, CHT 3: 302} ]              [300, 301, 302] ] 
   setCHTData() {
+    this.chtRawData = [...this.importService.chtData];
     const cht1ValArray = [];
     const cht2ValArray = [];
     const cht3ValArray = [];
@@ -148,6 +140,7 @@ export class DataSharingService implements OnInit{
   //      {EGT 1: 101, EGT 2: 201, EGT 3: 301},     -->       [200, 201, 202],
   //      {EGT 1: 102, EGT 2: 202, EGT 3: 302} ]              [300, 301, 302] ] 
   setEGTData() {
+    this.egtRawData = [...this.importService.egtData];
     const egt1ValArray = [];
     const egt2ValArray = [];
     const egt3ValArray = [];
@@ -191,6 +184,11 @@ export class DataSharingService implements OnInit{
     return this.reduceArraySize(this.egtValuesArray, sampleSize);
   }
 
+  //Reduce number of array elements to sampleSize length by taking Nth element where N equals original array length
+  // divided by sampleSize
+  //Ex) Original array -> 1000 elements
+  //    sampleSize     -> 200 elements
+  //    resultArray will include originalArray[0], originalArray[5], originalArray[10], ...
   reduceArraySize(inputArray: any[], sampleSize: number) {
     let resultArray = new Array(inputArray.length).fill(0).map(() => new Array(sampleSize));
 
@@ -201,13 +199,10 @@ export class DataSharingService implements OnInit{
     for(let outerElement = 0; outerElement < inputArray.length; outerElement++) {
       let innerElement = -1;
       while(++innerElement < sampleSize) {
-
-        resultArray[outerElement][innerElement] = (inputArray[outerElement][Math.round(innerElement * spacing)]);
-        
+        resultArray[outerElement][innerElement] = (inputArray[outerElement][Math.round(innerElement * spacing)]);        
       }
-
     }
-    console.log(resultArray);
+
     return resultArray;
   }
 }
