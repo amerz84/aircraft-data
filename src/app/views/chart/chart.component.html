@@ -2,17 +2,28 @@
 
 <div class="grid-container">
     <div class="chart-wrapper grid-box" *ngIf="isDataAvailable">
-        <canvas baseChart 
-            [datasets]="lineChartData" 
-            [options]="lineChartOptions"
-            [colors]="lineChartColors" 
-            [legend]="lineChartLegend" 
-            [chartType]="lineChartType" 
-            [plugins]="lineChartPlugins">
+        <canvas baseChart
+            [datasets]="CHTChartData" 
+            [labels]="chartLabels"
+            [options]="CHTChartOptions"
+            [colors]="CHTChartColors" 
+            [legend]="CHTChartLegend" 
+            [chartType]="CHTChartType" 
+            [plugins]="CHTChartPlugins">
         </canvas>
     </div>
     <div class="grid-box">{{this.flightDuration}}</div>
-    <div class="grid-box"></div>
+    <div class="chart-wrapper grid-box" *ngIf="isDataAvailable">
+        <canvas baseChart 
+            [datasets]="EGTChartData" 
+            [labels]="chartLabels"
+            [options]="EGTChartOptions"
+            [colors]="EGTChartColors" 
+            [legend]="EGTChartLegend" 
+            [chartType]="EGTChartType" 
+            [plugins]="EGTChartPlugins">
+        </canvas>
+    </div>
     <div class="grid-box"></div>
 
 </div>
