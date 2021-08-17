@@ -12,13 +12,11 @@ import { DateTimeConversion } from '../../utils/datetime-utils';
   styleUrls: ['./chart.component.css']
 })
 export class ChartComponent implements OnInit {
-  @ViewChild(BaseChartDirective) baseChart: QueryList<BaseChartDirective>;
+  @ViewChild(BaseChartDirective) baseChart: QueryList<BaseChartDirective>; //Used to assign chart labels
   
   markers: number = 100;              // number of data points for each line in chart
-  recordCount: number;                // number of rows of original spreadsheet
-  isDataAvailable: boolean = false;
-  flightDuration;
-  chartLabels: Label[] = [];
+  flightDuration: string;             // length of flight, taken from spreadsheet local time column (HH:MM:SS format)
+  chartLabels: Label[] = [];          // labels for CHT and EGT charts (should always be the same)
 
   // CHT data chart props
   CHTChartData: ChartDataSets[];
@@ -49,18 +47,13 @@ export class ChartComponent implements OnInit {
   EGTChartLegend = true;
   EGTChartPlugins = [];
   EGTChartType = 'line';
+  ///////////////////////////////////////////////////////////////
   
-  constructor(private sharingService: DataSharingService, private converter: DateTimeConversion, private importService: DataImportService) {
-
-
-    
-  }
+  constructor(private sharingService: DataSharingService, private converter: DateTimeConversion, private importService: DataImportService) {}
 
   ngOnInit() {   
-    this.isDataAvailable = true; 
     this.sharingService.setCHTData();
     this.sharingService.setEGTData();
-    this.recordCount = this.importService.originalRecordCount;
     this.flightDuration = this.converter.getTimeDiff(this.importService.getFlightTimes());
     this.CHTChartData = [
       { data: this.sharingService.getCHTVals(this.markers)[0], label: 'CHT 1' },
@@ -81,33 +74,27 @@ export class ChartComponent implements OnInit {
   }
 
   ngAfterViewInit() {
+    //Regenerate labels after chart data is present
     this.chartLabels.length = 0;
-    this.chartLabels.push(...this.getLabels());
+    this.chartLabels.push(...this.getChartLabels());
 
-    //Issue with Angular change detection and Chart initialization
-    //Wrapping chart label assignment and update() in a callback will ensure
-    //Labels are generated after chart data is present
     this.baseChart.changes.subscribe(() => {
       for(let child of this.baseChart) {
         child.chart.config.data.labels = this.chartLabels;
         child.chart.update();
       }
     });
-/*     setTimeout(() => {
-      for(let child of this.baseChart) {
-        child.chart.config.data.labels = this.chartLabels;
-        child.chart.update();
-      }      
-    }, 50); */
   }
 
-  //Take length of markers array (# of plot points for each line) and assign a new HH:MM:SS value to each
-  // marker starting at 00:00:01
-  getLabels() {
+  //Take length of markers array (# of plot points for each line) and assign a HH:MM:SS value to each
+  // label starting at 00:00:01, with an interval of (record count/markers)
+  // Ex) For recordCount == 100 && markers == 10,
+  //     labels = [00:00:01, 00:00:10, 00:00:20, ...]
+  getChartLabels() {
     const labels: string[] = [];
     for (let i = 0, j = 0; i < this.markers; i++) {
       labels.push(this.converter.toSeconds(j));
-      j += Math.floor(this.recordCount / this.markers);
+      j += Math.floor(this.importService.getRecordCount() / this.markers);
     }
     return labels;
   }

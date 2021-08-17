@@ -1,7 +1,7 @@
 <div class="bg-image"></div>
 
 <div class="grid-container">
-    <div class="chart-wrapper grid-box" *ngIf="isDataAvailable">
+    <div class="chart-wrapper grid-box">
         <canvas baseChart
             [datasets]="CHTChartData" 
             [labels]="chartLabels"
@@ -12,8 +12,8 @@
             [plugins]="CHTChartPlugins">
         </canvas>
     </div>
-    <div class="grid-box">{{this.flightDuration}}</div>
-    <div class="chart-wrapper grid-box" *ngIf="isDataAvailable">
+    <div class="grid-box">Duration of flight: {{this.flightDuration}}</div>
+    <div class="chart-wrapper grid-box">
         <canvas baseChart 
             [datasets]="EGTChartData" 
             [labels]="chartLabels"

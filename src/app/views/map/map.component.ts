@@ -1,8 +1,9 @@
-import { DataSharingService } from 'src/app/services/data-sharing.service';
 import { Component, ViewChild } from '@angular/core';
 import { GoogleMap } from '@angular/google-maps';
 import { Router } from '@angular/router';
 import {} from 'googlemaps'; //Typescript typings for maps added manually (see also index.d.ts in /src)
+import { BehaviorSubject } from 'rxjs';
+import { DataImportService } from 'src/app/services/data-import.service';
 
 @Component({
   selector: 'map-view',
@@ -16,13 +17,16 @@ export class MapComponent {
   minBound: google.maps.LatLng;
   maxBound: google.maps.LatLng;
   center: google.maps.LatLngLiteral;
+
+  positionArray = new BehaviorSubject<any>(null);
+  positionArray$ = this.positionArray.asObservable();
   zoom = 6;
   display;
 
-  constructor(private sharingService: DataSharingService, private router: Router) {
-    this.center = this.sharingService.getCenterCoordinate();
-    this.minBound = new google.maps.LatLng(this.sharingService.minLat, this.sharingService.minLong);
-    this.maxBound = new google.maps.LatLng(this.sharingService.maxLat, this.sharingService.maxLong);
+  constructor(private importService: DataImportService, private router: Router) {
+    this.center = this.importService.getCenterCoordinate();
+    this.minBound = new google.maps.LatLng(this.importService.getMinLatitude(), this.importService.getMinLongitude());
+    this.maxBound = new google.maps.LatLng(this.importService.getMaxLatitude(), this.importService.getMaxLongitude());
     this.setFlightPath();
   } 
 
@@ -31,24 +35,22 @@ export class MapComponent {
     this.map.googleMap.fitBounds(bounds);     
   }
 
+  //Set the initial scale of the map based on the min and max lat and long values
   getBounds(){
     let north;
     let south;
     let east;
     let west; 
 
-    // set the coordinates to marker's lat and lng on the first run.
-    // if the coordinates exist, get max or min depends on the coordinates.
-    north = north !== undefined ? Math.max(north, this.sharingService.maxLat) : this.sharingService.maxLat;
-    south = south !== undefined ? Math.min(south, this.sharingService.minLat) : this.sharingService.minLat;
-    east = east !== undefined ? Math.max(east, this.sharingService.maxLong) : this.sharingService.maxLong;
-    west = west !== undefined ? Math.min(west, this.sharingService.minLong) : this.sharingService.minLong;
+    north = north !== undefined ? Math.max(north, this.importService.getMaxLatitude()) : this.importService.getMaxLatitude();
+    south = south !== undefined ? Math.min(south, this.importService.getMinLatitude()) : this.importService.getMinLatitude();
+    east = east !== undefined ? Math.max(east, this.importService.getMaxLongitude()) : this.importService.getMaxLongitude();
+    west = west !== undefined ? Math.min(west, this.importService.getMinLongitude()) : this.importService.getMinLongitude();
     
     const bounds = { north, south, east, west };
     return bounds;
   }
   
-
   moveMap(event: google.maps.MapMouseEvent) {
     this.center = (event.latLng.toJSON());
   }
@@ -57,11 +59,12 @@ export class MapComponent {
     this.display = event.latLng.toJSON();
   }
 
+  //Set array of latitude and longitude data {lat: number, lng: number}
+  //to map polyline data source
   setFlightPath() {
-    this.sharingService.getPositionArray().subscribe(res => {
+    this.importService.getPositionArray().subscribe(res => {
       this.flightPath = res;
     });
-  }
-  
+  }  
 
 }
