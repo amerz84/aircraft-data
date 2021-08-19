@@ -12,7 +12,16 @@
             [plugins]="CHTChartPlugins">
         </canvas>
     </div>
-    <div class="grid-box">Duration of flight: {{this.flightDuration}}</div>
+    <div class="grid-box chart-information">
+        <div>
+            Duration of flight: {{this.flightDuration}}
+        </div>
+        <div>
+            <ul>
+                <li *ngFor="let element of this.chtInfoArray">EGT {{ this.chtInfoArray.indexOf(element) + 1 }} Average: {{ element | number : '1.2-2' }}</li>
+            </ul>
+        </div>
+    </div>
     <div class="chart-wrapper grid-box">
         <canvas baseChart 
             [datasets]="EGTChartData" 
@@ -24,6 +33,12 @@
             [plugins]="EGTChartPlugins">
         </canvas>
     </div>
-    <div class="grid-box"></div>
+    <div class="grid-box chart-information">
+        <div>
+            <ul>
+                <li *ngFor="let element of this.egtInfoArray">EGT {{ this.egtInfoArray.indexOf(element) + 1 }} Average: {{ element | number : '1.2-2' }}</li>
+            </ul>
+        </div>
+    </div>
 
 </div>

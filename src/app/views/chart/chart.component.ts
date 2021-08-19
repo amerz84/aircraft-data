@@ -17,6 +17,8 @@ export class ChartComponent implements OnInit {
   markers: number = 100;              // number of data points for each line in chart
   flightDuration: string;             // length of flight, taken from spreadsheet local time column (HH:MM:SS format)
   chartLabels: Label[] = [];          // labels for CHT and EGT charts (should always be the same)
+  chtInfoArray = [];
+  egtInfoArray = [];
 
   // CHT data chart props
   CHTChartData: ChartDataSets[];
@@ -71,6 +73,14 @@ export class ChartComponent implements OnInit {
       { data: this.sharingService.getEGTVals(this.markers)[4], label: 'EGT 5' },
       { data: this.sharingService.getEGTVals(this.markers)[5], label: 'EGT 6' },
     ];
+
+    this.sharingService.chtAverageArray.forEach(element => {
+      this.chtInfoArray.push(element);
+    });
+
+    this.sharingService.egtAverageArray.forEach(element => {
+      this.egtInfoArray.push(element);
+    });
   }
 
   ngAfterViewInit() {
