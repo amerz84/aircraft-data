@@ -13,10 +13,10 @@ import { RouteReuseStrategy, RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ChartsModule } from 'ng2-charts';
 import { AppComponent } from './app.component';
-import { HeaderComponent } from './header/header/header.component';
+import { HeaderComponent } from './header/header.component';
 import { CustomReuseStrategy } from './reuse-strategy';
 import { DataImportService } from './services/data-import.service';
-import { DataSharingService } from './services/data-sharing.service';
+import { ArrayUtility } from './utils/array-utils';
 import { headersAll } from './utils/column-arrays';
 import { DateTimeUtility } from './utils/datetime-utils';
 import { ChartComponent } from './views/chart/chart.component';
@@ -63,9 +63,9 @@ import { TableComponent } from './views/table/table.component';
   providers: [
     {provide: 'HEADERS', useValue:headersAll},
     {provide: RouteReuseStrategy, useClass: CustomReuseStrategy},
-    DataSharingService,
     DataImportService,
-    DateTimeUtility
+    DateTimeUtility,
+    ArrayUtility
   ],
   bootstrap: [AppComponent]
 })

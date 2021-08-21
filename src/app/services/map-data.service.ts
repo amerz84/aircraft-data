@@ -1,6 +1,7 @@
-import { DataImportService } from 'src/app/services/data-import.service';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { DataImportService } from 'src/app/services/data-import.service';
+import { ArrayUtility } from './../utils/array-utils';
 
 @Injectable({
   providedIn: 'root'
@@ -14,32 +15,17 @@ export class MapDataService {
   private maxLong;
   flightPath: BehaviorSubject<{ lat: number; lng: number; }[]> = new BehaviorSubject([]);
 
-  constructor(private importService: DataImportService) {}
+  constructor(private importService: DataImportService, private arrayUtility: ArrayUtility) {}
 
-  //Called by map component to load data on component init
+  /** Gets lat/long and other coordinate data from the import service. */
   initMapData() {
-    this.latitudeArray = this.getNonEmptyValues(this.importService.latitudeData);
-    this.longitudeArray = this.getNonEmptyValues(this.importService.longitudeData);
+    this.latitudeArray = this.arrayUtility.getNonEmptyValues(this.importService.latitudeData);
+    this.longitudeArray = this.arrayUtility.getNonEmptyValues(this.importService.longitudeData);
     this.setMapBoundCoordinates();
     this.convertCoordinateDataType();
   }
 
-  //Returns array of non-empty string values
-  getNonEmptyValues(obj: string[]): Array<string> {
-    let trimmedArray: Array<string> = [];
-
-    obj.forEach(obj => {
-      for (const [key, value] of Object.entries(obj)) {
-        if(value.toString().trim() !== "") {
-          trimmedArray.push(value);
-        }
-      }      
-    });
-    return trimmedArray;
-  }
-
-  //Determine center point of map display 
-  // by taking AVG(SUM(min value + max value)) for latitude and longitude
+  /** Determine center point of map display by taking AVG(SUM(min value + max value)) for latitude and longitude. */
   getCenterCoordinate() {
     return {
       lat: (this.minLat + this.maxLat) / 2.0,
@@ -63,7 +49,9 @@ export class MapDataService {
     return this.maxLong;
   }
 
-  //Determine minLat or minLong given latOrLong arg and array of coordinates for setting map bounds/edges
+  /** Determine minimum value of coordinate array and set value of class member minLat or minLong depending on latOrLong arg.
+   * 
+   * Used for setting embedded Google map bounds/edges. */
   setMinCoordinate(coordArray: string[], latOrLong: string) {
     switch(latOrLong) {
       case 'lat':
@@ -75,7 +63,9 @@ export class MapDataService {
     }
   }
 
-  //Determine maxLat or maxLong given latOrLong arg and array of coordinates for setting map bounds/edges
+  /** Determine maximum value of coordinate array and set value of class member maxLat or maxLong depending on latOrLong arg.
+   * 
+   * Used for setting embedded Google map bounds/edges. */
   setMaxCoordinate(coordArray: string[], latOrLong: string) {
     switch(latOrLong) {
       case 'lat':
@@ -87,8 +77,9 @@ export class MapDataService {
     }
   }
   
-  //Set four corners of map using the min and max values for lat and long.
-  //GoogleMap will automatically add padding to these values
+  /** Set four corners of map using the min and max values for lat and long.
+   * 
+  NOTE: GoogleMap will automatically add padding to these values. */
   setMapBoundCoordinates() {
     this.setMinCoordinate(this.latitudeArray, 'lat');
     this.setMinCoordinate(this.longitudeArray, 'long');
@@ -96,7 +87,7 @@ export class MapDataService {
     this.setMaxCoordinate(this.longitudeArray, 'long');
   }
 
-  //Convert coordinate data type from string into float (required for google.maps.polyline)
+  /** Convert coordinate data type from string into float (required for google.maps.polyline). */
   convertCoordinateDataType() {
     this.flightPath.next(this.latitudeArray.map((lat, index) => ({lat: parseFloat(lat), lng: parseFloat(this.longitudeArray[index])})));
   }

@@ -4,11 +4,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { faFileUpload } from '@fortawesome/free-solid-svg-icons';
 import { gsap } from 'gsap';
-import { DataSharingService } from 'src/app/services/data-sharing.service';
 import { DataImportService } from '../../services/data-import.service';
 import { avionicsHeaders, chtHeaders, egtHeaders, engineHeaders, headersAll } from '../../utils/column-arrays';
-
-
+import { TableDataService } from './../../services/table-data.service';
 
 @Component({
   selector: 'table-view',
@@ -16,7 +14,7 @@ import { avionicsHeaders, chtHeaders, egtHeaders, engineHeaders, headersAll } fr
   styleUrls: ['./table.component.css']
 })
 export class TableComponent implements OnInit {
-  @Input('isTableLoaded') _isTableLoaded: boolean; // True if spreadsheet data successfully loaded into table component
+  @Input('isTableLoaded') _isTableLoaded; // True if spreadsheet data successfully loaded into table component
   headerValues = [];            //Placeholder to determine displayed column list
   isToggled: boolean;           // Check for "toggle" status of columns displayed. False = columns not hidden, True = columns hidden
 
@@ -36,13 +34,13 @@ export class TableComponent implements OnInit {
   
 
   /////////////////////////////////////////////
-  constructor(private importService: DataImportService, private _snackBar: MatSnackBar, private sharingService: DataSharingService) {}
+  constructor(private importService: DataImportService, private tableDataService: TableDataService, private _snackBar: MatSnackBar) {}
 
   ngOnInit() {
     this.dataSource =  new MatTableDataSource<String>([]);
     this.tempSource = new MatTableDataSource<String>([]);
     this.dummyDataSource = new MatTableDataSource<String>(null);
-    this._isTableLoaded = false;
+    this._isTableLoaded = this.tableDataService.isTableLoaded$.subscribe();
     this.isToggled = false;
     this.page = new EventEmitter();
     this.currentPage = 0;
@@ -80,7 +78,7 @@ export class TableComponent implements OnInit {
       this.tempSource.data = data;      
 
       this._isTableLoaded = true;
-      this.sharingService.toggleIsTableLoaded(this._isTableLoaded);
+      this.tableDataService.toggleIsTableLoaded(true);
 
       this.dataSource.connect();
     }, error => {
