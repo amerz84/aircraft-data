@@ -1,4 +1,4 @@
-import { DateTimeConversion } from './utils/datetime-utils';
+import { DateTimeUtility } from './utils/datetime-utils';
 import { HttpClientJsonpModule, HttpClientModule } from '@angular/common/http';
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { GoogleMapsModule } from '@angular/google-maps';
@@ -65,7 +65,7 @@ import { TableComponent } from './views/table/table.component';
     {provide: RouteReuseStrategy, useClass: CustomReuseStrategy},
     DataSharingService,
     DataImportService,
-    DateTimeConversion
+    DateTimeUtility
   ],
   bootstrap: [AppComponent]
 })

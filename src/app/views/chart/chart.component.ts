@@ -4,7 +4,7 @@ import { ChartDataSets } from 'chart.js';
 import { BaseChartDirective, Color, Label } from 'ng2-charts';
 import { DataSharingService } from 'src/app/services/data-sharing.service';
 
-import { DateTimeConversion } from '../../utils/datetime-utils';
+import { DateTimeUtility } from '../../utils/datetime-utils';
 
 @Component({
   selector: 'chart-view',
@@ -51,7 +51,7 @@ export class ChartComponent implements OnInit {
   EGTChartType = 'line';
   ///////////////////////////////////////////////////////////////
   
-  constructor(private sharingService: DataSharingService, private converter: DateTimeConversion, private importService: DataImportService) {}
+  constructor(private sharingService: DataSharingService, private converter: DateTimeUtility, private importService: DataImportService) {}
 
   ngOnInit() {   
     this.sharingService.setCHTData();

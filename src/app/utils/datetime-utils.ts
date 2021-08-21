@@ -1,4 +1,4 @@
-export class DateTimeConversion {
+export class DateTimeUtility {
     //Return seconds argument to time string in "HH:MM:SS" format
     //Ex) 100 seconds -> "00:01:40"
     public toSeconds(seconds: number) {
