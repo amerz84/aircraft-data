@@ -129,7 +129,7 @@ export class DataImportService {
     const csv_string = csv.join('\n');
     //Create file and prompt for open/save
     //NOTE - if there are filters applied to the table, this will only include the filtered data, not the original table data
-    const filename = 'Aircraft_data_' + new Date().toLocaleDateString() + '.csv';
+    const filename = 'Insert_File_Name' + new Date().toLocaleDateString() + '.csv';
     const link = document.createElement('a');
     link.style.display = 'none';
     link.setAttribute('target', '_blank');

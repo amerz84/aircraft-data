@@ -14,7 +14,6 @@ export class MapDataService {
   private maxLong;
   flightPath: BehaviorSubject<{ lat: number; lng: number; }[]> = new BehaviorSubject([]);
 
-
   constructor(private importService: DataImportService) {}
 
   //Called by map component to load data on component init
