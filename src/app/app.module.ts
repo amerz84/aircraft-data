@@ -1,4 +1,3 @@
-import { DateTimeUtility } from './utils/datetime-utils';
 import { HttpClientJsonpModule, HttpClientModule } from '@angular/common/http';
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { GoogleMapsModule } from '@angular/google-maps';
@@ -19,6 +18,7 @@ import { CustomReuseStrategy } from './reuse-strategy';
 import { DataImportService } from './services/data-import.service';
 import { DataSharingService } from './services/data-sharing.service';
 import { headersAll } from './utils/column-arrays';
+import { DateTimeUtility } from './utils/datetime-utils';
 import { ChartComponent } from './views/chart/chart.component';
 import { MapComponent } from './views/map/map.component';
 import { NotFoundComponent } from './views/not-found/not-found.component';
