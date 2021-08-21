@@ -14,8 +14,8 @@ export class DataSharingService {
   egtAverageArray = [];
 
   //Data from table.component -> header.component
-  private isTableLoaded = new BehaviorSubject(false);
-  isTableLoaded$ = this.isTableLoaded.asObservable();
+  isTableLoaded = new BehaviorSubject(false);
+  //isTableLoaded$ = this.isTableLoaded.asObservable();
   ///////////////////////////////////////////////
 
   constructor(private importService: DataImportService) {}

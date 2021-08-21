@@ -1,31 +1,21 @@
-import { Injectable, Output } from '@angular/core';
-import { Observable, of, Subscriber, throwError } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { Observable, Subscriber, throwError } from 'rxjs';
 import * as XLSX from 'xlsx';
 import { headersAll } from '../utils/column-arrays';
-
-
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataImportService {
   private originalRecordCount: number;  //# of rows of (non-header) data on spreadsheet
-  
-  //Data arrays for chart component
-  chtData: any[] = [];
-  egtData: any[] = [];
-  flightTimesArray: any[] = [];
 
-  //Variables for positional data (lat/long) for map component
-  @Output() positionArray: { lat: number; lng: number; }[];
-  minLat;
-  maxLat;
-  minLong;
-  maxLong;
-  latitudeData: string[] = [];
-  longitudeData: string[] = [];
-  filteredLatArray = [];
-  filteredLongArray = [];
+  //Data arrays for chart component
+  chtData: string[] = [];
+  egtData: string[] = [];
+  flightTimesArray: string[] = [];
+
+  private _latitudeData: string[] = [];
+  private _longitudeData: string[] = [];
 
   //Aircraft header data info
   ///////////////////////////////////////////////////
@@ -75,24 +65,8 @@ export class DataImportService {
 
         //Get latitude and longitude column data for map component
         //Remove whitespace-only cells and copy arrays to filtered arrays
-        this.latitudeData = (XLSX.utils.sheet_to_json(worksheet, {range:"E3:E45000", blankrows:false}));
-        this.longitudeData = (XLSX.utils.sheet_to_json(worksheet, {range:"F3:F45000", blankrows:false}));
-        this.latitudeData.forEach(obj => {
-          for (const [key, value] of Object.entries(obj)) {
-            if(value.toString().trim() !== "") {
-              this.filteredLatArray.push(value);
-            }
-          }
-        });
-        this.longitudeData.forEach(obj => {
-          for (const [key, value] of Object.entries(obj)) {
-            if(value.toString().trim() !== "") {
-              this.filteredLongArray.push(value);
-            }
-          }
-        });
-        this.setCoordinates();
-        this.convertCoordinateType();
+        this._latitudeData = (XLSX.utils.sheet_to_json(worksheet, {range:"E3:E45000", blankrows:false}));
+        this._longitudeData = (XLSX.utils.sheet_to_json(worksheet, {range:"F3:F45000", blankrows:false}));
 
         //Get CHT and EGT column data for chart component
         this.chtData = (XLSX.utils.sheet_to_json(worksheet, {range:"AE3:AJ45000", blankrows:false}));
@@ -116,76 +90,20 @@ export class DataImportService {
     });
   }
 
+  get latitudeData() {
+    return this._latitudeData;
+  }
+
+  get longitudeData() {
+    return this._longitudeData;
+  }
+
   getFlightTimes() {
     return this.flightTimesArray;
   }
 
   getRecordCount() {
     return this.originalRecordCount;
-  }
-
-  getMinLatitude() {
-    return this.minLat;
-  }
-
-  getMaxLatitude() {
-    return this.maxLat;
-  }
-
-  getMinLongitude() {
-    return this.minLong;
-  }
-
-  getMaxLongitude() {
-    return this.maxLong;
-  }
-
-  //Determine visual center of flight path for map display
-  getCenterCoordinate() {
-    return {
-      lat: (this.minLat + this.maxLat) / 2.0,
-      lng: (this.minLong + this.maxLong) / 2.0
-    }
-  }
-
-  getPositionArray() {
-    return of(this.positionArray);
-  }
-
-  //Determine minLat or minLong given latOrLong arg and array of coordinates for setting map bounds/edges
-  setMinCoordinate(coordArray: string[], latOrLong: string) {
-    switch(latOrLong) {
-      case 'lat':
-        this.minLat = Math.min.apply(null, coordArray);
-        break;
-      case 'long':
-        this.minLong = Math.min.apply(null, coordArray);
-        break;
-    }
-  }
-
-  //Determine maxLat or maxLong given latOrLong arg and array of coordinates for setting map bounds/edges
-  setMaxCoordinate(coordArray: string[], latOrLong: string) {
-    switch(latOrLong) {
-      case 'lat':
-        this.maxLat = Math.max.apply(null, coordArray);
-        break;
-      case 'long':
-        this.maxLong = Math.max.apply(null, coordArray);
-        break;
-    }
-  }
-  
-  setCoordinates() {
-    this.setMinCoordinate(this.filteredLatArray, 'lat');
-    this.setMinCoordinate(this.filteredLongArray, 'long');
-    this.setMaxCoordinate(this.filteredLatArray, 'lat');
-    this.setMaxCoordinate(this.filteredLongArray, 'long');
-  }
-
-  //Convert coordinate data into number (required for google.maps.polyline)
-  convertCoordinateType() {
-    this.positionArray = this.filteredLatArray.map((lat, index) => ({lat: parseFloat(lat), lng: parseFloat(this.filteredLongArray[index])}));
   }
 
   /////////////////////////////////////////////////

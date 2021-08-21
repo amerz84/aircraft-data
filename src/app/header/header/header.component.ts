@@ -13,7 +13,7 @@ export class HeaderComponent implements OnInit {
   constructor(private sharingService: DataSharingService) { }
 
   ngOnInit(): void {
-    this.sharingService.isTableLoaded$.subscribe(res => {
+    this.sharingService.isTableLoaded.subscribe(res => {
       this.isTableLoaded = res;
     });
   }
