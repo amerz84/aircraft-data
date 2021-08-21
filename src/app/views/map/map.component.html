@@ -6,13 +6,9 @@
             height="400px"
             width="750px"
             [center]="center"
-            (mapClick)="moveMap($event)"
-            (mapMousemove)="move($event)">
-            <map-polyline [path]="flightPath"></map-polyline>
+            (mapClick)="moveMap($event)">
+            <map-polyline [path]="this.flightPath$ | async"></map-polyline>
         </google-map>
-
-<div>Latitude: {{display?.lat}}</div>
-<div>Longitude: {{display?.lng}}</div>
-      </div>
+    </div>
 
 </body>

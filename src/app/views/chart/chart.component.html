@@ -1,16 +1,44 @@
 <div class="bg-image"></div>
 
-<body class="content-container">
-    <div class="chart-wrapper">
-        <canvas baseChart 
-            [datasets]="lineChartData" 
-            [labels]="lineChartLabels" 
-            [options]="lineChartOptions"
-            [colors]="lineChartColors" 
-            [legend]="lineChartLegend" 
-            [chartType]="lineChartType" 
-            [plugins]="lineChartPlugins">
+<div class="grid-container">
+    <div class="chart-wrapper grid-box">
+        <canvas baseChart
+            [datasets]="CHTChartData" 
+            [labels]="chartLabels"
+            [options]="CHTChartOptions"
+            [colors]="CHTChartColors" 
+            [legend]="CHTChartLegend" 
+            [chartType]="CHTChartType" 
+            [plugins]="CHTChartPlugins">
         </canvas>
     </div>
+    <div class="grid-box chart-information">
+        <div>
+            Duration of flight: {{ this.flightDuration }}
+        </div>
+        <div>
+            <ul>
+                <li *ngFor="let element of this.chtInfoArray">EGT {{ this.chtInfoArray.indexOf(element) + 1 }} Average: {{ element | number : '1.2-2' }}</li>
+            </ul>
+        </div>
+    </div>
+    <div class="chart-wrapper grid-box">
+        <canvas baseChart 
+            [datasets]="EGTChartData" 
+            [labels]="chartLabels"
+            [options]="EGTChartOptions"
+            [colors]="EGTChartColors" 
+            [legend]="EGTChartLegend" 
+            [chartType]="EGTChartType" 
+            [plugins]="EGTChartPlugins">
+        </canvas>
+    </div>
+    <div class="grid-box chart-information">
+        <div>
+            <ul>
+                <li *ngFor="let element of this.egtInfoArray">EGT {{ this.egtInfoArray.indexOf(element) + 1 }} Average: {{ element | number : '1.2-2' }}</li>
+            </ul>
+        </div>
+    </div>
 
-</body>
+</div>

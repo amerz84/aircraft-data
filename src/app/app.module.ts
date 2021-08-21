@@ -1,5 +1,6 @@
-import { DataSharingService } from './services/data-sharing.service';
+import { HttpClientJsonpModule, HttpClientModule } from '@angular/common/http';
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
+import { GoogleMapsModule } from '@angular/google-maps';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -10,19 +11,20 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouteReuseStrategy, RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { HttpClientModule, HttpClientJsonpModule } from '@angular/common/http';
-
+import { ChartsModule } from 'ng2-charts';
 import { AppComponent } from './app.component';
-import { HeaderComponent } from './header/header/header.component';
-import { headersAll } from './shared/column-arrays';
+import { HeaderComponent } from './header/header.component';
+import { CustomReuseStrategy } from './reuse-strategy';
+import { DataImportService } from './services/data-import.service';
+import { ArrayUtility } from './utils/array-utils';
+import { headersAll } from './utils/column-arrays';
+import { DateTimeUtility } from './utils/datetime-utils';
 import { ChartComponent } from './views/chart/chart.component';
 import { MapComponent } from './views/map/map.component';
+import { NotFoundComponent } from './views/not-found/not-found.component';
 import { TableInfoComponent, TableInfoDialog } from './views/table/table-info/table-info.component';
 import { TableComponent } from './views/table/table.component';
-import { NotFoundComponent } from './views/not-found/not-found.component';
-import { ChartsModule } from 'ng2-charts';
-import { CustomReuseStrategy } from './reuse-strategy';
-import { GoogleMapsModule } from '@angular/google-maps';
+
 
 @NgModule({
   declarations: [
@@ -61,7 +63,9 @@ import { GoogleMapsModule } from '@angular/google-maps';
   providers: [
     {provide: 'HEADERS', useValue:headersAll},
     {provide: RouteReuseStrategy, useClass: CustomReuseStrategy},
-    DataSharingService
+    DataImportService,
+    DateTimeUtility,
+    ArrayUtility
   ],
   bootstrap: [AppComponent]
 })

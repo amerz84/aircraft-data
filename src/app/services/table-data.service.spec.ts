@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { DataSharingService } from './data-sharing.service';
+import { TableDataService } from './table-data.service';
 
-describe('DataSharingService', () => {
-  let service: DataSharingService;
+describe('TableDataService', () => {
+  let service: TableDataService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(DataSharingService);
+    service = TestBed.inject(TableDataService);
   });
 
   it('should be created', () => {

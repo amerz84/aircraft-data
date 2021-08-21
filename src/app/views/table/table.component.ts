@@ -1,14 +1,12 @@
-import { Component, EventEmitter, Output, ViewChild, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { faFileUpload } from '@fortawesome/free-solid-svg-icons';
 import { gsap } from 'gsap';
-import { DataSharingService } from 'src/app/services/data-sharing.service';
-
 import { DataImportService } from '../../services/data-import.service';
-import { avionicsHeaders, chtHeaders, egtHeaders, engineHeaders, headersAll } from '../../shared/column-arrays';
-
+import { avionicsHeaders, chtHeaders, egtHeaders, engineHeaders, headersAll } from '../../utils/column-arrays';
+import { TableDataService } from './../../services/table-data.service';
 
 @Component({
   selector: 'table-view',
@@ -16,36 +14,33 @@ import { avionicsHeaders, chtHeaders, egtHeaders, engineHeaders, headersAll } fr
   styleUrls: ['./table.component.css']
 })
 export class TableComponent implements OnInit {
-  headerValues = []; //Placeholder to determine displayed column list
-  isToggled: boolean; // Check for "toggle" status of columns displayed. False = columns not hidden, True = columns hidden
-  @Input('isTableLoaded') _isTableLoaded: boolean; // Variable for data loaded into HTML table from spreadsheet
-  faFileUpload = faFileUpload; //binding for the file upload icon
+  @Input('isTableLoaded') _isTableLoaded; // True if spreadsheet data successfully loaded into table component
+  headerValues = [];            //Placeholder to determine displayed column list
+  isToggled: boolean;           // Check for "toggle" status of columns displayed. False = columns not hidden, True = columns hidden
+
+  faFileUpload = faFileUpload;  //binding for the Font Awesome file upload icon
   tempSource: MatTableDataSource<String>; //Used to repopulate original/unfiltered file data after clearFilter() called
-  timeline; //GSAP animation timeline
-  @Output() positionArray: { lat: number; lng: number; }[];
+  timeline;                     //GSAP animation timeline
 
   // Mat Table directives //
   dataSource: MatTableDataSource<String>; 
   dummyDataSource: MatTableDataSource<String>; //Null/empty table to display "sticky" header - workaround for Edge/Chrome
   displayedColumns: string[] = headersAll; //Table headers (first row), initiated to full column list
-  @ViewChild(MatPaginator) paginator: MatPaginator;
 
-  /////////////////////////////////////////////
   // Paginator variables //
+  @ViewChild(MatPaginator) paginator: MatPaginator;
   @Output() page: EventEmitter<PageEvent>; //Event for paginator page change
   currentPage: number; //Paginator page index
   
 
   /////////////////////////////////////////////
-  constructor(private importService: DataImportService, private _snackBar: MatSnackBar, private sharingService: DataSharingService) {
-  
-  }
+  constructor(private importService: DataImportService, private tableDataService: TableDataService, private _snackBar: MatSnackBar) {}
 
   ngOnInit() {
     this.dataSource =  new MatTableDataSource<String>([]);
     this.tempSource = new MatTableDataSource<String>([]);
     this.dummyDataSource = new MatTableDataSource<String>(null);
-    this._isTableLoaded = false;
+    this._isTableLoaded = this.tableDataService.isTableLoaded$.subscribe();
     this.isToggled = false;
     this.page = new EventEmitter();
     this.currentPage = 0;
@@ -65,7 +60,7 @@ export class TableComponent implements OnInit {
   }
 
   /////////////////////////////////////////////////
-  //Call on file upload through use of the drop zone (drag and drop)
+  // through use of the drop zone (drag and drop)
   onFileDrop(event: any) {
     //Override browser handler functionality
     event.stopPropagation();
@@ -76,17 +71,16 @@ export class TableComponent implements OnInit {
   }
 
   //////////////////////////////////////////////////
-  // Call on data.service to convert csv file into table data
+  // Call on data import service to convert csv file into table data
   callFileUploader(event: any, isFromDropZone = false) {
     this.importService.onFileChange(event, isFromDropZone).subscribe((data: String[]) => {      
       this.dataSource.data = data;
       this.tempSource.data = data;      
 
       this._isTableLoaded = true;
-      this.sharingService.toggleIsTableLoaded(this._isTableLoaded);
+      this.tableDataService.toggleIsTableLoaded(true);
 
       this.dataSource.connect();
-      this.storeLatAndLong(); //Store lat and long values into separate array
     }, error => {
       this._snackBar.open("Upload failed --- " + error.message, "OK", {panelClass: "column-snackbar"});
       return;
@@ -209,32 +203,5 @@ export class TableComponent implements OnInit {
   showColumnName(colName: string) {
     this._snackBar.open(colName, null, {duration: 1500, panelClass: "column-snackbar"});
   }
-
-  ///////////////////////////////////////////////////////
-  //Iterate through data table (not the original uploaded file) and map lat and long values to positionArray
-  storeLatAndLong() {
-    const latArray = [];
-    const longArray = [];
-
-    this.dataSource.data.forEach(obj => {
-      for (const [key, value] of Object.entries(obj)) {
-        if(key === "Lat" && parseInt(value.trim())) {
-          latArray.push(value);
-        }
-        if (key === "Long" && parseInt(value.trim())) {
-          longArray.push(value);
-        }    
-      };
-    });
-
-    //Store min and max coordinates for determining map size
-    this.sharingService.setMinCoordinate(latArray, 'lat');
-    this.sharingService.setMinCoordinate(longArray, 'long');
-    this.sharingService.setMaxCoordinate(latArray, 'lat');
-    this.sharingService.setMaxCoordinate(longArray, 'long');
     
-    //Convert coordinate data into number (required for google.maps.polyline) and store in service
-    this.positionArray = latArray.map((lat, index) => ({lat: parseFloat(lat), lng: parseFloat(longArray[index])}));
-    this.sharingService.positionArray.next(this.positionArray);
-  }
 }

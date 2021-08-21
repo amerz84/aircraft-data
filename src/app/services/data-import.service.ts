@@ -1,16 +1,27 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subscriber, throwError } from 'rxjs';
 import * as XLSX from 'xlsx';
-
-import { headersAll } from '../shared/column-arrays';
-
+import { headersAll } from '../utils/column-arrays';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataImportService {
+  private _originalRecordCount: number;  //# of rows of (non-header) data on spreadsheet
+
+  //Data for chart component
+  _chtData: string[] = [];
+  _egtData: string[] = [];
+  private _flightTimesArray: string[] = [];
+
+  //Date for map component
+  private _latitudeData: string[] = [];
+  private _longitudeData: string[] = [];
+
   //Aircraft header data info
-  firstRowDataArray = [];
+  ///////////////////////////////////////////////////
+  firstRowDataArray = [];               //NOTE : TAKE OUT WHEN MIGRATING TO IQ DATA ///////////////////////////////
+  ///////////////////////////////////////////////////
   formattedHeaderArray = [];
 
   //Convert file data into Observable array for table display
@@ -18,8 +29,10 @@ export class DataImportService {
     const target: DataTransfer = <DataTransfer>(event.target);
     const reader: FileReader = new FileReader();
 
-    // Read raw binary contents from selected file. Will fire OnLoad event upon completion
-    // If drop zone used to upload file, DataTransfer class won't work
+    // Read raw binary contents from selected file. Will fire reader.onLoad event upon completion
+    // readAsBinaryString() has two overloads used here:
+    // 1 - Using drop zone: event.dataTransfer
+    // 2 - Using file upload button: event.target
     if (isFromDropZone) {
       //Check for invalid drops
       try {
@@ -33,6 +46,9 @@ export class DataImportService {
     reader.readAsBinaryString(target.files[0]);
     }
 
+    // reader.onload has 2 functions here:
+    // 1 - Parses out specific column data used for map/chart components (e.g. all CHT columns, CHT1-CHT6)
+    // 2 - Parses out entire spreadsheet data for use in table component
     return new Observable((observer: Subscriber<any[]>): void => {
       reader.onload = (e: any) => {
         const binaryStr: string = e.target.result; // Store result of reader.readAsBinaryString
@@ -48,12 +64,47 @@ export class DataImportService {
         //Remove "noise" from header cells and store only the desired values in formatted array for the "View File Info" component
         this.formatFirstRowData();
 
+        //Get latitude and longitude column data for map component
+        //Remove whitespace-only cells and copy arrays to filtered arrays
+        this._latitudeData = (XLSX.utils.sheet_to_json(worksheet, {range:"E3:E45000", blankrows:false}));
+        this._longitudeData = (XLSX.utils.sheet_to_json(worksheet, {range:"F3:F45000", blankrows:false}));
+
+        //Get CHT and EGT column data for chart component
+        this._chtData = (XLSX.utils.sheet_to_json(worksheet, {range:"AE3:AJ45000", blankrows:false}));
+        this._egtData = (XLSX.utils.sheet_to_json(worksheet, {range:"AK3:AP45000", blankrows:false}));
+
+        //Get local time values from first and last rows to determine duration of flight
+        const localTimeColumn = (XLSX.utils.sheet_to_json(worksheet, {range:"B3:B45000", blankrows:false}));
+        this._flightTimesArray.push(localTimeColumn[0][" Lcl Time"].trim());
+        this._flightTimesArray.push(localTimeColumn.slice(-1)[0][" Lcl Time"].trim());
+
         // Format the raw data string into 2-d array starting from cell A3. Dates formatted. Headers taken from column-arrays.ts
         const excelData = (XLSX.utils.sheet_to_json(worksheet, {range:3, header:headersAll, raw:false, dateNF:'yyyy-mm-dd'}));
         observer.next(excelData);
+
+        //Store number of data rows from spreadsheet
+        //// Used by chart component for determining flight length
+        this._originalRecordCount = excelData.length;
+
         observer.complete(); 
       }
     });
+  }
+
+  get latitudeData() {
+    return this._latitudeData;
+  }
+
+  get longitudeData() {
+    return this._longitudeData;
+  }
+
+  get flightTimesArray() {
+    return this._flightTimesArray;
+  }
+
+  get originalRecordCount() {
+    return this._originalRecordCount;
   }
 
   /////////////////////////////////////////////////
@@ -79,7 +130,7 @@ export class DataImportService {
     const csv_string = csv.join('\n');
     //Create file and prompt for open/save
     //NOTE - if there are filters applied to the table, this will only include the filtered data, not the original table data
-    const filename = 'Aircraft_data_' + new Date().toLocaleDateString() + '.csv';
+    const filename = 'Insert_File_Name' + new Date().toLocaleDateString() + '.csv';
     const link = document.createElement('a');
     link.style.display = 'none';
     link.setAttribute('target', '_blank');
@@ -118,6 +169,18 @@ export class DataImportService {
   //Send formatted string values back to dialog component
   getFormattedHeaderData(index: number) {
     return this.formattedHeaderArray[index];
+  }
+
+  ////////////////////////////////////////////
+  //Return 2D array of CHT data
+  get chtData() {
+    return this._chtData;
+  }
+
+  ////////////////////////////////////////////
+  //Return 2D array of EGT data
+  get egtData() {
+    return this._egtData;
   }
 }
 
