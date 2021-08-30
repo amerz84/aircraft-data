@@ -19,8 +19,10 @@ export class MapComponent {
   center: google.maps.LatLngLiteral;
   startCoord: google.maps.LatLngLiteral = { lat: 0, lng: 0};
   mapInfoContent = { title: "", coord: ""};
+  isApiLoaded$: Observable<boolean>;
 
   zoom = 6;
+  display: google.maps.LatLngLiteral;
 
   constructor(private mapDataService: MapDataService) {} 
 
@@ -75,4 +77,7 @@ export class MapComponent {
     this.mapInfo.open(marker);
   }
 
+  move(event: google.maps.MapMouseEvent) {
+    this.display = event.latLng.toJSON();
+  }
 }
