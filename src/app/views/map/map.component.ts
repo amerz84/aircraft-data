@@ -1,8 +1,9 @@
-import { MapDataService } from './../../services/map-data.service';
 import { Component, ViewChild } from '@angular/core';
-import { GoogleMap } from '@angular/google-maps';
-import {} from 'googlemaps'; //Typescript typings for maps added manually (see also index.d.ts in /src)
-
+import { GoogleMap, MapInfoWindow, MapMarker } from '@angular/google-maps';
+import { } from 'googlemaps'; //Typescript typings for maps added manually (see also index.d.ts in /src)
+import { Observable } from 'rxjs';
+import { first } from 'rxjs/operators';
+import { MapDataService } from './../../services/map-data.service';
 
 @Component({
   selector: 'map-view',
@@ -11,11 +12,13 @@ import {} from 'googlemaps'; //Typescript typings for maps added manually (see a
 })
 export class MapComponent {
   @ViewChild(GoogleMap) map!: GoogleMap;
-  flightPath$: any;
-  //bounds: google.maps.LatLngBounds;
+  @ViewChild(MapInfoWindow, { static: false }) mapInfo: MapInfoWindow
+  flightPath$: Observable<{lat: number, lng: number}[]>;
   minBound: google.maps.LatLng;
   maxBound: google.maps.LatLng;
   center: google.maps.LatLngLiteral;
+  startCoord: google.maps.LatLngLiteral = { lat: 0, lng: 0};
+  mapInfoContent = { title: "", coord: ""};
 
   zoom = 6;
 
@@ -57,6 +60,19 @@ export class MapComponent {
   //to map polyline data source
   setFlightPath() {
     this.flightPath$ = this.mapDataService.flightPath.asObservable();
-  }  
+
+    this.flightPath$.pipe(first()).subscribe(res => {
+      this.startCoord.lat = res[0].lat;
+      this.startCoord.lng = res[0].lng;
+    });
+  } 
+
+  openMapInfo(marker: MapMarker) {
+    this.mapInfoContent = {
+      title: "Starting Point",
+      coord: this.startCoord.lat + " ," + this.startCoord.lng
+    };
+    this.mapInfo.open(marker);
+  }
 
 }

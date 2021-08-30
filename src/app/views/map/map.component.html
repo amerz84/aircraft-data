@@ -7,6 +7,16 @@
             width="750px"
             [center]="center"
             (mapClick)="moveMap($event)">
+            <map-marker 
+                #marker="mapMarker"
+                [position]="this.startCoord"
+                [options]="{draggable: false, title: 'Start'}"
+                (mapClick)="openMapInfo(marker)">
+            </map-marker>
+            <map-info-window>
+                <div>{{ mapInfoContent.title }}</div>
+                <div>{{ mapInfoContent.coord }}</div>
+            </map-info-window>
             <map-polyline [path]="this.flightPath$ | async"></map-polyline>
         </google-map>
     </div>
