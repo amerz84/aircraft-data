@@ -1,11 +1,12 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { faFileUpload } from '@fortawesome/free-solid-svg-icons';
 import { gsap } from 'gsap';
 import { DataImportService } from '../../services/data-import.service';
-import { avionicsHeaders, chtHeaders, egtHeaders, engineHeaders, headersAll } from '../../utils/column-arrays';
+import { chtHeaders, egtHeaders, headersAll } from '../../utils/column-arrays';
 import { TableDataService } from './../../services/table-data.service';
 
 @Component({
@@ -21,11 +22,13 @@ export class TableComponent implements OnInit {
   faFileUpload = faFileUpload;  //binding for the Font Awesome file upload icon
   tempSource: MatTableDataSource<String>; //Used to repopulate original/unfiltered file data after clearFilter() called
   timeline;                     //GSAP animation timeline
+  engineColsShown;
+  avionicsColsChecked;
 
   // Mat Table directives //
   dataSource: MatTableDataSource<String>; 
   dummyDataSource: MatTableDataSource<String>; //Null/empty table to display "sticky" header - workaround for Edge/Chrome
-  displayedColumns: string[] = headersAll; //Table headers (first row), initiated to full column list
+
 
   // Paginator variables //
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -93,13 +96,13 @@ export class TableComponent implements OnInit {
   onDragOver(event: any) {
     event.stopPropagation();
     event.preventDefault();
-    document.getElementById('drop-zone-initial').classList.add('isDragover');
+    document.getElementById('drop-zone-container').classList.add('isDragover');
   }
 
   /////////////////////////////////////////////////
   //Remove class when file is dragged away from drop zone
   onDragEnd() {
-    document.getElementById('drop-zone-initial').classList.remove('isDragover');
+    document.getElementById('drop-zone-container').classList.remove('isDragover');
   }
 
   /////////////////////////////////////////////////
@@ -151,20 +154,20 @@ export class TableComponent implements OnInit {
   //Toggle display of undesired columns. Boolean is toggled in onClick method in html file
   //Initial display shows ALL columns
   //NOTE: Downloaded table still shows all columns
-  toggleColumnDisplay(eventValue?: string) {
-    const button = document.getElementById("columnToggler");
-
-    if(eventValue == "engine") {
-      this.displayedColumns = engineHeaders;
-      button.classList.add("column-toggle");
-    }
-    else if (eventValue == "avionics") {
-      this.displayedColumns = avionicsHeaders;
+  toggleColumnDisplay(event: MatSlideToggleChange, colType: string) {
+      for (let elem of headersAll) {
+        if (elem.category.toLowerCase() === colType) {
+          elem.hide = !elem.hide;
+        }      
+      }
+    
+/*     else if (colType == "avionics") {
+      //this.displayedColumns = avionicsHeaders;
       button.classList.remove("column-toggle");
     }
     else {
-      this.displayedColumns = headersAll;
-    }
+      //this.displayedColumns = headersAll;
+    } */
   }
 
   /////////////////////////////////////////////////
@@ -192,8 +195,8 @@ export class TableComponent implements OnInit {
   /////////////////////////////////////////////////
   // Call on GSAP timeline to apply animations to dropzone and filters/table elements
   animatePageElements() {
-    this.timeline.to("#drop-zone-initial", {duration: 0.5, width: "20vw", height: "15vh"});
-    this.timeline.to("#button-table-container", {duration: 0.5, visibility: "visible"});    
+    this.timeline.to("#drop-zone", {duration: 0.5, width: "20vw", height: "15vh"});
+    this.timeline.to(".table-container", {duration: 0.5, visibility: "visible"});    
   }
   
   /////////////////////////////////////////////////
@@ -202,6 +205,10 @@ export class TableComponent implements OnInit {
   // If sticky headers fixed for mat table, this can be deprecated
   showColumnName(colName: string) {
     this._snackBar.open(colName, null, {duration: 1500, panelClass: "column-snackbar"});
+  }
+
+  getDisplayedColumns(): string[] {
+    return headersAll.filter(col => !col.hide || this.engineColsShown).map(col => col.name);    
   }
     
 }

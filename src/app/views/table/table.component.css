@@ -2,10 +2,17 @@ body {
   max-width: 90%;
 }
 
+h3 {
+  margin: 0%;
+  font-weight: 600;
+}
+
 .content-container {
   position: relative;
-  margin-top: -90vh;
+  margin-top: -95vh;
   background: transparent;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Page background */
@@ -18,6 +25,7 @@ body {
   background-repeat: no-repeat;
   background-size: cover;
   position: relative;
+  z-index: -1;
 }
 
 /*  Filters / other buttons */
@@ -60,7 +68,7 @@ mat-button-toggle {
 }
 
 /* File upload / drop zone area */
-#drop-zone-initial {
+#drop-zone {
   outline: 2px dashed black;
   outline-offset: -5px;
   width:  80vw;
@@ -69,12 +77,13 @@ mat-button-toggle {
   border-radius: 4px;
   transition: background-color 0.2s;
   display: flex;
+  flex-shrink: 1;
   text-align: center;
   z-index: 1;
   font-weight: 500;
   font-size: 0.8vw;
   margin: auto;
-  margin-bottom: 2em;
+  margin-bottom: 2vh;
   position: relative;
 }
 
@@ -166,6 +175,38 @@ th.mat-header-cell:last-of-type {
 }
 
 /* Filters and table */
-#button-table-container {
+.table-container {
+  display: flex;
   visibility: hidden;
 }
+
+.table-data-container {
+  width: 100%;
+  overflow: auto;
+}
+
+.toggle-container {
+  background-color:rgb(211, 211, 211, 0.5);
+  border-radius: 10px;
+  margin-right: 1vw;
+  height: fit-content;
+}
+
+mat-slide-toggle {
+  padding: 2%;
+  line-height: 1.5;
+}
+
+.mat-slide-toggle-content {
+  font-size: 1vw;
+}
+
+/* Slide toggle color */
+:host ::ng-deep .mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-bar {
+  background-color: rgb(255, 221, 27);
+}
+
+:host ::ng-deep  .mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-thumb {
+  background-color: #444;
+}
+/* ---------------------- */

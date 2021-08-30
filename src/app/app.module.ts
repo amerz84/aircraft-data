@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { BrowserModule } from '@angular/platform-browser';
@@ -50,6 +51,7 @@ import { TableComponent } from './views/table/table.component';
     MatDialogModule,
     MatButtonToggleModule,
     MatSnackBarModule,
+    MatSlideToggleModule,
     BrowserAnimationsModule,
     RouterModule.forRoot([
       { path: '', redirectTo: '/table', pathMatch: 'full' },

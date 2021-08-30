@@ -79,7 +79,7 @@ export class DataImportService {
         this._flightTimesArray.push(localTimeColumn.slice(-1)[0][" Lcl Time"].trim());
 
         // Format the raw data string into 2-d array starting from cell A3. Dates formatted. Headers taken from column-arrays.ts
-        const excelData = (XLSX.utils.sheet_to_json(worksheet, {range:3, header:headersAll, raw:false, dateNF:'yyyy-mm-dd'}));
+        const excelData = (XLSX.utils.sheet_to_json(worksheet, {range:3, header:headersAll.map(col => col.name), raw:false, dateNF:'yyyy-mm-dd'}));
         observer.next(excelData);
 
         //Store number of data rows from spreadsheet
