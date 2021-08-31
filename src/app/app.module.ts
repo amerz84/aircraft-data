@@ -23,6 +23,7 @@ import { DataImportService } from './services/data-import.service';
 import { ArrayUtility } from './utils/array-utils';
 import { headersAll } from './utils/column-arrays';
 import { DateTimeUtility } from './utils/datetime-utils';
+import { ChartHelperService } from './views/chart/chart-helper-service';
 import { ChartComponent } from './views/chart/chart.component';
 import { MapComponent } from './views/map/map.component';
 import { NotFoundComponent } from './views/not-found/not-found.component';
@@ -72,7 +73,8 @@ import { TableComponent } from './views/table/table.component';
     {provide: RouteReuseStrategy, useClass: CustomReuseStrategy},
     DataImportService,
     DateTimeUtility,
-    ArrayUtility
+    ArrayUtility,
+    ChartHelperService
   ],
   bootstrap: [AppComponent]
 })

@@ -1,9 +1,12 @@
 import { Component, OnInit, QueryList, ViewChild } from '@angular/core';
-import { ChartDataSets } from 'chart.js';
-import { BaseChartDirective, Color, Label } from 'ng2-charts';
+import { ChartDataset } from 'chart.js';
+import Chart from 'chart.js/auto';
+import annotationPlugin from 'chartjs-plugin-annotation';
+import { BaseChartDirective, Label } from 'ng2-charts';
 import { DateTimeUtility } from '../../utils/datetime-utils';
 import { ChartDataService } from './../../services/chart-data.service';
 import { DataImportService } from './../../services/data-import.service';
+import { ChartHelperService } from './chart-helper-service';
 
 @Component({
   selector: 'chart-view',
@@ -20,58 +23,48 @@ export class ChartComponent implements OnInit {
   egtInfoArray = [];
 
   // CHT data chart props
-  CHTChartData: ChartDataSets[];
-  CHTChartOptions = {
-    responsive: true,
-  };
-  CHTChartColors: Color[] = [
-    {
-      borderColor: 'black',
-      backgroundColor: 'rgba(255,255,0,0.28)',
-    },
-  ];
-  CHTChartLegend = true;
-  CHTChartPlugins = [];
-  CHTChartType = 'line';
+  CHTChartData: ChartDataset[];
+  CHTChartOptions = this.chartHelperService.CHTChartOptions;
+  CHTChartColors = this.chartHelperService.CHTChartColors;
+  CHTChartLegend = this.chartHelperService.CHTChartLegend;
+  CHTChartPlugins = this.chartHelperService.CHTChartOptions.plugins;
+  CHTChartType = this.chartHelperService.CHTChartType;
   /////////////////////////////////////////////////////////////////
 
   // EGT data chart props
-  EGTChartData: ChartDataSets[];
-  EGTChartOptions = {
-    responsive: true,
-  };
-  EGTChartColors: Color[] = [
-    {
-      borderColor: 'black',
-      backgroundColor: 'rgba(255,255,0,0.28)',
-    },
-  ];
-  EGTChartLegend = true;
-  EGTChartPlugins = [];
-  EGTChartType = 'line';
+  EGTChartData: ChartDataset[];
+  EGTChartOptions = this.chartHelperService.EGTChartOptions;
+  EGTChartColors = this.chartHelperService.EGTChartColors;
+  EGTChartLegend = this.chartHelperService.EGTChartLegend;
+  EGTChartPlugins = this.chartHelperService.EGTChartOptions.plugins;
+  EGTChartType = this.chartHelperService.EGTChartType;
   ///////////////////////////////////////////////////////////////
   
-  constructor(private chartDataService: ChartDataService, private converter: DateTimeUtility, private importService: DataImportService) {}
+  constructor(private chartDataService: ChartDataService, private converter: DateTimeUtility, 
+    private importService: DataImportService, private chartHelperService: ChartHelperService) {}
 
   ngOnInit() {   
+    // Chart annotation plugin needs to be registered manually
+    // see https://www.chartjs.org/chartjs-plugin-annotation/guide/integration.html#script-tag
+    Chart.register(annotationPlugin);
     this.chartDataService.initChartData();
 
     this.flightDuration = this.converter.getTimeDiff(this.importService.flightTimesArray);
     this.CHTChartData = [
-      { data: this.chartDataService.getCHTVals(this.markers)[0], label: 'CHT 1' },
-      { data: this.chartDataService.getCHTVals(this.markers)[1], label: 'CHT 2' },
-      { data: this.chartDataService.getCHTVals(this.markers)[2], label: 'CHT 3' },
-      { data: this.chartDataService.getCHTVals(this.markers)[3], label: 'CHT 4' },
-      { data: this.chartDataService.getCHTVals(this.markers)[4], label: 'CHT 5' },
-      { data: this.chartDataService.getCHTVals(this.markers)[5], label: 'CHT 6' },
+      { data: this.chartDataService.getCHTVals(this.markers)[0], label: 'CHT 1', xAxisID: 'x', yAxisID: 'y'},
+      { data: this.chartDataService.getCHTVals(this.markers)[1], label: 'CHT 2', xAxisID: 'x', yAxisID: 'y' },
+      { data: this.chartDataService.getCHTVals(this.markers)[2], label: 'CHT 3', xAxisID: 'x', yAxisID: 'y' },
+      { data: this.chartDataService.getCHTVals(this.markers)[3], label: 'CHT 4', xAxisID: 'x', yAxisID: 'y' },
+      { data: this.chartDataService.getCHTVals(this.markers)[4], label: 'CHT 5', xAxisID: 'x', yAxisID: 'y' },
+      { data: this.chartDataService.getCHTVals(this.markers)[5], label: 'CHT 6', xAxisID: 'x', yAxisID: 'y' },
     ];
     this.EGTChartData = [
-      { data: this.chartDataService.getEGTVals(this.markers)[0], label: 'EGT 1' },
-      { data: this.chartDataService.getEGTVals(this.markers)[1], label: 'EGT 2' },
-      { data: this.chartDataService.getEGTVals(this.markers)[2], label: 'EGT 3' },
-      { data: this.chartDataService.getEGTVals(this.markers)[3], label: 'EGT 4' },
-      { data: this.chartDataService.getEGTVals(this.markers)[4], label: 'EGT 5' },
-      { data: this.chartDataService.getEGTVals(this.markers)[5], label: 'EGT 6' },
+      { data: this.chartDataService.getEGTVals(this.markers)[0], label: 'EGT 1', xAxisID: 'x', yAxisID: 'y' },
+      { data: this.chartDataService.getEGTVals(this.markers)[1], label: 'EGT 2', xAxisID: 'x', yAxisID: 'y' },
+      { data: this.chartDataService.getEGTVals(this.markers)[2], label: 'EGT 3', xAxisID: 'x', yAxisID: 'y' },
+      { data: this.chartDataService.getEGTVals(this.markers)[3], label: 'EGT 4', xAxisID: 'x', yAxisID: 'y' },
+      { data: this.chartDataService.getEGTVals(this.markers)[4], label: 'EGT 5', xAxisID: 'x', yAxisID: 'y' },
+      { data: this.chartDataService.getEGTVals(this.markers)[5], label: 'EGT 6', xAxisID: 'x', yAxisID: 'y' },
     ];
 
     this.chartDataService.chtAverageArray.forEach(element => {
@@ -91,7 +84,7 @@ export class ChartComponent implements OnInit {
     this.baseChart.changes.subscribe(() => {
       for(let child of this.baseChart) {
         child.chart.config.data.labels = this.chartLabels;
-        child.chart.update();
+        child.chart.render();
       }
     });
   }

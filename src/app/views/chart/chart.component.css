@@ -8,7 +8,7 @@ body {
 
 .grid-container {
   position: relative;
-  margin: -90vh auto auto auto;
+  margin: -95vh auto auto auto;
   width: 80%;
   height: 80%;
   background: transparent;
@@ -20,7 +20,7 @@ body {
   grid-row-gap: 5vh;
 }
 .grid-box {
-  background-color: #333;
+  background-color: rgba(51,51,51, 0.7);
   padding: 3%;
   border-radius: 10px;
   display: flex;
