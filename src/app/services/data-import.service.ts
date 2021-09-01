@@ -23,6 +23,7 @@ export class DataImportService {
   firstRowDataArray = [];               //NOTE : TAKE OUT WHEN MIGRATING TO IQ DATA ///////////////////////////////
   ///////////////////////////////////////////////////
   formattedHeaderArray = [];
+  headerArray = [];
 
   //Convert file data into Observable array for table display
   onFileChange(event: any, isFromDropZone = false): Observable<any> {
@@ -52,6 +53,8 @@ export class DataImportService {
     return new Observable((observer: Subscriber<any[]>): void => {
       reader.onload = (e: any) => {
         const binaryStr: string = e.target.result; // Store result of reader.readAsBinaryString
+
+        this.setHeaderArray(binaryStr);
         const workbook: XLSX.WorkBook = XLSX.read(binaryStr, { type: 'binary' });
         const sheetName: string = workbook.SheetNames[0];
         const worksheet: XLSX.WorkSheet = workbook.Sheets[sheetName];
@@ -167,7 +170,7 @@ export class DataImportService {
 
   /////////////////////////////////////////////////
   //Send formatted string values back to dialog component
-  getFormattedHeaderData(index: number) {
+  getFormattedAircraftInfo(index: number) {
     return this.formattedHeaderArray[index];
   }
 
@@ -181,6 +184,23 @@ export class DataImportService {
   //Return 2D array of EGT data
   get egtData() {
     return this._egtData;
+  }
+
+  setHeaderArray(binaryString: string) {
+    const workbook: XLSX.WorkBook = XLSX.read(binaryString, { type: 'binary', sheetRows: 3 });
+    const sheetName: string = workbook.SheetNames[0];
+    const worksheet: XLSX.WorkSheet = workbook.Sheets[sheetName];
+    const excelData: string[] = (XLSX.utils.sheet_to_json(worksheet, {range:2, header:1, raw:false, blankrows:false, dateNF:'yyyy-mm-dd'}));
+
+    excelData.forEach(obj => {
+      for (const [key, value] of Object.entries<string>(obj)) {
+        if(key.trim() !== "" && value.trim() !== "") {
+          this.headerArray.push(value.trim());
+        }
+      }
+    });
+
+    this.headerArray.map
   }
 }
 

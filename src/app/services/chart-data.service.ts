@@ -10,7 +10,8 @@ export class ChartDataService {
   chtAverageArray: number[] = [];
   chtValuesArray: Array<string[]> = [];
 
-  constructor(private importService: DataImportService) { }
+  constructor(private importService: DataImportService) {
+   }
 
   initChartData() {
     this.setCHTData();

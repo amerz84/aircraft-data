@@ -15,20 +15,14 @@ import { TableDataService } from './../../services/table-data.service';
   styleUrls: ['./table.component.css']
 })
 export class TableComponent implements OnInit {
-  @Input('isTableLoaded') _isTableLoaded; // True if spreadsheet data successfully loaded into table component
-  headerValues = [];            //Placeholder to determine displayed column list
-  isToggled: boolean;           // Check for "toggle" status of columns displayed. False = columns not hidden, True = columns hidden
-
+  @Input('isTableLoaded') isTableLoaded$; // Boolean to check if spreadsheet data successfully loaded into table component
   faFileUpload = faFileUpload;  //binding for the Font Awesome file upload icon
   tempSource: MatTableDataSource<String>; //Used to repopulate original/unfiltered file data after clearFilter() called
-  timeline;                     //GSAP animation timeline
-  engineColsShown;
-  avionicsColsChecked;
+  timeline: GSAPTimeline;                     //GSAP animation timeline
 
   // Mat Table directives //
   dataSource: MatTableDataSource<String>; 
   dummyDataSource: MatTableDataSource<String>; //Null/empty table to display "sticky" header - workaround for Edge/Chrome
-
 
   // Paginator variables //
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -43,8 +37,7 @@ export class TableComponent implements OnInit {
     this.dataSource =  new MatTableDataSource<String>([]);
     this.tempSource = new MatTableDataSource<String>([]);
     this.dummyDataSource = new MatTableDataSource<String>(null);
-    this._isTableLoaded = this.tableDataService.isTableLoaded$.subscribe();
-    this.isToggled = false;
+    this.isTableLoaded$ = this.tableDataService.isTableLoaded$.subscribe();
     this.page = new EventEmitter();
     this.currentPage = 0;
     this.timeline = gsap.timeline();
@@ -80,7 +73,7 @@ export class TableComponent implements OnInit {
       this.dataSource.data = data;
       this.tempSource.data = data;      
 
-      this._isTableLoaded = true;
+      this.isTableLoaded$ = true; //Lets table info component know that data is present
       this.tableDataService.toggleIsTableLoaded(true);
 
       this.dataSource.connect();
@@ -160,14 +153,6 @@ export class TableComponent implements OnInit {
           elem.hide = !elem.hide;
         }      
       }
-    
-/*     else if (colType == "avionics") {
-      //this.displayedColumns = avionicsHeaders;
-      button.classList.remove("column-toggle");
-    }
-    else {
-      //this.displayedColumns = headersAll;
-    } */
   }
 
   /////////////////////////////////////////////////
@@ -189,7 +174,7 @@ export class TableComponent implements OnInit {
   /////////////////////////////////////////////////
   //Boolean check for existence of table data
   get isTableLoaded() {
-    return this._isTableLoaded;
+    return this.isTableLoaded$;
   }
 
   /////////////////////////////////////////////////
@@ -207,8 +192,9 @@ export class TableComponent implements OnInit {
     this._snackBar.open(colName, null, {duration: 1500, panelClass: "column-snackbar"});
   }
 
+  // Return subsection of column headers that are not currently hidden (toggled off)
   getDisplayedColumns(): string[] {
-    return headersAll.filter(col => !col.hide || this.engineColsShown).map(col => col.name);    
+    return headersAll.filter(col => !col.hide).map(col => col.name);    
   }
     
 }

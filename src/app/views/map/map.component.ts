@@ -1,8 +1,10 @@
 import { Component, ViewChild } from '@angular/core';
+import { AngularFireDatabase, AngularFireList } from '@angular/fire/compat/database';
 import { GoogleMap, MapInfoWindow, MapMarker } from '@angular/google-maps';
 import { } from 'googlemaps'; //Typescript typings for maps added manually (see also index.d.ts in /src)
 import { Observable } from 'rxjs';
-import { first } from 'rxjs/operators';
+import { first, map } from 'rxjs/operators';
+import { Airport } from './../../models/airport';
 import { MapDataService } from './../../services/map-data.service';
 
 @Component({
@@ -20,13 +22,17 @@ export class MapComponent {
   startCoord: google.maps.LatLngLiteral = { lat: 0, lng: 0};
   mapInfoContent = { title: "", coord: ""};
   isApiLoaded$: Observable<boolean>;
-
+  code: AngularFireList<Airport>;
   zoom = 6;
   display: google.maps.LatLngLiteral;
 
-  constructor(private mapDataService: MapDataService) {} 
+  constructor(private mapDataService: MapDataService, private db: AngularFireDatabase) {} 
 
   ngOnInit() {
+    this.code = this.db.list('/airports/usa/', ref => ref.orderByChild('code').equalTo('ktys'));
+    this.code.snapshotChanges().pipe(map(entry => {
+      return entry.map(val => ({key: val.payload.key, ...(val as any).payload.val() }));
+    })).subscribe(data => console.log(data));
     this.mapDataService.initMapData();
     this.center = this.mapDataService.getCenterCoordinate();
     this.minBound = new google.maps.LatLng(this.mapDataService.getMinLatitude(), this.mapDataService.getMinLongitude());
@@ -63,6 +69,7 @@ export class MapComponent {
   setFlightPath() {
     this.flightPath$ = this.mapDataService.flightPath.asObservable();
 
+    //Get first coordinate pair for start position marker
     this.flightPath$.pipe(first()).subscribe(res => {
       this.startCoord.lat = res[0].lat;
       this.startCoord.lng = res[0].lng;

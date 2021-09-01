@@ -14,7 +14,7 @@ import { ChartHelperService } from './chart-helper-service';
   styleUrls: ['./chart.component.css']
 })
 export class ChartComponent implements OnInit {
-  @ViewChild(BaseChartDirective) baseChart: QueryList<BaseChartDirective>; //Used to assign chart labels
+  @ViewChild(BaseChartDirective) baseChart: QueryList<BaseChartDirective> = new QueryList<BaseChartDirective>(); //Used to assign chart labels
   
   markers: number = 100;              // number of data points for each line in chart
   flightDuration: string;             // length of flight, taken from spreadsheet local time column (HH:MM:SS format)
@@ -41,7 +41,8 @@ export class ChartComponent implements OnInit {
   ///////////////////////////////////////////////////////////////
   
   constructor(private chartDataService: ChartDataService, private converter: DateTimeUtility, 
-    private importService: DataImportService, private chartHelperService: ChartHelperService) {}
+    private importService: DataImportService, private chartHelperService: ChartHelperService) {
+    }
 
   ngOnInit() {   
     // Chart annotation plugin needs to be registered manually
@@ -74,11 +75,11 @@ export class ChartComponent implements OnInit {
     this.chartDataService.egtAverageArray.forEach(element => {
       this.egtInfoArray.push(element);
     });
+  
   }
 
   ngAfterViewInit() {
     //Regenerate labels after chart data is present
-    this.chartLabels.length = 0;
     this.chartLabels.push(...this.getChartLabels());
 
     this.baseChart.changes.subscribe(() => {
@@ -86,7 +87,8 @@ export class ChartComponent implements OnInit {
         child.chart.config.data.labels = this.chartLabels;
         child.chart.render();
       }
-    });
+    });  
+
   }
 
   /** Take length of markers array (# of plot points for each line) and assign a HH:MM:SS value to each
