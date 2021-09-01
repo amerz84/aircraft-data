@@ -73,11 +73,11 @@ export class ChartDataService {
 
   /** Convert array of key-value pairs to array of array of values (populate inner array elements by key).
    * 
-   * [ {EGT 1: 100, EGT 2: 200, EGT 3: 300},             [ [100, 101, 102],
+   * [ {1: 100, 2: 200, 3: 300},     -->     [ [100, 101, 102],
    * 
-   *   {EGT 1: 101, EGT 2: 201, EGT 3: 301},     -->       [200, 201, 202],
+   *   {1: 101, 2: 201, 3: 301},     -->       [200, 201, 202],
    * 
-   *   {EGT 1: 102, EGT 2: 202, EGT 3: 302} ]              [300, 301, 302] ] */
+   *   {1: 102, 2: 202, 3: 302} ]    -->       [300, 301, 302] ] */
   setEGTData() {
     const egtRawData = [...this.importService.egtData];
     const egt1ValArray: string[] = [];

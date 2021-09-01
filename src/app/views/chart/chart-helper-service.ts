@@ -111,10 +111,10 @@ export class ChartHelperService {
             annotations: {
               line1: {
                 type: 'line',
-                yMin: 1500,
-                yMax: 1500,
+                yMin: 1700,
+                yMax: 1700,
                 borderColor: 'red',
-                borderWidth: 2,
+                borderWidth: 1,
                 label: {
                   enabled: true,
                   color: 'red',
