@@ -42,6 +42,7 @@ export class ChartComponent implements OnInit {
   
   constructor(private chartDataService: ChartDataService, private converter: DateTimeUtility, 
     private importService: DataImportService, private chartHelperService: ChartHelperService) {
+      
     }
 
   ngOnInit() {   
@@ -49,6 +50,7 @@ export class ChartComponent implements OnInit {
     // see https://www.chartjs.org/chartjs-plugin-annotation/guide/integration.html#script-tag
     Chart.register(annotationPlugin);
     this.chartDataService.initChartData();
+    this.test();
 
     this.flightDuration = this.converter.getTimeDiff(this.importService.flightTimesArray);
     this.CHTChartData = [
@@ -104,6 +106,63 @@ export class ChartComponent implements OnInit {
       j += Math.floor(this.importService.originalRecordCount / this.markers);
     }
     return labels;
+  }
+
+  test() {
+
+    console.log(this.chartDataService.chtValuesArray[0]);
+    for(let currElement = 0; currElement < this.chartDataService.chtValuesArray[0].length; currElement++) {
+
+      let sum = 0 + parseInt(this.chartDataService.chtValuesArray[0][currElement]);     
+
+
+      //Find moving average of first 10 elements
+      if (currElement < 10) {
+        let avg = 0;
+        let numIterations = 0;
+
+        for(let j =0; j < 10; j++) {
+          sum += parseInt(this.chartDataService.chtValuesArray[0][currElement + j + 1]);
+          numIterations++;
+        }
+        avg = sum / (numIterations + 1);
+        if (parseInt(this.chartDataService.chtValuesArray[0][currElement]) > (1.25 * avg) || parseInt(this.chartDataService.chtValuesArray[0][currElement]) < (0.75 * avg)) {
+          console.log(currElement);
+        }
+      }
+
+      //Find moving average of inner elements
+      if (currElement >= 10 && currElement < this.chartDataService.chtValuesArray[0].length - 10) {
+        let avg = 0;
+        let numIterations = 0;
+
+        for (let j = 0; j < 10; j++) {
+          sum += parseInt(this.chartDataService.chtValuesArray[0][currElement + j + 1]) + parseInt(this.chartDataService.chtValuesArray[0][currElement- Math.abs(j-currElement)]);
+          numIterations++;
+        }
+        avg = sum / ((numIterations * 2) + 1);
+        if (parseInt(this.chartDataService.chtValuesArray[0][currElement]) > (1.25 * avg) || parseInt(this.chartDataService.chtValuesArray[0][currElement]) < (0.75 * avg)) {
+          console.log(currElement);
+        }
+      }
+      
+      //Find moving average of last 10 elements
+      if (currElement >= this.chartDataService.chtValuesArray[0].length - 10) {
+        let avg = 0;
+        let numIterations = 0;
+
+        for(let j = this.chartDataService.chtValuesArray[0].length - 1; j > this.chartDataService.chtValuesArray[0].length - 11; j--) {
+          sum += parseInt(this.chartDataService.chtValuesArray[0][j]) + parseInt(this.chartDataService.chtValuesArray[0][currElement-(j-currElement)]);
+          numIterations++;
+          
+        }
+        avg = sum / ((numIterations * 2) + 1);
+        if (parseInt(this.chartDataService.chtValuesArray[0][currElement]) > (1.25 * avg) || parseInt(this.chartDataService.chtValuesArray[0][currElement]) < (0.75 * avg)) {
+          console.log(currElement);
+        }
+      }
+      sum = 0;
+    }
   }
 
 }
