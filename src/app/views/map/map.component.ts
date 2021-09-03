@@ -37,7 +37,9 @@ export class MapComponent {
     this.center = this.mapDataService.getCenterCoordinate();
     this.minBound = new google.maps.LatLng(this.mapDataService.getMinLatitude(), this.mapDataService.getMinLongitude());
     this.maxBound = new google.maps.LatLng(this.mapDataService.getMaxLatitude(), this.mapDataService.getMaxLongitude());
+    this.mapDataService.convertToLatLng();
     this.setFlightPath();
+
   }
 
   ngAfterViewInit(){

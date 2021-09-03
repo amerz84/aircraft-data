@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { ArrayUtility } from './../utils/array-utils';
 import { DataImportService } from './data-import.service';
 
 @Injectable({
@@ -7,12 +8,16 @@ import { DataImportService } from './data-import.service';
 export class ChartDataService {
   egtAverageArray: number[] = [];
   egtValuesArray: Array<string[]> = [];
+  egtAbnormalVals: number[] = [];
   chtAverageArray: number[] = [];
   chtValuesArray: Array<string[]> = [];
+  chtAbnormalVals: number[] = [];
 
-  constructor(private importService: DataImportService) {
-   }
+  constructor(private importService: DataImportService, private arrayUtils: ArrayUtility) {}
 
+  /**Takes the initial 2D temperature arrays from data-import service and 
+   * puts each primary element into a separate array for further processing and later component display. 
+   * Also initiates data transformation functions (find averages, abnormal sensor readings, etc.) */
   initChartData() {
     this.setCHTData();
     this.setEGTData();
@@ -69,6 +74,7 @@ export class ChartDataService {
     this.chtValuesArray.push(cht4ValArray);
     this.chtValuesArray.push(cht5ValArray);
     this.chtValuesArray.push(cht6ValArray);
+    this.findAbnormalTemperatures(this.chtValuesArray, "cht");
   }
 
   /** Convert array of key-value pairs to array of array of values (populate inner array elements by key).
@@ -125,33 +131,33 @@ export class ChartDataService {
     this.egtValuesArray.push(egt4ValArray);
     this.egtValuesArray.push(egt5ValArray);
     this.egtValuesArray.push(egt6ValArray);
+    this.findAbnormalTemperatures(this.egtValuesArray, "egt");
   }
   
 
   /**
-   * Returns data source for CHT Line chart
    * @param sampleSize 
-   * @returns string[]
+   * @returns 2D data source for CHT Line chart.
    */
   getCHTVals(sampleSize: number) {
     return this.reduceChartDataArraySize(this.chtValuesArray, sampleSize);
   }
 
   /**
-   * Returns data source for EGT Line chart
    * @param sampleSize 
-   * @returns string[]
+   * @returns 2D data source for EGT Line chart.
    */
   getEGTVals(sampleSize: number) {
     return this.reduceChartDataArraySize(this.egtValuesArray, sampleSize);
   }
 
-  /** Reduce number of array elements to sampleSize length by taking Nth element, 
-   * where N = (original array length / sampleSize).
+  /** 
+   * @returns New array of sampleSize length by taking Nth element of input array, 
+   * where N = (input array length / sampleSize).
    * 
-   * Ex) Original array -> 1000 elements, sampleSize -> 200 elements
+   * Ex) input array -> 1000 elements, sampleSize -> 200 elements
    * 
-   * resultArray = [originalArray[0], originalArray[5], originalArray[10], ..., originalArray[995]]. */
+   * resultArray = [inputArray[0], inputArray[5], inputArray[10], ..., inputArray[995]]. */
   reduceChartDataArraySize(inputArray: Array<string[]>, sampleSize: number) {
     let resultArray = new Array(inputArray.length).fill(0).map(() => new Array(sampleSize));
 
@@ -170,15 +176,7 @@ export class ChartDataService {
   }
 
   /**
-   * Return array of CHT/EGT averages for each sensor/probe in set.
-   * @param sensorOneSum number
-   * @param sensorTwoSum number
-   * @param sensorThreeSum number
-   * @param sensorFourSum number
-   * @param sensorFiveSum number
-   * @param sensorSixSum number
-   * @param numRows number
-   * @returns number[]
+   * @returns 1D array of CHT/EGT averages for each sensor/probe in set.
    */
   getAverageTemperature(sensorOneSum, sensorTwoSum, sensorThreeSum, sensorFourSum, sensorFiveSum, sensorSixSum, numRows): number[] {
     return [sensorOneSum / numRows, 
@@ -187,6 +185,32 @@ export class ChartDataService {
             sensorFourSum / numRows,
             sensorFiveSum / numRows,
             sensorSixSum / numRows];
+  }
+
+  /**Call on array-utils.ts getAbnormalValues() to determine if there are any 
+   * high or low (compared to moving average) values in CHT/EGT sensor data and store in member array
+   * for use in chart component.   */
+  findAbnormalTemperatures(sensorArray: Array<string[]>, source: string): void {
+    for (let i = 0; i < sensorArray.length; i++) {
+      if (source.toLowerCase() === "cht") {
+        this.chtAbnormalVals.push(this.arrayUtils.getAbnormalValues(sensorArray[i]));
+      }
+      else if (source.toLowerCase() === "egt") {
+        this.egtAbnormalVals.push(this.arrayUtils.getAbnormalValues(sensorArray[i]));
+      }
+    }
+  }
+
+  /**
+   * @returns 1D array of count of high/low values for each sensor in CHT/EGT set.
+   */
+  getAbnormalTemperatures(source: string): number[] {
+    if (source.toLowerCase() === "cht") {
+      return this.chtAbnormalVals;
+    }
+    else if (source.toLowerCase() === "egt") {
+      return this.egtAbnormalVals;
+    }
   }
 }
 

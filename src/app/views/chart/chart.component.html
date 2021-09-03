@@ -17,8 +17,11 @@
             Duration of flight: {{ this.flightDuration }}
         </div>
         <div>
-            <ul>
-                <li *ngFor="let element of this.chtInfoArray">EGT {{ this.chtInfoArray.indexOf(element) + 1 }} Average: {{ element | number : '1.2-2' }}</li>
+            <ul>Average Temperatures
+                <li *ngFor="let element of this.chtAvgValArray; let i=index">CHT {{ i+1 }} Average: {{ element | number : '1.2-2' }}</li>
+            </ul>
+            <ul>Abnormal Readings
+                <li *ngFor="let element of this.chtAbnormalTempArray; let i=index">CHT {{ i+1 }}: {{ element }}</li>
             </ul>
         </div>
     </div>
@@ -35,8 +38,11 @@
     </div>
     <div class="grid-box chart-information">
         <div>
-            <ul>
-                <li *ngFor="let element of this.egtInfoArray">EGT {{ this.egtInfoArray.indexOf(element) + 1 }} Average: {{ element | number : '1.2-2' }}</li>
+            <ul>Average Temperatures
+                <li *ngFor="let element of this.egtAvgValArray; let i=index">EGT {{ i+1 }} Average: {{ element | number : '1.2-2' }}</li>
+            </ul>
+            <ul>Abnormal Readings
+                <li *ngFor="let element of this.egtAbnormalTempArray; let i=index">EGT {{ i+1 }}: {{ element }}</li>
             </ul>
         </div>
     </div>
