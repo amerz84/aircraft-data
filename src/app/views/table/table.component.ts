@@ -57,7 +57,7 @@ export class TableComponent implements OnInit {
 
   /////////////////////////////////////////////////
   // through use of the drop zone (drag and drop)
-  onFileDrop(event: any) {
+  onFileDrop(event: DragEvent) {
     //Override browser handler functionality
     event.stopPropagation();
     event.preventDefault();
@@ -68,7 +68,7 @@ export class TableComponent implements OnInit {
 
   //////////////////////////////////////////////////
   // Call on data import service to convert csv file into table data
-  callFileUploader(event: any, isFromDropZone = false) {
+  callFileUploader(event: DragEvent, isFromDropZone = false) {
     this.importService.onFileChange(event, isFromDropZone).subscribe((data: String[]) => {      
       this.dataSource.data = data;
       this.tempSource.data = data;      

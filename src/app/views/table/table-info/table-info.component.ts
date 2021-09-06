@@ -1,6 +1,7 @@
-import { Component, Inject, Input } from '@angular/core';
-import { MatDialog, MatDialogConfig, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, Input } from '@angular/core';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DataImportService } from '../../../services/data-import.service';
+import { TableInfoDialog } from './table-info-dialog/table-info-dialog.component';
 
 
 @Component({
@@ -39,46 +40,12 @@ export class TableInfoComponent {
         }
         this.dialog.open(TableInfoDialog, dialogConfig);
       } //End if
-    else console.log("Table data not loaded - please upload file first.");
+    else console.error("Table data not loaded - please upload file first.");
   }
 
   //////////////////////////////////////////////
   //Return formatted values for "aircraft info" (e.g. values for software version, system ID, etc.)
   getFormattedFirstRowData(index: number) {
     return this.uploadService.getFormattedAircraftInfo(index);
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////
-@Component({
-  selector: 'table-info-dialog',
-  templateUrl: 'table-info-dialog.html',
-})
-export class TableInfoDialog {
-  logVersion: string;
-  airframeName: string;
-  sysSoftwarePN: string;
-  unitSoftwarePN: string;
-  mode: string;
-  unitSoftwareVer: string;
-  sysID: string;
-
-  //Bind the formatted first row data
-  constructor(
-    private dialogRef: MatDialogRef<TableInfoDialog>,
-    @Inject(MAT_DIALOG_DATA) data) {
-      this.logVersion = data.logVersion;
-      this.airframeName = data.airframeName;
-      this.sysSoftwarePN = data.sysSoftwarePN;
-      this.unitSoftwarePN = data.unitSoftwarePN;
-      this.mode = data.mode;
-      this.unitSoftwareVer = data.unitSoftwareVer;
-      this.sysID = data.sysID;    
-  }
-
-  //////////////////////////////////////////////
-  // Close dialog button
-  close() {
-    this.dialogRef.close();
   }
 }

@@ -27,8 +27,10 @@ import { ChartHelperService } from './views/chart/chart-helper-service';
 import { ChartComponent } from './views/chart/chart.component';
 import { MapComponent } from './views/map/map.component';
 import { NotFoundComponent } from './views/not-found/not-found.component';
-import { TableInfoComponent, TableInfoDialog } from './views/table/table-info/table-info.component';
+import { TableInfoDialog } from './views/table/table-info/table-info-dialog/table-info-dialog.component';
+import { TableInfoComponent } from './views/table/table-info/table-info.component';
 import { TableComponent } from './views/table/table.component';
+
 
 
 @NgModule({
@@ -40,7 +42,7 @@ import { TableComponent } from './views/table/table.component';
     MapComponent,
     ChartComponent,
     HeaderComponent,
-    NotFoundComponent
+    NotFoundComponent,
   ],
   imports: [
     BrowserModule,

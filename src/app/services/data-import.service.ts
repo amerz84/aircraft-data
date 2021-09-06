@@ -37,61 +37,17 @@ export class DataImportService {
     if (isFromDropZone) {
       //Check for invalid drops
       try {
-      reader.readAsBinaryString(event.dataTransfer.items[0].getAsFile());
+        reader.readAsBinaryString(event.dataTransfer.items[0].getAsFile());
+        return this.readAircraftInfo(reader);
       }
       catch(error) {
         return throwError(error);
       }
     }
     else {
-    reader.readAsBinaryString(target.files[0]);
+      reader.readAsBinaryString(target.files[0]);
+      return this.readAircraftInfo(reader);
     }
-
-    // reader.onload has 2 functions here:
-    // 1 - Parses out specific column data used for map/chart components (e.g. all CHT columns, CHT1-CHT6)
-    // 2 - Parses out entire spreadsheet data for use in table component
-    return new Observable((observer: Subscriber<any[]>): void => {
-      reader.onload = (e: any) => {
-        const binaryStr: string = e.target.result; // Store result of reader.readAsBinaryString
-
-        this.setHeaderArray(binaryStr);
-        const workbook: XLSX.WorkBook = XLSX.read(binaryStr, { type: 'binary' });
-        const sheetName: string = workbook.SheetNames[0];
-        const worksheet: XLSX.WorkSheet = workbook.Sheets[sheetName];
-
-        // Store value of cells in row A for header/identification data 
-        for (let i=0; i<7; i++) {
-          let cell = worksheet[this.nextChar(i+1) + 1];
-          this.firstRowDataArray[i] = (cell ? cell.v : undefined);
-        }
-        //Remove "noise" from header cells and store only the desired values in formatted array for the "View File Info" component
-        this.formatFirstRowData();
-
-        //Get latitude and longitude column data for map component
-        //Remove whitespace-only cells and copy arrays to filtered arrays
-        this._latitudeData = (XLSX.utils.sheet_to_json(worksheet, {range:"E3:E45000", blankrows:false}));
-        this._longitudeData = (XLSX.utils.sheet_to_json(worksheet, {range:"F3:F45000", blankrows:false}));
-
-        //Get CHT and EGT column data for chart component
-        this._chtData = (XLSX.utils.sheet_to_json(worksheet, {range:"AE3:AJ45000", blankrows:false}));
-        this._egtData = (XLSX.utils.sheet_to_json(worksheet, {range:"AK3:AP45000", blankrows:false}));
-
-        //Get local time values from first and last rows to determine duration of flight
-        const localTimeColumn = (XLSX.utils.sheet_to_json(worksheet, {range:"B3:B45000", blankrows:false}));
-        this._flightTimesArray.push(localTimeColumn[0][" Lcl Time"].trim());
-        this._flightTimesArray.push(localTimeColumn.slice(-1)[0][" Lcl Time"].trim());
-
-        // Format the raw data string into 2-d array starting from cell A3. Dates formatted. Headers taken from column-arrays.ts
-        const excelData = (XLSX.utils.sheet_to_json(worksheet, {range:3, header:headersAll.map(col => col.name), raw:false, dateNF:'yyyy-mm-dd'}));
-        observer.next(excelData);
-
-        //Store number of data rows from spreadsheet
-        //// Used by chart component for determining flight length
-        this._originalRecordCount = excelData.length;
-
-        observer.complete(); 
-      }
-    });
   }
 
   get latitudeData() {
@@ -199,8 +155,58 @@ export class DataImportService {
         }
       }
     });
+  }
 
-    this.headerArray.map
+  readFlightData() {
+
+  }
+
+  readAircraftInfo(reader: any) {
+    // reader.onload has 2 functions here:
+    // 1 - Parses out specific column data used for map/chart components (e.g. all CHT columns, CHT1-CHT6)
+    // 2 - Parses out entire spreadsheet data for use in table component
+    return new Observable((observer: Subscriber<any[]>): void => {
+      reader.onload = (e: any) => {
+        const binaryStr: string = e.target.result; // Store result of reader.readAsBinaryString
+
+        this.setHeaderArray(binaryStr);
+        const workbook: XLSX.WorkBook = XLSX.read(binaryStr, { type: 'binary' });
+        const sheetName: string = workbook.SheetNames[0];
+        const worksheet: XLSX.WorkSheet = workbook.Sheets[sheetName];
+
+        // Store value of cells in row A for header/identification data 
+        for (let i=0; i<7; i++) {
+          let cell = worksheet[this.nextChar(i+1) + 1];
+          this.firstRowDataArray[i] = (cell ? cell.v : undefined);
+        }
+        //Remove "noise" from header cells and store only the desired values in formatted array for the "View File Info" component
+        this.formatFirstRowData();
+
+        //Get latitude and longitude column data for map component
+        //Remove whitespace-only cells and copy arrays to filtered arrays
+        this._latitudeData = (XLSX.utils.sheet_to_json(worksheet, {range:"E3:E45000", blankrows:false}));
+        this._longitudeData = (XLSX.utils.sheet_to_json(worksheet, {range:"F3:F45000", blankrows:false}));
+
+        //Get CHT and EGT column data for chart component
+        this._chtData = (XLSX.utils.sheet_to_json(worksheet, {range:"AE3:AJ45000", blankrows:false}));
+        this._egtData = (XLSX.utils.sheet_to_json(worksheet, {range:"AK3:AP45000", blankrows:false}));
+
+        //Get local time values from first and last rows to determine duration of flight
+        const localTimeColumn = (XLSX.utils.sheet_to_json(worksheet, {range:"B3:B45000", blankrows:false}));
+        this._flightTimesArray.push(localTimeColumn[0][" Lcl Time"].trim());
+        this._flightTimesArray.push(localTimeColumn.slice(-1)[0][" Lcl Time"].trim());
+
+        // Format the raw data string into 2-d array starting from cell A3. Dates formatted. Headers taken from column-arrays.ts
+        const excelData = (XLSX.utils.sheet_to_json(worksheet, {range:3, header:headersAll.map(col => col.name), raw:false, dateNF:'yyyy-mm-dd'}));
+        observer.next(excelData);
+
+        //Store number of data rows from spreadsheet
+        //// Used by chart component for determining flight length
+        this._originalRecordCount = excelData.length;
+
+        observer.complete(); 
+      }
+    });
   }
 }
 
