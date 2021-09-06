@@ -12,16 +12,48 @@
   </div>
   <div class="table-container">
     <div class="toggle-container">
-      <mat-slide-toggle (change)="toggleColumnDisplay($event, 'engine')">
-        <h3>
-          Engine Data
-        </h3>
-      </mat-slide-toggle>
-      <mat-slide-toggle (change)="toggleColumnDisplay($event, 'avionics')">
-        <h3>
-          Avionics Data
-        </h3>
-      </mat-slide-toggle>
+      <div class="toggle-element-container">
+        <mat-slide-toggle (change)="toggleColumnDisplay($event, 'timeinfo')">
+          <h3>
+            Date/Time
+          </h3>
+        </mat-slide-toggle>
+      </div>
+      <div class="toggle-element-container">
+        <mat-slide-toggle (change)="toggleColumnDisplay($event, 'general')">
+          <h3>
+            General Data
+          </h3>
+        </mat-slide-toggle>
+      </div>
+      <div class="toggle-element-container">
+        <mat-slide-toggle (change)="toggleColumnDisplay($event, 'generaltemps')">
+          <h3>
+            Temp. Data
+          </h3>
+        </mat-slide-toggle>
+      </div>
+      <div class="toggle-element-container">
+        <mat-slide-toggle (change)="toggleColumnDisplay($event, 'adc')">
+          <h3>
+            ADC Data
+          </h3>
+        </mat-slide-toggle>
+      </div>
+      <div class="toggle-element-container">
+        <mat-slide-toggle (change)="toggleColumnDisplay($event, 'ahrs')">
+          <h3>
+            AHRS Data
+          </h3>
+        </mat-slide-toggle>
+      </div>
+      <div class="toggle-element-container">
+        <mat-slide-toggle (change)="toggleColumnDisplay($event, 'fuel')">
+          <h3>
+            Fuel Data
+          </h3>
+        </mat-slide-toggle>
+      </div>
     </div>
     <div class="table-data-container">
       <div class="button-grid">

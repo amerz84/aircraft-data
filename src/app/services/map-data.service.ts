@@ -103,6 +103,5 @@ export class MapDataService {
     let dist = google.maps.geometry.spherical.computeLength(latLngArray);
     console.log(latLngArray.length);
     console.log(dist);
-    //console.log(latLngArray);
   }
 }

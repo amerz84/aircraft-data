@@ -23,7 +23,7 @@ export class DataImportService {
   firstRowDataArray = [];               //NOTE : TAKE OUT WHEN MIGRATING TO IQ DATA ///////////////////////////////
   ///////////////////////////////////////////////////
   formattedHeaderArray = [];
-  headerArray = [];
+  columnHeaderArray = [];
 
   //Convert file data into Observable array for table display
   onFileChange(event: any, isFromDropZone = false): Observable<any> {
@@ -38,7 +38,7 @@ export class DataImportService {
       //Check for invalid drops
       try {
         reader.readAsBinaryString(event.dataTransfer.items[0].getAsFile());
-        return this.readAircraftInfo(reader);
+        return this.readFlightDataCSV(reader);
       }
       catch(error) {
         return throwError(error);
@@ -46,7 +46,7 @@ export class DataImportService {
     }
     else {
       reader.readAsBinaryString(target.files[0]);
-      return this.readAircraftInfo(reader);
+      return this.readFlightDataCSV(reader);
     }
   }
 
@@ -141,7 +141,7 @@ export class DataImportService {
   get egtData() {
     return this._egtData;
   }
-
+/* 
   setHeaderArray(binaryString: string) {
     const workbook: XLSX.WorkBook = XLSX.read(binaryString, { type: 'binary', sheetRows: 3 });
     const sheetName: string = workbook.SheetNames[0];
@@ -151,17 +151,13 @@ export class DataImportService {
     excelData.forEach(obj => {
       for (const [key, value] of Object.entries<string>(obj)) {
         if(key.trim() !== "" && value.trim() !== "") {
-          this.headerArray.push(value.trim());
+          this.columnHeaderArray.push(value.trim());
         }
       }
     });
-  }
+  } */
 
-  readFlightData() {
-
-  }
-
-  readAircraftInfo(reader: any) {
+  readFlightDataCSV(reader: any) {
     // reader.onload has 2 functions here:
     // 1 - Parses out specific column data used for map/chart components (e.g. all CHT columns, CHT1-CHT6)
     // 2 - Parses out entire spreadsheet data for use in table component
@@ -169,32 +165,36 @@ export class DataImportService {
       reader.onload = (e: any) => {
         const binaryStr: string = e.target.result; // Store result of reader.readAsBinaryString
 
-        this.setHeaderArray(binaryStr);
         const workbook: XLSX.WorkBook = XLSX.read(binaryStr, { type: 'binary' });
         const sheetName: string = workbook.SheetNames[0];
         const worksheet: XLSX.WorkSheet = workbook.Sheets[sheetName];
 
-        // Store value of cells in row A for header/identification data 
+/*         // Store value of cells in row A for header/identification data 
         for (let i=0; i<7; i++) {
           let cell = worksheet[this.nextChar(i+1) + 1];
           this.firstRowDataArray[i] = (cell ? cell.v : undefined);
         }
         //Remove "noise" from header cells and store only the desired values in formatted array for the "View File Info" component
-        this.formatFirstRowData();
+        this.formatFirstRowData(); */
+
+        //Set starting row to first row with "good" data (date !== 01/01/0001 && time !== around midnight)
+        const dateTimeArray: any[] = (XLSX.utils.sheet_to_json(worksheet, {range:"A3:B200", blankrows:false}));
+        const rowToStartFrom = (3 + this.checkNumRowsToExclude(dateTimeArray)).toString();
+        console.log(rowToStartFrom);
 
         //Get latitude and longitude column data for map component
         //Remove whitespace-only cells and copy arrays to filtered arrays
-        this._latitudeData = (XLSX.utils.sheet_to_json(worksheet, {range:"E3:E45000", blankrows:false}));
-        this._longitudeData = (XLSX.utils.sheet_to_json(worksheet, {range:"F3:F45000", blankrows:false}));
+        const latStart = "SS" + rowToStartFrom + ":SS45000";
+        this._latitudeData = (XLSX.utils.sheet_to_json(worksheet, {range:latStart, blankrows:false}));
+        this._longitudeData = (XLSX.utils.sheet_to_json(worksheet, {range:("SW3:SW45000").toString(), blankrows:false}));
 
         //Get CHT and EGT column data for chart component
-        this._chtData = (XLSX.utils.sheet_to_json(worksheet, {range:"AE3:AJ45000", blankrows:false}));
-        this._egtData = (XLSX.utils.sheet_to_json(worksheet, {range:"AK3:AP45000", blankrows:false}));
+        this._chtData = (XLSX.utils.sheet_to_json(worksheet, {range:("VA3:VM45000").toString(), blankrows:false}));
+        this._egtData = (XLSX.utils.sheet_to_json(worksheet, {range:("TK3:TU45000"), blankrows:false}));
 
-        //Get local time values from first and last rows to determine duration of flight
-        const localTimeColumn = (XLSX.utils.sheet_to_json(worksheet, {range:"B3:B45000", blankrows:false}));
-        this._flightTimesArray.push(localTimeColumn[0][" Lcl Time"].trim());
-        this._flightTimesArray.push(localTimeColumn.slice(-1)[0][" Lcl Time"].trim());
+        //Get time values from first and last rows to determine duration of flight
+        const localTimeColumn: any[] = (XLSX.utils.sheet_to_json(worksheet, {range:"B3:B45000", blankrows:false}));
+        this.setFlightDuration(localTimeColumn, (parseInt(rowToStartFrom) - 3));
 
         // Format the raw data string into 2-d array starting from cell A3. Dates formatted. Headers taken from column-arrays.ts
         const excelData = (XLSX.utils.sheet_to_json(worksheet, {range:3, header:headersAll.map(col => col.name), raw:false, dateNF:'yyyy-mm-dd'}));
@@ -207,6 +207,35 @@ export class DataImportService {
         observer.complete(); 
       }
     });
+  }
+
+  /**
+   * Takes first and last valid entries for "UTC Time" and pushes to 2-element array. Used for calculating overall flight/log duration
+   */
+  setFlightDuration(flightTimesArray: any[], numRowsToExclude: number) {    
+    this._flightTimesArray.push(flightTimesArray[numRowsToExclude]['UTC Time'].trim());
+    this._flightTimesArray.push(flightTimesArray.slice(-1)[0]['UTC Time'].trim());
+  }
+
+  /**
+   * 
+   * @returns number of rows with "bad"/unsynchronized data (Date = 01/01/0001 or Time starting from midnight)
+   */
+  checkNumRowsToExclude(dateTimeArray: any[]): number {
+    let numRowsToExclude = 0;
+
+    dateTimeArray.forEach(obj => {
+      for (const [key, value] of Object.entries<any>(obj)) {
+        if(key.trim() === "UTC Date" && value === 36892) {
+          numRowsToExclude++;
+          break;
+        }
+        if(key.trim() === "UTC Time" && value.trim().startsWith("00:00")) {
+          numRowsToExclude++;
+        }
+      }
+    });
+    return numRowsToExclude;
   }
 }
 

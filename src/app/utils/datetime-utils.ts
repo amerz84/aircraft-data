@@ -7,10 +7,10 @@ export class DateTimeUtility {
         return date.toISOString().substr(11, 8);
     }
 
-    /** Calculate the difference (in seconds) from the first row to last row of spreadsheet local time column. */
+    /** Calculate the difference (in seconds) from the first row to last row of spreadsheet UTC time column. */
     public getTimeDiff(flightTimeArray: string[]) {
-        const startTime = new Date("January 1, 1999 " + flightTimeArray[0]).getTime();
-        const finishTime = new Date("January 1, 1999 " + flightTimeArray[1]).getTime();
+        const startTime = new Date("January 1, 1999 " + flightTimeArray[0].substr(0,8)).getTime();
+        const finishTime = new Date("January 1, 1999 " + flightTimeArray[1].substr(0,8)).getTime();
         return this.toSeconds(Math.abs(finishTime - startTime) / 1000);
     }
 }

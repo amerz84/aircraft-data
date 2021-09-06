@@ -122,12 +122,12 @@ export class TableComponent implements OnInit {
     
     this.dataSource.data.forEach(obj => {
       for (const [key, value] of Object.entries(obj)) {
-        if(chtHeaders.includes(key) && parseInt(value.trim()) >= 400) {
+        if(chtHeaders.includes(key) && parseInt(value.trim()) >= 500) {
           //console.log(`${key} ${value}`);
           matchFilter.push(obj);
           return;
         }
-        if(egtHeaders.includes(key) && parseInt(value.trim()) >= 1100) {
+        if(egtHeaders.includes(key) && parseInt(value.trim()) >= 1700) {
           //console.log(`${key} ${value}`);
           matchFilter.push(obj);
           return;

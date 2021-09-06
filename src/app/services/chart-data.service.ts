@@ -39,27 +39,27 @@ export class ChartDataService {
 
     chtRawData.forEach(obj => {
       for (const [key, value] of Object.entries<string>(obj)) {
-        if(key.trim() === "E1 CHT1") {
+        if(key.trim() === "CHT (cyl 1)") {
           cht1ValArray.push(value);
           cht1Sum += parseFloat(value);
         }
-        if(key.trim() === "E1 CHT2") {
+        if(key.trim() === "CHT (cyl 2)") {
           cht2ValArray.push(value);
           cht2Sum += parseFloat(value);
         }  
-        if(key.trim() === "E1 CHT3") {
+        if(key.trim() === "CHT (cyl 3)") {
           cht3ValArray.push(value);
           cht3Sum += parseFloat(value);
         }
-        if(key.trim() === "E1 CHT4") {
+        if(key.trim() === "CHT (cyl 4)") {
           cht4ValArray.push(value);
           cht4Sum += parseFloat(value);
         }   
-        if(key.trim() === "E1 CHT5") {
+        if(key.trim() === "CHT (cyl 5)") {
           cht5ValArray.push(value);
           cht5Sum += parseFloat(value);
         }
-        if(key.trim() === "E1 CHT6") {
+        if(key.trim() === "CHT (cyl 6)") {
           cht6ValArray .push(value);
           cht6Sum += parseFloat(value);
         }     
@@ -96,27 +96,27 @@ export class ChartDataService {
 
     egtRawData.forEach(obj => {
       for (const [key, value] of Object.entries<string>(obj)) {
-        if(key.trim() === "E1 EGT1") {
+        if(key.trim() === "EGT (cyl 1)") {
           egt1ValArray.push(value);
           egt1Sum += parseFloat(value);
         }
-        if(key.trim() === "E1 EGT2") {
+        if(key.trim() === "EGT (cyl 2)") {
           egt2ValArray.push(value);
           egt2Sum += parseFloat(value);
         }  
-        if(key.trim() === "E1 EGT3") {
+        if(key.trim() === "EGT (cyl 3)") {
           egt3ValArray.push(value);
           egt3Sum += parseFloat(value);
         }
-        if(key.trim() === "E1 EGT4") {
+        if(key.trim() === "EGT (cyl 4)") {
           egt4ValArray.push(value);
           egt4Sum += parseFloat(value);
         }   
-        if(key.trim() === "E1 EGT5") {
+        if(key.trim() === "EGT (cyl 5)") {
           egt5ValArray.push(value);
           egt5Sum += parseFloat(value);
         }
-        if(key.trim() === "E1 EGT6") {
+        if(key.trim() === "EGT (cyl 6)") {
           egt6ValArray .push(value);
           egt6Sum += parseFloat(value);
         }     
