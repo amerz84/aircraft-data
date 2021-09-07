@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { faFileUpload } from '@fortawesome/free-solid-svg-icons';
@@ -20,6 +19,18 @@ export class TableComponent implements OnInit {
   tempSource: MatTableDataSource<String>; //Used to repopulate original/unfiltered file data after clearFilter() called
   timeline: GSAPTimeline;                     //GSAP animation timeline
 
+  //Mat Slide Toggles
+  isTimeInfoChecked = false;
+  isGeneralChecked = false;
+  isGenTempsChecked = false;
+  isADCChecked = false;
+  isGIAChecked = false;
+  isAHRSChecked = false;
+  isFuelChecked = false;
+
+  //Mat Progress Bar
+  isProgressing = false;
+
   // Mat Table directives //
   dataSource: MatTableDataSource<String>; 
   dummyDataSource: MatTableDataSource<String>; //Null/empty table to display "sticky" header - workaround for Edge/Chrome
@@ -29,7 +40,6 @@ export class TableComponent implements OnInit {
   @Output() page: EventEmitter<PageEvent>; //Event for paginator page change
   currentPage: number; //Paginator page index
   
-
   /////////////////////////////////////////////
   constructor(private importService: DataImportService, private tableDataService: TableDataService, private _snackBar: MatSnackBar) {}
 
@@ -62,6 +72,7 @@ export class TableComponent implements OnInit {
     event.stopPropagation();
     event.preventDefault();
 
+    this.isProgressing = true;
     this.animatePageElements(); //Start page animation
     this.callFileUploader(event, true);
   }
@@ -69,6 +80,8 @@ export class TableComponent implements OnInit {
   //////////////////////////////////////////////////
   // Call on data import service to convert csv file into table data
   callFileUploader(event: DragEvent, isFromDropZone = false) {
+    this.isProgressing = true;
+
     this.importService.onFileChange(event, isFromDropZone).subscribe((data: String[]) => {      
       this.dataSource.data = data;
       this.tempSource.data = data;      
@@ -77,6 +90,8 @@ export class TableComponent implements OnInit {
       this.tableDataService.toggleIsTableLoaded(true);
 
       this.dataSource.connect();
+      this.isProgressing = false;
+      this.setInitialToggles(); // Activates "default" toggles
     }, error => {
       this._snackBar.open("Upload failed --- " + error.message, "OK", {panelClass: "column-snackbar"});
       return;
@@ -147,7 +162,7 @@ export class TableComponent implements OnInit {
   //Toggle display of undesired columns. Boolean is toggled in onClick method in html file
   //Initial display shows ALL columns
   //NOTE: Downloaded table still shows all columns
-  toggleColumnDisplay(event: MatSlideToggleChange, colType: string) {
+  toggleColumnDisplay(colType: string) {
       for (let elem of headersAll) {
         if (elem.category.toLowerCase() === colType) {
           elem.hide = !elem.hide;
@@ -195,6 +210,13 @@ export class TableComponent implements OnInit {
   // Return subsection of column headers that are not currently hidden (toggled off)
   getDisplayedColumns(): string[] {
     return headersAll.filter(col => !col.hide).map(col => col.name);    
+  }
+
+  setInitialToggles() {
+    this.isTimeInfoChecked = true;
+    this.isGenTempsChecked = true;
+    this.toggleColumnDisplay('timeinfo');
+    this.toggleColumnDisplay('generaltemps');
   }
     
 }

@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
@@ -30,8 +31,6 @@ import { NotFoundComponent } from './views/not-found/not-found.component';
 import { TableInfoDialog } from './views/table/table-info/table-info-dialog/table-info-dialog.component';
 import { TableInfoComponent } from './views/table/table-info/table-info.component';
 import { TableComponent } from './views/table/table.component';
-
-
 
 @NgModule({
   declarations: [
@@ -58,6 +57,7 @@ import { TableComponent } from './views/table/table.component';
     MatButtonToggleModule,
     MatSnackBarModule,
     MatSlideToggleModule,
+    MatProgressBarModule,
     BrowserAnimationsModule,
     RouterModule.forRoot([
       { path: '', redirectTo: '/table', pathMatch: 'full' },

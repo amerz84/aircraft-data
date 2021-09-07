@@ -172,7 +172,7 @@ export const headersAll = [
     { name: "SSM", unit: "", hide: true, category: ""},
     { name: "GPS Vnorth (GIA1)", unit: "kt", hide: true, category: "gia"},
     { name: "SSM", unit: "", hide: true, category: ""},
-    { name: "GPS Vnorth (GIA1)", unit: "kt", hide: true, category: "gia"}, //
+    { name: "GPS Vnorth (GIA2)", unit: "kt", hide: true, category: "gia"}, //
     { name: "SSM", unit: "", hide: true, category: ""},
     { name: "GPS Status (GIA1)", unit: "ASCII", hide: true, category: "gia"},
     { name: "SSM", unit: "", hide: true, category: ""},

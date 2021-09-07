@@ -180,24 +180,22 @@ export class DataImportService {
         //Set starting row to first row with "good" data (date !== 01/01/0001 && time !== around midnight)
         const dateTimeArray: any[] = (XLSX.utils.sheet_to_json(worksheet, {range:"A3:B200", blankrows:false}));
         const rowToStartFrom = (3 + this.checkNumRowsToExclude(dateTimeArray)).toString();
-        console.log(rowToStartFrom);
 
         //Get latitude and longitude column data for map component
         //Remove whitespace-only cells and copy arrays to filtered arrays
-        const latStart = "SS" + rowToStartFrom + ":SS45000";
-        this._latitudeData = (XLSX.utils.sheet_to_json(worksheet, {range:latStart, blankrows:false}));
-        this._longitudeData = (XLSX.utils.sheet_to_json(worksheet, {range:("SW3:SW45000").toString(), blankrows:false}));
+        this._latitudeData = (XLSX.utils.sheet_to_json(worksheet, {range:"SS3:SS45000", blankrows:false}));
+        this._longitudeData = (XLSX.utils.sheet_to_json(worksheet, {range:"SW3:SW45000", blankrows:false}));
 
         //Get CHT and EGT column data for chart component
-        this._chtData = (XLSX.utils.sheet_to_json(worksheet, {range:("VA3:VM45000").toString(), blankrows:false}));
-        this._egtData = (XLSX.utils.sheet_to_json(worksheet, {range:("TK3:TU45000"), blankrows:false}));
+        this._chtData = (XLSX.utils.sheet_to_json(worksheet, {range:"VA3:VM45000", blankrows:false}));
+        this._egtData = (XLSX.utils.sheet_to_json(worksheet, {range:"TK3:TU45000", blankrows:false}));
 
         //Get time values from first and last rows to determine duration of flight
         const localTimeColumn: any[] = (XLSX.utils.sheet_to_json(worksheet, {range:"B3:B45000", blankrows:false}));
         this.setFlightDuration(localTimeColumn, (parseInt(rowToStartFrom) - 3));
 
         // Format the raw data string into 2-d array starting from cell A3. Dates formatted. Headers taken from column-arrays.ts
-        const excelData = (XLSX.utils.sheet_to_json(worksheet, {range:3, header:headersAll.map(col => col.name), raw:false, dateNF:'yyyy-mm-dd'}));
+        const excelData = (XLSX.utils.sheet_to_json(worksheet, {range:parseInt(rowToStartFrom), header:headersAll.map(col => col.name), raw:false, dateNF:'yyyy-mm-dd'}));
         observer.next(excelData);
 
         //Store number of data rows from spreadsheet
