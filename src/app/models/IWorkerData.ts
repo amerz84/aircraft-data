@@ -1,4 +1,5 @@
 export interface IWorkerData {
     id: number,
-    payload: any[]
+    name: string,
+    payload: any[]    
 }
