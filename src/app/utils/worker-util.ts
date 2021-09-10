@@ -27,8 +27,7 @@ class CustomWorker implements ICustomWorker {
     execute<T, S, K>(data: T, name: S): Observable<K> {
         const res = new Subject<K>();
         const workerData: any = {
-            id: Math.random(),
-            name: name,
+            id: name,
             payload: data
         };
         this.responseMap.set(workerData.id, res);

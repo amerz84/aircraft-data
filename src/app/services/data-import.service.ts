@@ -181,9 +181,9 @@ export class DataImportService {
         const worksheet: XLSX.WorkSheet = workbook.Sheets[sheetName];
         let rowToStartFrom;
         
-        this.customWorker?.execute<XLSX.WorkSheet, String, any[]>(worksheet, "dateTime").subscribe((response)  => {
-          this.result = response
-        });
+          this.customWorker?.execute<XLSX.WorkSheet, String, any[]>(worksheet, "rowToStartFrom").subscribe((response)  => {
+            this.result = response
+          });
           
 /*           worker.onmessage = ({ data }) => {
             rowToStartFrom = (3 + this.checkNumRowsToExclude(data)).toString();
