@@ -61,6 +61,7 @@ export class TableComponent implements OnInit {
   //Call on file upload through use of the drop area browse button
   onFileSelect(event: any) {    
     //Listen for changes to loaded file data and populate table with data from dataSource
+    this.isProgressing = true;
     this.callFileUploader(event);  
     this.animatePageElements(); //Start page animation 
   }
@@ -80,7 +81,6 @@ export class TableComponent implements OnInit {
   //////////////////////////////////////////////////
   // Call on data import service to convert csv file into table data
   callFileUploader(event: DragEvent, isFromDropZone = false) {
-    this.isProgressing = true;
 
     this.importService.onFileChange(event, isFromDropZone).subscribe((data: String[]) => {      
       this.dataSource.data = data;
