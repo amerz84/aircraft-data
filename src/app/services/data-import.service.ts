@@ -2,15 +2,12 @@ import { Injectable } from '@angular/core';
 import { Observable, Subscriber, throwError } from 'rxjs';
 import * as XLSX from 'xlsx';
 import { headersAll } from '../utils/column-arrays';
-import { ICustomWorker, WorkerUtil } from './../utils/worker-util';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataImportService {
   private _originalRecordCount: number;  //# of rows of (non-header) data on spreadsheet
-  customWorker: ICustomWorker;
-  result: any[] = [];
 
   //Data for chart component
   _chtData: string[] = [];
@@ -27,14 +24,6 @@ export class DataImportService {
   ///////////////////////////////////////////////////
   formattedHeaderArray = [];
   columnHeaderArray = [];
-
-  constructor() {
-    if (typeof Worker !== 'undefined') {
-      // Create a new
-      const worker = new Worker(new URL('../workers/data-import.worker', import.meta.url));
-      this.customWorker = WorkerUtil.create(worker);
-    }
-  }
 
   //Convert file data into Observable array for table display
   onFileChange(event: any, isFromDropZone = false): Observable<any> {
@@ -179,21 +168,18 @@ export class DataImportService {
         const workbook: XLSX.WorkBook = XLSX.read(binaryStr, { type: 'binary' });
         const sheetName: string = workbook.SheetNames[0];
         const worksheet: XLSX.WorkSheet = workbook.Sheets[sheetName];
-        let rowToStartFrom;
-        
-          this.customWorker?.execute<XLSX.WorkSheet, String, any[]>(worksheet, "rowToStartFrom").subscribe((response)  => {
-            this.result = response
-          });
-          
-/*           worker.onmessage = ({ data }) => {
-            rowToStartFrom = (3 + this.checkNumRowsToExclude(data)).toString();
-          };
-          worker.postMessage(worksheet); */
-        
+
+/*         // Store value of cells in row A for header/identification data 
+        for (let i=0; i<7; i++) {
+          let cell = worksheet[this.nextChar(i+1) + 1];
+          this.firstRowDataArray[i] = (cell ? cell.v : undefined);
+        }
+        //Remove "noise" from header cells and store only the desired values in formatted array for the "View File Info" component
+        this.formatFirstRowData(); */
 
         //Set starting row to first row with "good" data (date !== 01/01/0001 && time !== around midnight)
-
-
+        const dateTimeArray: any[] = (XLSX.utils.sheet_to_json(worksheet, {range:"A3:B200", blankrows:false}));
+        const rowToStartFrom = (3 + this.checkNumRowsToExclude(dateTimeArray)).toString();
 
         //Get latitude and longitude column data for map component
         //Remove whitespace-only cells and copy arrays to filtered arrays

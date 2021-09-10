@@ -43,7 +43,7 @@ export class TableComponent implements OnInit {
   /////////////////////////////////////////////
   constructor(private importService: DataImportService, private tableDataService: TableDataService, private _snackBar: MatSnackBar) {}
 
-  async ngOnInit() {
+  ngOnInit() {
     this.dataSource =  new MatTableDataSource<String>([]);
     this.tempSource = new MatTableDataSource<String>([]);
     this.dummyDataSource = new MatTableDataSource<String>(null);

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { TableDataService } from '../../services/table-data.service';
+import { TableDataService } from '../services/table-data.service';
 
 @Component({
   selector: 'header',

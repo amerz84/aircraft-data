@@ -36,8 +36,7 @@
             "buildOptimizer": false,
             "sourceMap": true,
             "optimization": false,
-            "namedChunks": true,
-            "webWorkerTsConfig": "tsconfig.worker.json"
+            "namedChunks": true
           },
           "configurations": {
             "production": {
@@ -102,8 +101,7 @@
               "src/app/theme.scss",
               "src/styles.css"
             ],
-            "scripts": [],
-            "webWorkerTsConfig": "tsconfig.worker.json"
+            "scripts": []
           }
         },
         "lint": {
