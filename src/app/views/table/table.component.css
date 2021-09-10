@@ -144,6 +144,7 @@ label:hover {
 /* Tables */
 #csv-table, #table-header{
   overflow:auto;
+  background-color: white;
 }
 
 .mat-table { 
