@@ -18,7 +18,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ChartsModule } from 'ng2-charts';
 import { environment } from './../environments/environment';
 import { AppComponent } from './app.component';
-import { HeaderComponent } from './header/header.component';
+import { HeaderComponent } from './views/header/header.component';
 import { CustomReuseStrategy } from './reuse-strategy';
 import { DataImportService } from './services/data-import.service';
 import { ArrayUtility } from './utils/array-utils';
@@ -31,6 +31,7 @@ import { NotFoundComponent } from './views/not-found/not-found.component';
 import { TableInfoDialog } from './views/table/table-info/table-info-dialog/table-info-dialog.component';
 import { TableInfoComponent } from './views/table/table-info/table-info.component';
 import { TableComponent } from './views/table/table.component';
+import { MeterToMilePipe } from './pipes/meter-to-mile.pipe';
 
 @NgModule({
   declarations: [
@@ -42,6 +43,7 @@ import { TableComponent } from './views/table/table.component';
     ChartComponent,
     HeaderComponent,
     NotFoundComponent,
+    MeterToMilePipe,
   ],
   imports: [
     BrowserModule,

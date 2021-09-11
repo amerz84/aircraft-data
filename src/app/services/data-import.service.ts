@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subscriber, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, Subscriber, throwError } from 'rxjs';
+import { DateTimeUtility } from 'src/app/utils/datetime-utils';
 import * as XLSX from 'xlsx';
 import { headersAll } from '../utils/column-arrays';
 
@@ -24,6 +25,12 @@ export class DataImportService {
   ///////////////////////////////////////////////////
   formattedHeaderArray = [];
   columnHeaderArray = [];
+  private _flightDate = new BehaviorSubject(null);
+  flightDate$ = this._flightDate.asObservable();
+  private _flightDuration = new BehaviorSubject(null);
+  flightDuration$ = this._flightDuration.asObservable();
+
+  constructor(private converter: DateTimeUtility) {}
 
   //Convert file data into Observable array for table display
   onFileChange(event: any, isFromDropZone = false): Observable<any> {
@@ -169,17 +176,12 @@ export class DataImportService {
         const sheetName: string = workbook.SheetNames[0];
         const worksheet: XLSX.WorkSheet = workbook.Sheets[sheetName];
 
-/*         // Store value of cells in row A for header/identification data 
-        for (let i=0; i<7; i++) {
-          let cell = worksheet[this.nextChar(i+1) + 1];
-          this.firstRowDataArray[i] = (cell ? cell.v : undefined);
-        }
-        //Remove "noise" from header cells and store only the desired values in formatted array for the "View File Info" component
-        this.formatFirstRowData(); */
-
         //Set starting row to first row with "good" data (date !== 01/01/0001 && time !== around midnight)
         const dateTimeArray: any[] = (XLSX.utils.sheet_to_json(worksheet, {range:"A3:B200", blankrows:false}));
         const rowToStartFrom = (3 + this.checkNumRowsToExclude(dateTimeArray)).toString();
+
+        //Get date of flight MM/DD/YY
+        this._flightDate.next(worksheet["A" + rowToStartFrom].w);
 
         //Get latitude and longitude column data for map component
         //Remove whitespace-only cells and copy arrays to filtered arrays
@@ -213,6 +215,8 @@ export class DataImportService {
   setFlightDuration(flightTimesArray: any[], numRowsToExclude: number) {    
     this._flightTimesArray.push(flightTimesArray[numRowsToExclude]['UTC Time'].trim());
     this._flightTimesArray.push(flightTimesArray.slice(-1)[0]['UTC Time'].trim());
+
+    this._flightDuration.next(this.converter.getTimeDiff(this._flightTimesArray));
   }
 
   /**

@@ -33,13 +33,10 @@ export class MapComponent {
     this.code.snapshotChanges().pipe(map(entry => {
       return entry.map(val => ({key: val.payload.key, ...(val as any).payload.val() }));
     })).subscribe(data => console.log(data));
-    this.mapDataService.initMapData();
     this.center = this.mapDataService.getCenterCoordinate();
     this.minBound = new google.maps.LatLng(this.mapDataService.getMinLatitude(), this.mapDataService.getMinLongitude());
     this.maxBound = new google.maps.LatLng(this.mapDataService.getMaxLatitude(), this.mapDataService.getMaxLongitude());
-    this.mapDataService.convertToLatLng();
     this.setFlightPath();
-
   }
 
   ngAfterViewInit(){

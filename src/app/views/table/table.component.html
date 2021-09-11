@@ -9,7 +9,6 @@
       <input type="file" class="form-control-file" id="fileItem" (change)="onFileSelect($event)" multiple>
       <span id="drop-zone-text">Or Drop Here</span> 
     </div>
-    <mat-progress-bar *ngIf="isProgressing" mode="indeterminate"></mat-progress-bar>
   </div>
   <div class="table-container">
     <div class="toggle-container">
@@ -95,8 +94,14 @@
       <div id="csv-table" #scrollData (scroll)="scrollHeader.scrollLeft = scrollData.scrollLeft">
         <mat-table #table id="mat-data" [dataSource]="this.dataSource">
           <ng-container *ngFor="let column of getDisplayedColumns()" [matColumnDef]="column">
+            <div *ngIf="column === 'UTC Time'; then timeCol else generalCol"></div>
             <th mat-header-cell *matHeaderCellDef>{{ column }}</th>
-            <td mat-cell *matCellDef="let element" (click)="showColumnName(column)"> {{ element[column] }} </td>
+            <ng-template #timeCol>
+              <td mat-cell *matCellDef="let element" (click)="showColumnName(column)"> {{ element[column] | slice: 0:8 }} </td>
+            </ng-template>
+            <ng-template #generalCol>
+              <td mat-cell *matCellDef="let element" (click)="showColumnName(column)"> {{ element[column] }} </td>
+            </ng-template>
           </ng-container>          
   
           <tr mat-header-row *matHeaderRowDef="getDisplayedColumns()" style="display:none"></tr>

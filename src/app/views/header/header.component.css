@@ -1,0 +1,19 @@
+.navbar {
+    z-index: 100;
+}
+
+.container-fluid {
+    padding-left: 10%;
+    padding-right: 10%;
+}
+
+.flightinfo {
+    float: right;
+    font-weight: 700;
+    font-size: inherit;
+    margin-left: 10px;    
+}
+
+.dropdown-menu {
+    width: max-content;
+}

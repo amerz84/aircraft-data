@@ -28,9 +28,6 @@ export class TableComponent implements OnInit {
   isAHRSChecked = false;
   isFuelChecked = false;
 
-  //Mat Progress Bar
-  isProgressing = false;
-
   // Mat Table directives //
   dataSource: MatTableDataSource<String>; 
   dummyDataSource: MatTableDataSource<String>; //Null/empty table to display "sticky" header - workaround for Edge/Chrome
@@ -61,7 +58,6 @@ export class TableComponent implements OnInit {
   //Call on file upload through use of the drop area browse button
   onFileSelect(event: any) {    
     //Listen for changes to loaded file data and populate table with data from dataSource
-    this.isProgressing = true;
     this.callFileUploader(event);  
     this.animatePageElements(); //Start page animation 
   }
@@ -73,7 +69,6 @@ export class TableComponent implements OnInit {
     event.stopPropagation();
     event.preventDefault();
 
-    this.isProgressing = true;
     this.animatePageElements(); //Start page animation
     this.callFileUploader(event, true);
   }
@@ -90,7 +85,6 @@ export class TableComponent implements OnInit {
       this.tableDataService.toggleIsTableLoaded(true);
 
       this.dataSource.connect();
-      this.isProgressing = false;
       this.setInitialToggles(); // Activates "default" toggles
     }, error => {
       this._snackBar.open("Upload failed --- " + error.message, "OK", {panelClass: "column-snackbar"});
@@ -181,12 +175,6 @@ export class TableComponent implements OnInit {
   }
 
   /////////////////////////////////////////////////
-  //Save file
-/*   downloadTableAsCSV(table_id: string) {
-    this.importService.saveFile(table_id);
-  } */
-
-  /////////////////////////////////////////////////
   //Boolean check for existence of table data
   get isTableLoaded() {
     return this.isTableLoaded$;
@@ -204,7 +192,9 @@ export class TableComponent implements OnInit {
   // Redundant workaround for sticky headers bug
   // If sticky headers fixed for mat table, this can be deprecated
   showColumnName(colName: string) {
-    this._snackBar.open(colName, null, {duration: 1500, panelClass: "column-snackbar"});
+    const displayedColumn = headersAll.find(col => colName === col.name)
+    const message = displayedColumn.name + " (" + displayedColumn.unit + ")";
+    this._snackBar.open(message, null, {duration: 1500, panelClass: "column-snackbar"});
   }
 
   // Return subsection of column headers that are not currently hidden (toggled off)

@@ -14,6 +14,8 @@ export class MapDataService {
   private minLong;
   private maxLong;
   flightPath: BehaviorSubject<{ lat: number; lng: number; }[]> = new BehaviorSubject([]);
+  private _flightDistance = new BehaviorSubject(null);
+  flightDistance$ = this._flightDistance.asObservable();
 
   constructor(private importService: DataImportService, private arrayUtility: ArrayUtility) {}
 
@@ -23,6 +25,7 @@ export class MapDataService {
     this.longitudeArray = this.arrayUtility.getNonEmptyValues(this.importService.longitudeData);
     this.setMapBoundCoordinates();
     this.convertToFloatType();
+    this.convertToLatLng();
   }
 
   /** Determine center point of map display by taking AVG(SUM(min value + max value)) for latitude and longitude. */
@@ -100,8 +103,10 @@ export class MapDataService {
     for (let i = 0; i < this.latitudeArray.length; i++) {
       latLngArray.push(new google.maps.LatLng(parseFloat(this.latitudeArray[i]), parseFloat(this.longitudeArray[i])));      
     }
-    let dist = google.maps.geometry.spherical.computeLength(latLngArray);
-    console.log(latLngArray.length);
-    console.log(dist);
+    this.calcFlightDistance(latLngArray);
+  }
+
+  calcFlightDistance(coordArray: any[]) {
+    this._flightDistance.next(google.maps.geometry.spherical.computeLength(coordArray));
   }
 }
