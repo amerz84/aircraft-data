@@ -69,10 +69,6 @@
           <button mat-raised-button (click)="applyHighEgtOrChtFilter()">High CHT/EGT</button>
           <button mat-raised-button (click)="clearFilter()">Clear Filters</button>
         </div> 
-        <div id="button-grid-menu">     
-          <!-- <button mat-raised-button [disabled]="!isTableLoaded" (click)="downloadTableAsCSV('csv-table')">Save Table as File</button> -->
-          <table-info class="dialog-button" [isTableLoaded]="isTableLoaded"></table-info>
-        </div>
       </div>
   
       <!--- This table is for Edge/Chrome workaround where sticky headers wasn't working as intended.
@@ -97,7 +93,7 @@
             <div *ngIf="column === 'UTC Time'; then timeCol else generalCol"></div>
             <th mat-header-cell *matHeaderCellDef>{{ column }}</th>
             <ng-template #timeCol>
-              <td mat-cell *matCellDef="let element" (click)="showColumnName(column)"> {{ element[column] | slice: 0:8 }} </td>
+              <td mat-cell *matCellDef="let element" (click)="showColumnName(column)"> {{ element[column] | fullTimeFormatter | slice: 0:8 }} </td>
             </ng-template>
             <ng-template #generalCol>
               <td mat-cell *matCellDef="let element" (click)="showColumnName(column)"> {{ element[column] }} </td>

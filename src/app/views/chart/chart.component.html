@@ -14,9 +14,6 @@
     </div>
     <div class="grid-box chart-information">
         <div>
-            Duration of flight: {{ this.flightDuration }}
-        </div>
-        <div>
             <ul>Average Temperatures
                 <li *ngFor="let element of this.chtAvgValArray; let i=index">CHT {{ i+1 }} Average: {{ element | number : '1.2-2' }}</li>
             </ul>

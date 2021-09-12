@@ -21,8 +21,8 @@ export class MapDataService {
 
   /** Gets lat/long and other coordinate data from the import service. */
   initMapData() {
-    this.latitudeArray = this.arrayUtility.getNonEmptyValues(this.importService.latitudeData);
-    this.longitudeArray = this.arrayUtility.getNonEmptyValues(this.importService.longitudeData);
+    this.latitudeArray = this.arrayUtility.getValidValues(this.importService.latitudeData);
+    this.longitudeArray = this.arrayUtility.getValidValues(this.importService.longitudeData);
     this.setMapBoundCoordinates();
     this.convertToFloatType();
     this.convertToLatLng();

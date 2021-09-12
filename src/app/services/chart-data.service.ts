@@ -6,12 +6,12 @@ import { DataImportService } from './data-import.service';
   providedIn: 'root'
 })
 export class ChartDataService {
-  egtAverageArray: number[] = [];
-  egtValuesArray: Array<string[]> = [];
-  egtAbnormalVals: number[] = [];
-  chtAverageArray: number[] = [];
-  chtValuesArray: Array<string[]> = [];
-  chtAbnormalVals: number[] = [];
+  egtAverageArray: number[];
+  egtValuesArray: Array<string[]>;
+  egtAbnormalVals: number[];
+  chtAverageArray: number[];
+  chtValuesArray: Array<string[]>;
+  chtAbnormalVals: number[];
 
   constructor(private importService: DataImportService, private arrayUtils: ArrayUtility) {}
 
@@ -28,6 +28,9 @@ export class ChartDataService {
   //      {CHT 1: 101, CHT 2: 201, CHT 3: 301},     -->       [200, 201, 202],
   //      {CHT 1: 102, CHT 2: 202, CHT 3: 302} ]              [300, 301, 302] ] 
   setCHTData() {
+    this.chtValuesArray = [];
+    this.chtAverageArray = [];
+    this.chtAbnormalVals = [];
     const chtRawData = [...this.importService.chtData];
     const cht1ValArray: string[] = [];
     const cht2ValArray: string[] = [];
@@ -85,6 +88,9 @@ export class ChartDataService {
    * 
    *   {1: 102, 2: 202, 3: 302} ]    -->       [300, 301, 302] ] */
   setEGTData() {
+    this.egtValuesArray = [];
+    this.egtAverageArray = [];
+    this.egtAbnormalVals = [];
     const egtRawData = [...this.importService.egtData];
     const egt1ValArray: string[] = [];
     const egt2ValArray: string[] = [];

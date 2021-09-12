@@ -9,6 +9,9 @@ import { headersAll } from '../utils/column-arrays';
 })
 export class DataImportService {
   private _originalRecordCount: number;  //# of rows of (non-header) data on spreadsheet
+  private _fileCounter = new BehaviorSubject(0);
+  fileCounter$ = this._fileCounter.asObservable();
+  fileCount = 0;
 
   //Data for chart component
   _chtData: string[] = [];
@@ -29,6 +32,7 @@ export class DataImportService {
   flightDate$ = this._flightDate.asObservable();
   private _flightDuration = new BehaviorSubject(null);
   flightDuration$ = this._flightDuration.asObservable();
+  UTCTimeColumn: any[] = [];
 
   constructor(private converter: DateTimeUtility) {}
 
@@ -178,10 +182,11 @@ export class DataImportService {
 
         //Set starting row to first row with "good" data (date !== 01/01/0001 && time !== around midnight)
         const dateTimeArray: any[] = (XLSX.utils.sheet_to_json(worksheet, {range:"A3:B200", blankrows:false}));
-        const rowToStartFrom = (3 + this.checkNumRowsToExclude(dateTimeArray)).toString();
+        const rowToStartFrom = (3 + this.checkNumRowsToExclude(dateTimeArray));
 
         //Get date of flight MM/DD/YY
-        this._flightDate.next(worksheet["A" + rowToStartFrom].w);
+        //Add 1 in case rowtoStartFrom === 0
+        this._flightDate.next(worksheet["A" + (1 + rowToStartFrom).toString()].w);
 
         //Get latitude and longitude column data for map component
         //Remove whitespace-only cells and copy arrays to filtered arrays
@@ -193,16 +198,19 @@ export class DataImportService {
         this._egtData = (XLSX.utils.sheet_to_json(worksheet, {range:"TK3:TU45000", blankrows:false}));
 
         //Get time values from first and last rows to determine duration of flight
-        const localTimeColumn: any[] = (XLSX.utils.sheet_to_json(worksheet, {range:"B3:B45000", blankrows:false}));
-        this.setFlightDuration(localTimeColumn, (parseInt(rowToStartFrom) - 3));
+        this.UTCTimeColumn = this.converter.formatTimeArray(XLSX.utils.sheet_to_json(worksheet, {range:"B3:B45000", blankrows:false}), rowToStartFrom - 3);
+        this.setFlightDuration(this.UTCTimeColumn);
 
         // Format the raw data string into 2-d array starting from cell A3. Dates formatted. Headers taken from column-arrays.ts
-        const excelData = (XLSX.utils.sheet_to_json(worksheet, {range:parseInt(rowToStartFrom), header:headersAll.map(col => col.name), raw:false, dateNF:'yyyy-mm-dd'}));
+        const excelData = (XLSX.utils.sheet_to_json(worksheet, {range:rowToStartFrom, header:headersAll.map(col => col.name), raw:false, dateNF:'yyyy-mm-dd'}));
         observer.next(excelData);
 
         //Store number of data rows from spreadsheet
         //// Used by chart component for determining flight length
         this._originalRecordCount = excelData.length;
+
+        this.fileCount++;
+        this._fileCounter.next(this.fileCount);
 
         observer.complete(); 
       }
@@ -212,9 +220,10 @@ export class DataImportService {
   /**
    * Takes first and last valid entries for "UTC Time" and pushes to 2-element array. Used for calculating overall flight/log duration
    */
-  setFlightDuration(flightTimesArray: any[], numRowsToExclude: number) {    
-    this._flightTimesArray.push(flightTimesArray[numRowsToExclude]['UTC Time'].trim());
-    this._flightTimesArray.push(flightTimesArray.slice(-1)[0]['UTC Time'].trim());
+  setFlightDuration(flightTimesArray: any[]) {  
+    this._flightTimesArray = []; 
+    this._flightTimesArray.push(flightTimesArray[0]);
+    this._flightTimesArray.push(flightTimesArray.slice(-1)[0]);
 
     this._flightDuration.next(this.converter.getTimeDiff(this._flightTimesArray));
   }

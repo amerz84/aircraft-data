@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { faFileUpload } from '@fortawesome/free-solid-svg-icons';
 import { gsap } from 'gsap';
 import { DataImportService } from '../../services/data-import.service';
@@ -18,6 +18,7 @@ export class TableComponent implements OnInit {
   faFileUpload = faFileUpload;  //binding for the Font Awesome file upload icon
   tempSource: MatTableDataSource<String>; //Used to repopulate original/unfiltered file data after clearFilter() called
   timeline: GSAPTimeline;                     //GSAP animation timeline
+  fileCounter = 0; //Track # file uploads
 
   //Mat Slide Toggles
   isTimeInfoChecked = false;
@@ -28,7 +29,8 @@ export class TableComponent implements OnInit {
   isAHRSChecked = false;
   isFuelChecked = false;
 
-  // Mat Table directives //
+  // Mat Table //
+  @ViewChild(MatTable) table: MatTable<any>;
   dataSource: MatTableDataSource<String>; 
   dummyDataSource: MatTableDataSource<String>; //Null/empty table to display "sticky" header - workaround for Edge/Chrome
 
@@ -76,16 +78,17 @@ export class TableComponent implements OnInit {
   //////////////////////////////////////////////////
   // Call on data import service to convert csv file into table data
   callFileUploader(event: DragEvent, isFromDropZone = false) {
+    this.fileCounter++;
 
-    this.importService.onFileChange(event, isFromDropZone).subscribe((data: String[]) => {      
+    this.importService.onFileChange(event, isFromDropZone).subscribe((data: String[]) => { 
+      console.log(data);     
       this.dataSource.data = data;
       this.tempSource.data = data;      
 
-      this.isTableLoaded$ = true; //Lets table info component know that data is present
-      this.tableDataService.toggleIsTableLoaded(true);
-
-      this.dataSource.connect();
-      this.setInitialToggles(); // Activates "default" toggles
+      if (this.isTableLoaded$ !== true) {
+        this.tableDataService.toggleIsTableLoaded(true);
+        this.setInitialToggles(); // Activates "default" toggles
+      } 
     }, error => {
       this._snackBar.open("Upload failed --- " + error.message, "OK", {panelClass: "column-snackbar"});
       return;
@@ -188,7 +191,7 @@ export class TableComponent implements OnInit {
   }
   
   /////////////////////////////////////////////////
-  // Display column name in snackbar when td cell is clicked 
+  // Display column name and measurement unit in snackbar when td cell is clicked 
   // Redundant workaround for sticky headers bug
   // If sticky headers fixed for mat table, this can be deprecated
   showColumnName(colName: string) {
@@ -203,10 +206,12 @@ export class TableComponent implements OnInit {
   }
 
   setInitialToggles() {
-    this.isTimeInfoChecked = true;
-    this.isGenTempsChecked = true;
-    this.toggleColumnDisplay('timeinfo');
-    this.toggleColumnDisplay('generaltemps');
+    if (!(this.fileCounter > 1)) {
+      this.isTimeInfoChecked = true;
+      this.isGenTempsChecked = true;
+      this.toggleColumnDisplay('timeinfo');
+      this.toggleColumnDisplay('generaltemps');
+    }
   }
     
 }

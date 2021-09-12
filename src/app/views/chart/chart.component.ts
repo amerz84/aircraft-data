@@ -19,10 +19,11 @@ export class ChartComponent implements OnInit {
   markers: number = 100;              // number of data points for each line in chart
   flightDuration: string;             // length of flight, taken from spreadsheet local time column (HH:MM:SS format)
   chartLabels: Label[] = [];          // labels for CHT and EGT charts (should always be the same)
-  chtAvgValArray = [];
-  chtAbnormalTempArray = [];
-  egtAvgValArray = [];
-  egtAbnormalTempArray = [];
+  chtAvgValArray;
+  chtAbnormalTempArray;
+  egtAvgValArray;
+  egtAbnormalTempArray;
+  fileUploadCount = 0;
 
   // CHT data chart props
   CHTChartData: ChartDataset[];
@@ -43,19 +44,31 @@ export class ChartComponent implements OnInit {
   ///////////////////////////////////////////////////////////////
   
   constructor(private chartDataService: ChartDataService, private converter: DateTimeUtility, 
-    private importService: DataImportService, private chartHelperService: ChartHelperService) {
-      
+    private importService: DataImportService, private chartHelperService: ChartHelperService) {      
     }
 
   ngOnInit() {   
     // Chart annotation plugin needs to be registered manually
     // see https://www.chartjs.org/chartjs-plugin-annotation/guide/integration.html#script-tag
-    Chart.register(annotationPlugin);
-    this.chartDataService.initChartData();
+    Chart.register(annotationPlugin); 
+    this.importService.fileCounter$.subscribe(isNewFile => {
+      if (isNewFile > this.fileUploadCount) {
+        this.chartDataService.initChartData();
+        this.refreshChartData();
+        this.fileUploadCount++;
+        
+      }
+    })
+  }
+  
+  refreshChartData() {
+    this.chtAbnormalTempArray = [];
+    this.egtAbnormalTempArray = [];
+    this.chtAvgValArray = [];
+    this.egtAvgValArray = [];
     this.chtAbnormalTempArray = this.chartDataService.getAbnormalTemperatures("cht");
     this.egtAbnormalTempArray = this.chartDataService.getAbnormalTemperatures("egt");
 
-    this.flightDuration = this.converter.getTimeDiff(this.importService.flightTimesArray);
     this.CHTChartData = [
       { data: this.chartDataService.getCHTVals(this.markers)[0], label: 'CHT 1', xAxisID: 'x', yAxisID: 'y'},
       { data: this.chartDataService.getCHTVals(this.markers)[1], label: 'CHT 2', xAxisID: 'x', yAxisID: 'y' },
@@ -80,7 +93,6 @@ export class ChartComponent implements OnInit {
     this.chartDataService.egtAverageArray.forEach(element => {
       this.egtAvgValArray.push(element);
     });
-  
   }
 
   ngAfterViewInit() {
@@ -90,7 +102,7 @@ export class ChartComponent implements OnInit {
     this.baseChart.changes.subscribe(() => {
       for(let child of this.baseChart) {
         child.chart.config.data.labels = this.chartLabels;
-        child.chart.render();
+        child.chart.update();
       }
     });  
 

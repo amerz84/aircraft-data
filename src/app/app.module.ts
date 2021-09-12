@@ -32,6 +32,7 @@ import { TableInfoDialog } from './views/table/table-info/table-info-dialog/tabl
 import { TableInfoComponent } from './views/table/table-info/table-info.component';
 import { TableComponent } from './views/table/table.component';
 import { MeterToMilePipe } from './pipes/meter-to-mile.pipe';
+import { FullTimeFormatterPipe } from './pipes/full-time-formatter.pipe';
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import { MeterToMilePipe } from './pipes/meter-to-mile.pipe';
     HeaderComponent,
     NotFoundComponent,
     MeterToMilePipe,
+    FullTimeFormatterPipe,
   ],
   imports: [
     BrowserModule,
