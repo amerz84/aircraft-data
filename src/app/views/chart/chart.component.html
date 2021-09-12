@@ -1,0 +1,43 @@
+<div class="bg-image"></div>
+
+<div class="grid-container">
+    <div class="chart-wrapper grid-box">
+        <canvas baseChart
+            [datasets]="CHTChartData" 
+            [labels]="chartLabels"
+            [options]="CHTChartOptions"
+            [colors]="CHTChartColors" 
+            [legend]="CHTChartLegend" 
+            [chartType]="CHTChartType" 
+            [plugins]="CHTChartPlugins">
+        </canvas>
+    </div>
+    <div class="grid-box chart-information">
+        <ul>Average Temperatures
+            <li *ngFor="let element of this.chtAvgValArray; let i=index">CHT {{ i+1 }} Average: {{ element | number : '1.2-2' }}</li>
+        </ul>
+        <ul>Abnormal Readings
+            <li *ngFor="let element of this.chtAbnormalTempArray; let i=index">CHT {{ i+1 }}: {{ element }}</li>
+        </ul>
+    </div>
+    <div class="chart-wrapper grid-box">
+        <canvas baseChart 
+            [datasets]="EGTChartData" 
+            [labels]="chartLabels"
+            [options]="EGTChartOptions"
+            [colors]="EGTChartColors" 
+            [legend]="EGTChartLegend" 
+            [chartType]="EGTChartType" 
+            [plugins]="EGTChartPlugins">
+        </canvas>
+    </div>
+    <div class="grid-box chart-information">
+        <ul>Average Temperatures
+            <li *ngFor="let element of this.egtAvgValArray; let i=index">EGT {{ i+1 }} Average: {{ element | number : '1.2-2' }}</li>
+        </ul>
+        <ul>Abnormal Readings
+            <li *ngFor="let element of this.egtAbnormalTempArray; let i=index">EGT {{ i+1 }}: {{ element }}</li>
+        </ul>
+    </div>
+
+</div>

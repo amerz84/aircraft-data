@@ -1,0 +1,69 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">MFD Data Tool</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" routerLinkActive="active current" [routerLinkActiveOptions]="{ exact: true }" aria-current="page" routerLink="/">Table</a>
+        </li>
+
+        <!-- Links programmatically disabled/enabled using sub for isTableLoaded -->
+        <div *ngIf="isTableLoaded$ | async; then loaded else notLoaded"></div>
+        <ng-template #notLoaded>
+          <li class="nav-item">          
+            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Chart</a>
+          </li>
+          <li class="nav-item"> 
+            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Map</a>
+          </li>    
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle disabled" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Flight Info
+            </a>
+            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+            </ul>
+          </li>      
+        </ng-template>
+        <ng-template #loaded>
+          <li class="nav-item">
+            <a class="nav-link" routerLinkActive="active current" routerLink="/chart">Chart</a>
+          </li>
+          <li class="nav-item"> 
+            <a class="nav-link" routerLinkActive="active current" routerLink="/map">Map</a>          
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Flight Info
+            </a>
+            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+              <li>
+                <a class="dropdown-item">Date (dd/mm/yy): 
+                  <span class="flightinfo">
+                    {{ this.flightDate$ | async }}
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item">Duration (hh:mm:ss):
+                  <span class="flightinfo">
+                    {{ this.flightDuration$ | async }}
+                  </span> 
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item">Distance (mi): 
+                  <span class="flightinfo">
+                    {{ this.flightDistance$ | async | meterToMile | number: '0.1-2' }}
+                  </span>
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ng-template>
+      </ul> 
+    </div>
+  </div>
+</nav>

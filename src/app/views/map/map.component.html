@@ -1,0 +1,27 @@
+<div class="bg-image"></div>
+
+<body class="content-container">
+    <div class="map-container">
+        <google-map 
+            height="400px"
+            width="750px"
+            [center]="center"
+            (mapClick)="moveMap($event)"
+            (mapMousemove)="move($event)">
+            <map-marker 
+                #marker="mapMarker"
+                [position]="this.startCoord"
+                [options]="{draggable: false, title: 'Start'}"
+                (mapClick)="openMapInfo(marker)">
+            </map-marker>
+            <map-info-window>
+                <div>{{ mapInfoContent.title }}</div>
+                <div>{{ mapInfoContent.coord }}</div>
+            </map-info-window>
+            <map-polyline [path]="this.flightPath$ | async"></map-polyline>
+        </google-map>
+    </div>
+    <div class="coordinate grid">Latitude: {{display?.lat}}</div>
+    <div class="coordinate">Longitude: {{display?.lng}}</div>
+
+</body>

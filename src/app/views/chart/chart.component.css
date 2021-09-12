@@ -1,0 +1,51 @@
+body {
+    max-width: 90%;
+  }
+  
+.chart-information {
+  color: #fff;
+  max-width: max-content;
+}  
+
+.grid-container {
+  position: relative;
+  margin: -95vh auto auto auto;
+  width: 80%;
+  height: 80%;
+  background: transparent;
+  display: grid;
+  grid-template-columns: 50% 50%;
+  grid-column-gap: 5vw;
+  grid-row-gap: 5vh;
+  align-content: space-between;
+  align-items: center;
+  justify-content: space-between;
+
+}
+.grid-box {
+  background-color: rgba(51,51,51, 0.7);
+  padding: 3%;
+  border-radius: 10px;
+  display: flex;
+  align-items:center;
+  justify-content:center;
+}
+
+
+/* Page background */
+.bg-image {
+  background-image: url('src\assets\aircraft_bg.jpg');
+  filter: blur(10px);
+  height: 100%;
+  width: 100%;
+  background-position: top center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+}
+
+ul {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}

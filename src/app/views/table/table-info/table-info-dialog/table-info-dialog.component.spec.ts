@@ -1,20 +1,21 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TableInfoDialog } from './table-info-dialog.component';
 
-import { TableUploadComponent } from './table-upload.component';
 
-describe('TableUploadComponent', () => {
-  let component: TableUploadComponent;
-  let fixture: ComponentFixture<TableUploadComponent>;
+
+describe('TableInfoDialogComponent', () => {
+  let component: TableInfoDialog;
+  let fixture: ComponentFixture<TableInfoDialog>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TableUploadComponent ]
+      declarations: [ TableInfoDialog ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TableUploadComponent);
+    fixture = TestBed.createComponent(TableInfoDialog);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
