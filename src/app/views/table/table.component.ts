@@ -80,10 +80,9 @@ export class TableComponent implements OnInit {
   callFileUploader(event: DragEvent, isFromDropZone = false) {
     this.fileCounter++;
 
-    this.importService.onFileChange(event, isFromDropZone).subscribe((data: String[]) => { 
-      console.log(data);     
+    this.importService.onFileChange(event, isFromDropZone).subscribe((data: String[]) => {    
       this.dataSource.data = data;
-      this.tempSource.data = data;      
+      this.tempSource.data = data;
 
       if (this.isTableLoaded$ !== true) {
         this.tableDataService.toggleIsTableLoaded(true);

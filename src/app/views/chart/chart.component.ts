@@ -93,19 +93,18 @@ export class ChartComponent implements OnInit {
     this.chartDataService.egtAverageArray.forEach(element => {
       this.egtAvgValArray.push(element);
     });
+
+        //Regenerate labels after chart data is present
+        this.chartLabels.push(...this.getChartLabels());
   }
 
   ngAfterViewInit() {
-    //Regenerate labels after chart data is present
-    this.chartLabels.push(...this.getChartLabels());
-
     this.baseChart.changes.subscribe(() => {
       for(let child of this.baseChart) {
         child.chart.config.data.labels = this.chartLabels;
         child.chart.update();
       }
     });  
-
   }
 
   /** Take length of markers array (# of plot points for each line) and assign a HH:MM:SS value to each
@@ -118,7 +117,7 @@ export class ChartComponent implements OnInit {
     const labels: string[] = [];
     for (let i = 0, j = 0; i < this.markers; i++) {
       labels.push(this.converter.toSeconds(j));
-      j += Math.floor(this.importService.originalRecordCount / this.markers);
+      j += (this.importService.originalRecordCount / this.markers);
     }
     return labels;
   }

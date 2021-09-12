@@ -1,7 +1,7 @@
 <div class="bg-image"></div>
 
 <body class="content-container">
-    <div>
+    <div class="map-container">
         <google-map 
             height="400px"
             width="750px"
@@ -21,7 +21,7 @@
             <map-polyline [path]="this.flightPath$ | async"></map-polyline>
         </google-map>
     </div>
-    <div>Latitude: {{display?.lat}}</div>
-<div>Longitude: {{display?.lng}}</div>
+    <div class="coordinate grid">Latitude: {{display?.lat}}</div>
+    <div class="coordinate">Longitude: {{display?.lng}}</div>
 
 </body>
