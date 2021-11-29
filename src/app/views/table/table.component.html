@@ -1,7 +1,7 @@
 <div class="bg-image"></div>
       
 <body class="content-container">
-  <div class="drop-zone-container">
+  <div class="drop-zone-container" id="drop-zone-container">
     <div id="drop-zone" (drop)="onFileDrop($event);onDragEnd()" (dragover)="onDragOver($event)" (dragleave)="onDragEnd()">
       <label class="file-upload"for="fileItem">
         <fa-icon [icon]="faFileUpload" size="lg"></fa-icon>Upload File        
