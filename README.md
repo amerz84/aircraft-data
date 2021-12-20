@@ -8,9 +8,9 @@ This is a spreadsheet tool that allows a user to load a fixed-column-size .csv f
 
 ## Live Demo
 
-View Live Demo [here](https://amerz84.github.io/aircraft-data/)
+View Live Demo [here](https://amerz84.github.io/aircraft-data/) (Need to download dummy data below)
 
-#### Steps --
+#### Steps to upload dummy data--
 
 1. Go to [Demo file](https://github.com/amerz84/aircraft-data/blob/master/demofile.csv)
 2. Right-click "View Raw" button and save link
