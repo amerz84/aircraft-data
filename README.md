@@ -12,10 +12,7 @@ View Live Demo [here](https://amerz84.github.io/aircraft-data/)
 
 #### Steps --
 
-1. Go to demo file link below
-
-[Demo file](https://github.com/amerz84/aircraft-data/blob/master/demofile.csv) available in root folder - demofile.csv
-
+1. Go to [Demo file](https://github.com/amerz84/aircraft-data/blob/master/demofile.csv)
 2. Right-click "View Raw" button and save link
 3. In demo, either select file saved in Step 2 or drag-and-drop onto page
 
