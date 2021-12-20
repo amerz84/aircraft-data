@@ -10,7 +10,7 @@ This is a spreadsheet tool that allows a user to load a fixed-column-size .csv f
 
 View Live Demo [here](https://amerz84.github.io/aircraft-data/)
 
-[Demo file](https://github.com/amerz84/aircraft-data/blob/27ba5458ebddc4ff2715e40c3b4f39b45435731d/demofile.csv) available in root folder - demofile.csv
+[Demo file](https://github.com/amerz84/aircraft-data/blob/master/demofile.csv) available in root folder - demofile.csv
 
 ## Examples
 
