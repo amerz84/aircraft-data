@@ -39,5 +39,17 @@
             <li *ngFor="let element of this.egtAbnormalTempArray; let i=index">EGT {{ i+1 }}: {{ element }}</li>
         </ul>
     </div>
+    <div class="grid-box fuel-card">
+      <h2>Fuel Used (gal)</h2>
+      <span>
+        {{ this.fuelUsedInGals | number : '1.2-2' }}
+      </span>      
+    </div>
+    <div class="grid-box fuel-card">
+      <h2>Fuel Economy (mpg)</h2>
+      <span>
+        {{ this.fuelEconomy | meterToMile | number : '1.2-2' }}
+      </span>
+    </div>
 
 </div>

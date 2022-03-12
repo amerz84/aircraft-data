@@ -3,6 +3,8 @@ import { ChartDataset } from 'chart.js';
 import Chart from 'chart.js/auto';
 import annotationPlugin from 'chartjs-plugin-annotation';
 import { BaseChartDirective, Label } from 'ng2-charts';
+import { Observable } from 'rxjs';
+import { MapDataService } from 'src/app/services/map-data.service';
 import { DateTimeUtility } from '../../utils/datetime-utils';
 import { ChartDataService } from './../../services/chart-data.service';
 import { DataImportService } from './../../services/data-import.service';
@@ -18,12 +20,15 @@ export class ChartComponent implements OnInit {
   
   markers: number = 100;              // number of data points for each line in chart
   flightDuration: string;             // length of flight, taken from spreadsheet local time column (HH:MM:SS format)
+  fuelUsedInGals: number;             // number of gallons of fuel used, taken from the "Fuel Remaining" column
+  milesTraveled: number;
+  fuelEconomy: number;                // milesTraveled / fuelUsedInGals
   chartLabels: Label[] = [];          // labels for CHT and EGT charts (should always be the same)
   chtAvgValArray;
   chtAbnormalTempArray;
   egtAvgValArray;
   egtAbnormalTempArray;
-  fileUploadCount = 0;
+  fileUploadCount = 0;                // Tracker for new file uploads
 
   // CHT data chart props
   CHTChartData: ChartDataset[];
@@ -44,13 +49,15 @@ export class ChartComponent implements OnInit {
   ///////////////////////////////////////////////////////////////
   
   constructor(private chartDataService: ChartDataService, private converter: DateTimeUtility, 
-    private importService: DataImportService, private chartHelperService: ChartHelperService) {      
-    }
+    private importService: DataImportService, private chartHelperService: ChartHelperService,
+    private mapService: MapDataService) {}
 
   ngOnInit() {   
     // Chart annotation plugin needs to be registered manually
     // see https://www.chartjs.org/chartjs-plugin-annotation/guide/integration.html#script-tag
     Chart.register(annotationPlugin); 
+
+    //Refresh data if new file is uploaded
     this.importService.fileCounter$.subscribe(isNewFile => {
       if (isNewFile > this.fileUploadCount) {
         this.chartDataService.initChartData();
@@ -58,7 +65,13 @@ export class ChartComponent implements OnInit {
         this.fileUploadCount++;
         
       }
-    })
+    });
+
+    this.importService.getFuelUsed().subscribe(qtyUsed => {
+      this.fuelUsedInGals = qtyUsed;
+    });
+
+    this.mapService.flightDistance$.subscribe(distance => this.fuelEconomy = (distance / this.fuelUsedInGals));
   }
   
   refreshChartData() {
@@ -94,8 +107,8 @@ export class ChartComponent implements OnInit {
       this.egtAvgValArray.push(element);
     });
 
-        //Regenerate labels after chart data is present
-        this.chartLabels.push(...this.getChartLabels());
+    //Regenerate labels after chart data is present
+    this.chartLabels.push(...this.getChartLabels());
   }
 
   ngAfterViewInit() {

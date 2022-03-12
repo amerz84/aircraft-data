@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subscriber, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subscriber, throwError } from 'rxjs';
 import { DateTimeUtility } from 'src/app/utils/datetime-utils';
 import * as XLSX from 'xlsx';
 import { headersAll } from '../utils/column-arrays';
@@ -17,6 +17,7 @@ export class DataImportService {
   _chtData: string[] = [];
   _egtData: string[] = [];
   private _flightTimesArray: string[] = [];
+  fuelUsed: number = 0;
 
   //Date for map component
   private _latitudeData: string[] = [];
@@ -209,6 +210,10 @@ export class DataImportService {
         //// Used by chart component for determining flight length
         this._originalRecordCount = excelData.length;
 
+        //Set amount of fuel used (in gallons)
+        this.fuelUsed = worksheet["LO" + rowToStartFrom].w
+          - worksheet["LO" + (rowToStartFrom + this._originalRecordCount)].w;
+
         this.fileCount++;
         this._fileCounter.next(this.fileCount);
 
@@ -247,6 +252,10 @@ export class DataImportService {
       }
     });
     return numRowsToExclude;
+  }
+
+  getFuelUsed(): Observable<number> {
+    return of(this.fuelUsed);
   }
 }
 

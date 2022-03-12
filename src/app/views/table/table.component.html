@@ -6,7 +6,7 @@
       <label class="file-upload"for="fileItem">
         <fa-icon [icon]="faFileUpload" size="lg"></fa-icon>Upload File        
       </label>
-      <input type="file" class="form-control-file" id="fileItem" (change)="onFileSelect($event)" multiple>
+      <input type="file" class="form-control-file" id="fileItem" accept="text/csv," (change)="onFileSelect($event)">
       <span id="drop-zone-text">Or Drop Here</span> 
     </div>
   </div>

@@ -1,17 +1,28 @@
 body {
     max-width: 90%;
+    color: #fff;
   }
   
-.chart-information {
-  color: #fff;
-  max-width: max-content;
+.chart-information,
+.fuel-card {  
+  min-width: 50%;
+  margin: auto;
 }  
+
+.fuel-card {
+  flex-direction: column;
+  flex: 0 1 calc(50% - 1em);
+}
+
+.fuel-card span {
+  padding: 1rem;
+  font-size: 5em;
+}
 
 .grid-container {
   position: relative;
   margin: -95vh auto auto auto;
   width: 80%;
-  height: 80%;
   background: transparent;
   display: grid;
   grid-template-columns: 50% 50%;
@@ -20,9 +31,10 @@ body {
   align-content: space-between;
   align-items: center;
   justify-content: space-between;
-
+  padding: 5em;
 }
 .grid-box {
+  color: #fff;
   background-color: rgba(51,51,51, 0.7);
   padding: 3%;
   border-radius: 10px;

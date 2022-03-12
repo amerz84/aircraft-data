@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { ChartDataService } from './chart-data.service';
 import { MapDataService } from './map-data.service';
 
 @Injectable({
@@ -10,7 +9,7 @@ export class TableDataService {
   private _isTableLoaded = new BehaviorSubject(false);
   isTableLoaded$ = this._isTableLoaded.asObservable();
 
-  constructor(private mapDataService: MapDataService, private chartDataService: ChartDataService) {}
+  constructor(private mapDataService: MapDataService) {}
   
   toggleIsTableLoaded(isTableLoaded) {
     this._isTableLoaded.next(isTableLoaded);
