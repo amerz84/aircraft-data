@@ -29,6 +29,9 @@ export class ChartComponent implements OnInit {
   egtAvgValArray;
   egtAbnormalTempArray;
   fileUploadCount = 0;                // Tracker for new file uploads
+  chtOpen: boolean;                   // Status of cht section toggle (open/closed)
+  egtOpen: boolean;                   // Status of egt section toggle (open/closed)
+  fuelOpen: boolean;                  // Status of fuel section toggle (open/closed)
 
   // CHT data chart props
   CHTChartData: ChartDataset[];
@@ -52,7 +55,11 @@ export class ChartComponent implements OnInit {
     private importService: DataImportService, private chartHelperService: ChartHelperService,
     private mapService: MapDataService) {}
 
-  ngOnInit() {   
+  ngOnInit() {
+    this.chtOpen = true;
+    this.egtOpen = true;
+    this.fuelOpen = true;
+
     // Chart annotation plugin needs to be registered manually
     // see https://www.chartjs.org/chartjs-plugin-annotation/guide/integration.html#script-tag
     Chart.register(annotationPlugin); 
@@ -133,6 +140,18 @@ export class ChartComponent implements OnInit {
       j += (this.importService.originalRecordCount / this.markers);
     }
     return labels;
+  }
+
+  toggleContainer(source: string): void {
+    switch(source) {
+      case "cht": this.chtOpen = !this.chtOpen;
+        break;
+      case "egt": this.egtOpen = !this.egtOpen;
+        break;
+      case "fuel": this.fuelOpen = !this.fuelOpen;
+        break;
+      default: return;
+    }
   }
 
 }
