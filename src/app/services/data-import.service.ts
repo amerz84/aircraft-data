@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable, of, Subscriber, throwError } from 'rxjs';
 import { DateTimeUtility } from 'src/app/utils/datetime-utils';
 import * as XLSX from 'xlsx';
 import { headersAll } from '../utils/column-arrays';
+import { FileReaderService } from './file-reader.service';
 
 @Injectable({
   providedIn: 'root'
@@ -35,13 +36,14 @@ export class DataImportService {
   flightDuration$ = this._flightDuration.asObservable();
   UTCTimeColumn: any[] = [];
 
-  constructor(private converter: DateTimeUtility) {}
+  constructor(private converter: DateTimeUtility, private fileReaderService: FileReaderService) {}
 
   //Convert file data into Observable array for table display
   onFileChange(event: any, isFromDropZone = false): Observable<any> {
     const target: DataTransfer = <DataTransfer>(event.target);
     const reader: FileReader = new FileReader();
 
+    this.fileReaderService.getDemoFile()
     // Read raw binary contents from selected file. Will fire reader.onLoad event upon completion
     // readAsBinaryString() has two overloads used here:
     // 1 - Using drop zone: event.dataTransfer
@@ -49,15 +51,16 @@ export class DataImportService {
     if (isFromDropZone) {
       //Check for invalid drops
       try {
-        reader.readAsBinaryString(event.dataTransfer.items[0].getAsFile());
-        return this.readFlightDataCSV(reader);
+        
+        //reader.readAsBinaryString(event.dataTransfer.items[0].getAsFile());
+        //return this.readFlightDataCSV(reader);
       }
       catch(error) {
         return throwError(error);
       }
     }
     else {
-      reader.readAsBinaryString(target.files[0]);
+      //reader.readAsBinaryString(target.files[0]);
       return this.readFlightDataCSV(reader);
     }
   }
@@ -174,10 +177,12 @@ export class DataImportService {
     // 1 - Parses out specific column data used for map/chart components (e.g. all CHT columns, CHT1-CHT6)
     // 2 - Parses out entire spreadsheet data for use in table component
     return new Observable((observer: Subscriber<any[]>): void => {
-      reader.onload = (e: any) => {
-        const binaryStr: string = e.target.result; // Store result of reader.readAsBinaryString
+  
+        this.fileReaderService.getDemoFile().subscribe(res => {
+          console.log(res);
+          const binaryStr = res;
 
-        const workbook: XLSX.WorkBook = XLSX.read(binaryStr, { type: 'binary' });
+          const workbook: XLSX.WorkBook = XLSX.read(binaryStr, { type: 'binary' });
         const sheetName: string = workbook.SheetNames[0];
         const worksheet: XLSX.WorkSheet = workbook.Sheets[sheetName];
 
@@ -218,7 +223,11 @@ export class DataImportService {
         this._fileCounter.next(this.fileCount);
 
         observer.complete(); 
-      }
+          
+        }); // Store result of reader.readAsBinaryString
+
+        
+      
     });
   }
 
@@ -256,6 +265,13 @@ export class DataImportService {
 
   getFuelUsed(): Observable<number> {
     return of(this.fuelUsed);
+  }
+
+  getDemoFile() {
+    let demoFile;
+    this.fileReaderService.getDemoFile().subscribe(res => {
+      demoFile = res;
+    });
   }
 }
 
