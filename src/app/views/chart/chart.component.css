@@ -1,26 +1,60 @@
 body {
     max-width: 90%;
+    color: #fff;
   }
-  
-.chart-information {
-  color: #fff;
-}  
 
-.grid-container {
-  position: relative;
-  margin: -90vh auto auto auto;
-  width: 80%;
-  height: 80%;
-  background: transparent;
-  align-items: center;
-  display: grid;
-  grid-template-columns: 50% 50%;
-  grid-row: auto auto;
-  grid-column-gap: 5vw;;
-  grid-row-gap: 5vh;
+.arrow {
+  border: solid black;
+  border-width: 0 2px 2px 0;
+  display: inline-block;
+  padding: 5px;
+  margin-right: 1em;
 }
+
+.down {
+  transform: rotate(45deg) translateY(-3px);
+  -webkit-transform: rotate(45deg) translateY(-3px);
+}
+
+.right {
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+}
+
+.chart-information,
+.fuel-card {   
+  margin: auto 0 auto auto;
+} 
+
+.chart-wrapper {
+  width: 50%;
+  margin-top: 3em;
+}
+
+.fuel-card {
+  flex-direction: column;
+  flex: 0 1 calc(50% - 1em);
+  margin-top: 3em;
+}
+
+.fuel-card span {
+  padding: 1rem;
+  font-size: 5em;
+}
+
+.flex-container {
+  position: relative;
+  margin: -95vh auto auto auto;
+  width: 80%;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  grid-row-gap: 3em;
+}
+
 .grid-box {
-  background-color: #333;
+  color: #fff;
+  background-color: rgba(51,51,51, 0.7);
   padding: 3%;
   border-radius: 10px;
   display: flex;
@@ -28,6 +62,35 @@ body {
   justify-content:center;
 }
 
+.section-container {
+  border-radius: 10px;
+  background-color: rgb(180,180,180);
+  display: flex;
+  padding: 3em;
+  width: 100%;
+  position: relative;
+}
+
+.section-header {
+  background-color: rgb(140,140,140);
+  position: absolute;
+  top: 1em;
+  padding: 0.25em;
+  margin: 0;
+  border-radius: 25px;
+  width: 95%;
+  text-indent: 1em;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+ul {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
 
 /* Page background */
 .bg-image {
@@ -39,4 +102,6 @@ body {
   background-repeat: no-repeat;
   background-size: cover;
   position: relative;
+  z-index: -100;
 }
+

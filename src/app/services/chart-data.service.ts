@@ -1,17 +1,23 @@
 import { Injectable } from '@angular/core';
+import { ArrayUtility } from './../utils/array-utils';
 import { DataImportService } from './data-import.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChartDataService {
-  egtAverageArray: number[] = [];
-  egtValuesArray: Array<string[]> = [];
-  chtAverageArray: number[] = [];
-  chtValuesArray: Array<string[]> = [];
+  egtAverageArray: number[];
+  egtValuesArray: Array<string[]>;
+  egtAbnormalVals: number[];
+  chtAverageArray: number[];
+  chtValuesArray: Array<string[]>;
+  chtAbnormalVals: number[];
 
-  constructor(private importService: DataImportService) { }
+  constructor(private importService: DataImportService, private arrayUtils: ArrayUtility) {}
 
+  /**Takes the initial 2D temperature arrays from data-import service and 
+   * puts each primary element into a separate array for further processing and later component display. 
+   * Also initiates data transformation functions (find averages, abnormal sensor readings, etc.) */
   initChartData() {
     this.setCHTData();
     this.setEGTData();
@@ -22,6 +28,9 @@ export class ChartDataService {
   //      {CHT 1: 101, CHT 2: 201, CHT 3: 301},     -->       [200, 201, 202],
   //      {CHT 1: 102, CHT 2: 202, CHT 3: 302} ]              [300, 301, 302] ] 
   setCHTData() {
+    this.chtValuesArray = [];
+    this.chtAverageArray = [];
+    this.chtAbnormalVals = [];
     const chtRawData = [...this.importService.chtData];
     const cht1ValArray: string[] = [];
     const cht2ValArray: string[] = [];
@@ -33,27 +42,27 @@ export class ChartDataService {
 
     chtRawData.forEach(obj => {
       for (const [key, value] of Object.entries<string>(obj)) {
-        if(key.trim() === "E1 CHT1") {
+        if(key.trim() === "CHT (cyl 1)") {
           cht1ValArray.push(value);
           cht1Sum += parseFloat(value);
         }
-        if(key.trim() === "E1 CHT2") {
+        if(key.trim() === "CHT (cyl 2)") {
           cht2ValArray.push(value);
           cht2Sum += parseFloat(value);
         }  
-        if(key.trim() === "E1 CHT3") {
+        if(key.trim() === "CHT (cyl 3)") {
           cht3ValArray.push(value);
           cht3Sum += parseFloat(value);
         }
-        if(key.trim() === "E1 CHT4") {
+        if(key.trim() === "CHT (cyl 4)") {
           cht4ValArray.push(value);
           cht4Sum += parseFloat(value);
         }   
-        if(key.trim() === "E1 CHT5") {
+        if(key.trim() === "CHT (cyl 5)") {
           cht5ValArray.push(value);
           cht5Sum += parseFloat(value);
         }
-        if(key.trim() === "E1 CHT6") {
+        if(key.trim() === "CHT (cyl 6)") {
           cht6ValArray .push(value);
           cht6Sum += parseFloat(value);
         }     
@@ -68,16 +77,20 @@ export class ChartDataService {
     this.chtValuesArray.push(cht4ValArray);
     this.chtValuesArray.push(cht5ValArray);
     this.chtValuesArray.push(cht6ValArray);
+    this.findAbnormalTemperatures(this.chtValuesArray, "cht");
   }
 
   /** Convert array of key-value pairs to array of array of values (populate inner array elements by key).
    * 
-   * [ {EGT 1: 100, EGT 2: 200, EGT 3: 300},             [ [100, 101, 102],
+   * [ {1: 100, 2: 200, 3: 300},     -->     [ [100, 101, 102],
    * 
-   *   {EGT 1: 101, EGT 2: 201, EGT 3: 301},     -->       [200, 201, 202],
+   *   {1: 101, 2: 201, 3: 301},     -->       [200, 201, 202],
    * 
-   *   {EGT 1: 102, EGT 2: 202, EGT 3: 302} ]              [300, 301, 302] ] */
+   *   {1: 102, 2: 202, 3: 302} ]    -->       [300, 301, 302] ] */
   setEGTData() {
+    this.egtValuesArray = [];
+    this.egtAverageArray = [];
+    this.egtAbnormalVals = [];
     const egtRawData = [...this.importService.egtData];
     const egt1ValArray: string[] = [];
     const egt2ValArray: string[] = [];
@@ -89,27 +102,27 @@ export class ChartDataService {
 
     egtRawData.forEach(obj => {
       for (const [key, value] of Object.entries<string>(obj)) {
-        if(key.trim() === "E1 EGT1") {
+        if(key.trim() === "EGT (cyl 1)") {
           egt1ValArray.push(value);
           egt1Sum += parseFloat(value);
         }
-        if(key.trim() === "E1 EGT2") {
+        if(key.trim() === "EGT (cyl 2)") {
           egt2ValArray.push(value);
           egt2Sum += parseFloat(value);
         }  
-        if(key.trim() === "E1 EGT3") {
+        if(key.trim() === "EGT (cyl 3)") {
           egt3ValArray.push(value);
           egt3Sum += parseFloat(value);
         }
-        if(key.trim() === "E1 EGT4") {
+        if(key.trim() === "EGT (cyl 4)") {
           egt4ValArray.push(value);
           egt4Sum += parseFloat(value);
         }   
-        if(key.trim() === "E1 EGT5") {
+        if(key.trim() === "EGT (cyl 5)") {
           egt5ValArray.push(value);
           egt5Sum += parseFloat(value);
         }
-        if(key.trim() === "E1 EGT6") {
+        if(key.trim() === "EGT (cyl 6)") {
           egt6ValArray .push(value);
           egt6Sum += parseFloat(value);
         }     
@@ -124,33 +137,33 @@ export class ChartDataService {
     this.egtValuesArray.push(egt4ValArray);
     this.egtValuesArray.push(egt5ValArray);
     this.egtValuesArray.push(egt6ValArray);
+    this.findAbnormalTemperatures(this.egtValuesArray, "egt");
   }
   
 
   /**
-   * Returns data source for CHT Line chart
    * @param sampleSize 
-   * @returns string[]
+   * @returns 2D data source for CHT Line chart.
    */
   getCHTVals(sampleSize: number) {
     return this.reduceChartDataArraySize(this.chtValuesArray, sampleSize);
   }
 
   /**
-   * Returns data source for EGT Line chart
    * @param sampleSize 
-   * @returns string[]
+   * @returns 2D data source for EGT Line chart.
    */
   getEGTVals(sampleSize: number) {
     return this.reduceChartDataArraySize(this.egtValuesArray, sampleSize);
   }
 
-  /** Reduce number of array elements to sampleSize length by taking Nth element, 
-   * where N = (original array length / sampleSize).
+  /** 
+   * @returns New array of sampleSize length by taking Nth element of input array, 
+   * where N = (input array length / sampleSize).
    * 
-   * Ex) Original array -> 1000 elements, sampleSize -> 200 elements
+   * Ex) input array -> 1000 elements, sampleSize -> 200 elements
    * 
-   * resultArray = [originalArray[0], originalArray[5], originalArray[10], ..., originalArray[995]]. */
+   * resultArray = [inputArray[0], inputArray[5], inputArray[10], ..., inputArray[995]]. */
   reduceChartDataArraySize(inputArray: Array<string[]>, sampleSize: number) {
     let resultArray = new Array(inputArray.length).fill(0).map(() => new Array(sampleSize));
 
@@ -169,15 +182,7 @@ export class ChartDataService {
   }
 
   /**
-   * Return array of CHT/EGT averages for each sensor/probe in set.
-   * @param sensorOneSum number
-   * @param sensorTwoSum number
-   * @param sensorThreeSum number
-   * @param sensorFourSum number
-   * @param sensorFiveSum number
-   * @param sensorSixSum number
-   * @param numRows number
-   * @returns number[]
+   * @returns 1D array of CHT/EGT averages for each sensor/probe in set.
    */
   getAverageTemperature(sensorOneSum, sensorTwoSum, sensorThreeSum, sensorFourSum, sensorFiveSum, sensorSixSum, numRows): number[] {
     return [sensorOneSum / numRows, 
@@ -186,6 +191,32 @@ export class ChartDataService {
             sensorFourSum / numRows,
             sensorFiveSum / numRows,
             sensorSixSum / numRows];
+  }
+
+  /**Call on array-utils.ts getAbnormalValues() to determine if there are any 
+   * high or low (compared to moving average) values in CHT/EGT sensor data and store in member array
+   * for use in chart component.   */
+  findAbnormalTemperatures(sensorArray: Array<string[]>, source: string): void {
+    for (let i = 0; i < sensorArray.length; i++) {
+      if (source.toLowerCase() === "cht") {
+        this.chtAbnormalVals.push(this.arrayUtils.getAbnormalValues(sensorArray[i]));
+      }
+      else if (source.toLowerCase() === "egt") {
+        this.egtAbnormalVals.push(this.arrayUtils.getAbnormalValues(sensorArray[i]));
+      }
+    }
+  }
+
+  /**
+   * @returns 1D array of count of high/low values for each sensor in CHT/EGT set.
+   */
+  getAbnormalTemperatures(source: string): number[] {
+    if (source.toLowerCase() === "cht") {
+      return this.chtAbnormalVals;
+    }
+    else if (source.toLowerCase() === "egt") {
+      return this.egtAbnormalVals;
+    }
   }
 }
 

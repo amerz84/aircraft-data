@@ -1,11 +1,11 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { faFileUpload } from '@fortawesome/free-solid-svg-icons';
 import { gsap } from 'gsap';
 import { DataImportService } from '../../services/data-import.service';
-import { avionicsHeaders, chtHeaders, egtHeaders, engineHeaders, headersAll } from '../../utils/column-arrays';
+import { chtHeaders, egtHeaders, headersAll } from '../../utils/column-arrays';
 import { TableDataService } from './../../services/table-data.service';
 
 @Component({
@@ -14,25 +14,31 @@ import { TableDataService } from './../../services/table-data.service';
   styleUrls: ['./table.component.css']
 })
 export class TableComponent implements OnInit {
-  @Input('isTableLoaded') _isTableLoaded; // True if spreadsheet data successfully loaded into table component
-  headerValues = [];            //Placeholder to determine displayed column list
-  isToggled: boolean;           // Check for "toggle" status of columns displayed. False = columns not hidden, True = columns hidden
-
+  @Input('isTableLoaded') isTableLoaded$; // Boolean to check if spreadsheet data successfully loaded into table component
   faFileUpload = faFileUpload;  //binding for the Font Awesome file upload icon
   tempSource: MatTableDataSource<String>; //Used to repopulate original/unfiltered file data after clearFilter() called
-  timeline;                     //GSAP animation timeline
+  timeline: GSAPTimeline;                     //GSAP animation timeline
+  fileCounter = 0; //Track # file uploads
 
-  // Mat Table directives //
+  //Mat Slide Toggles
+  isTimeInfoChecked = false;
+  isGeneralChecked = false;
+  isGenTempsChecked = false;
+  isADCChecked = false;
+  isGIAChecked = false;
+  isAHRSChecked = false;
+  isFuelChecked = false;
+
+  // Mat Table //
+  @ViewChild(MatTable) table: MatTable<any>;
   dataSource: MatTableDataSource<String>; 
   dummyDataSource: MatTableDataSource<String>; //Null/empty table to display "sticky" header - workaround for Edge/Chrome
-  displayedColumns: string[] = headersAll; //Table headers (first row), initiated to full column list
 
   // Paginator variables //
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @Output() page: EventEmitter<PageEvent>; //Event for paginator page change
   currentPage: number; //Paginator page index
   
-
   /////////////////////////////////////////////
   constructor(private importService: DataImportService, private tableDataService: TableDataService, private _snackBar: MatSnackBar) {}
 
@@ -40,8 +46,7 @@ export class TableComponent implements OnInit {
     this.dataSource =  new MatTableDataSource<String>([]);
     this.tempSource = new MatTableDataSource<String>([]);
     this.dummyDataSource = new MatTableDataSource<String>(null);
-    this._isTableLoaded = this.tableDataService.isTableLoaded$.subscribe();
-    this.isToggled = false;
+    this.isTableLoaded$ = this.tableDataService.isTableLoaded$.subscribe();
     this.page = new EventEmitter();
     this.currentPage = 0;
     this.timeline = gsap.timeline();
@@ -61,7 +66,7 @@ export class TableComponent implements OnInit {
 
   /////////////////////////////////////////////////
   // through use of the drop zone (drag and drop)
-  onFileDrop(event: any) {
+  onFileDrop(event: DragEvent) {
     //Override browser handler functionality
     event.stopPropagation();
     event.preventDefault();
@@ -72,15 +77,17 @@ export class TableComponent implements OnInit {
 
   //////////////////////////////////////////////////
   // Call on data import service to convert csv file into table data
-  callFileUploader(event: any, isFromDropZone = false) {
-    this.importService.onFileChange(event, isFromDropZone).subscribe((data: String[]) => {      
+  callFileUploader(event: DragEvent, isFromDropZone = false) {
+    this.fileCounter++;
+
+    this.importService.onFileChange(event, isFromDropZone).subscribe((data: String[]) => {    
       this.dataSource.data = data;
-      this.tempSource.data = data;      
+      this.tempSource.data = data;
 
-      this._isTableLoaded = true;
-      this.tableDataService.toggleIsTableLoaded(true);
-
-      this.dataSource.connect();
+      if (this.isTableLoaded$ !== true) {
+        this.tableDataService.toggleIsTableLoaded(true);
+        this.setInitialToggles(); // Activates "default" toggles
+      } 
     }, error => {
       this._snackBar.open("Upload failed --- " + error.message, "OK", {panelClass: "column-snackbar"});
       return;
@@ -93,13 +100,13 @@ export class TableComponent implements OnInit {
   onDragOver(event: any) {
     event.stopPropagation();
     event.preventDefault();
-    document.getElementById('drop-zone-initial').classList.add('isDragover');
+    document.getElementById('drop-zone-container').classList.add('isDragover');
   }
 
   /////////////////////////////////////////////////
   //Remove class when file is dragged away from drop zone
   onDragEnd() {
-    document.getElementById('drop-zone-initial').classList.remove('isDragover');
+    document.getElementById('drop-zone-container').classList.remove('isDragover');
   }
 
   /////////////////////////////////////////////////
@@ -126,12 +133,12 @@ export class TableComponent implements OnInit {
     
     this.dataSource.data.forEach(obj => {
       for (const [key, value] of Object.entries(obj)) {
-        if(chtHeaders.includes(key) && parseInt(value.trim()) >= 400) {
+        if(chtHeaders.includes(key) && parseInt(value.trim()) >= 500) {
           //console.log(`${key} ${value}`);
           matchFilter.push(obj);
           return;
         }
-        if(egtHeaders.includes(key) && parseInt(value.trim()) >= 1100) {
+        if(egtHeaders.includes(key) && parseInt(value.trim()) >= 1700) {
           //console.log(`${key} ${value}`);
           matchFilter.push(obj);
           return;
@@ -151,20 +158,12 @@ export class TableComponent implements OnInit {
   //Toggle display of undesired columns. Boolean is toggled in onClick method in html file
   //Initial display shows ALL columns
   //NOTE: Downloaded table still shows all columns
-  toggleColumnDisplay(eventValue?: string) {
-    const button = document.getElementById("columnToggler");
-
-    if(eventValue == "engine") {
-      this.displayedColumns = engineHeaders;
-      button.classList.add("column-toggle");
-    }
-    else if (eventValue == "avionics") {
-      this.displayedColumns = avionicsHeaders;
-      button.classList.remove("column-toggle");
-    }
-    else {
-      this.displayedColumns = headersAll;
-    }
+  toggleColumnDisplay(colType: string) {
+      for (let elem of headersAll) {
+        if (elem.category.toLowerCase() === colType) {
+          elem.hide = !elem.hide;
+        }      
+      }
   }
 
   /////////////////////////////////////////////////
@@ -178,30 +177,40 @@ export class TableComponent implements OnInit {
   }
 
   /////////////////////////////////////////////////
-  //Save file
-/*   downloadTableAsCSV(table_id: string) {
-    this.importService.saveFile(table_id);
-  } */
-
-  /////////////////////////////////////////////////
   //Boolean check for existence of table data
   get isTableLoaded() {
-    return this._isTableLoaded;
+    return this.isTableLoaded$;
   }
 
   /////////////////////////////////////////////////
   // Call on GSAP timeline to apply animations to dropzone and filters/table elements
   animatePageElements() {
-    this.timeline.to("#drop-zone-initial", {duration: 0.5, width: "20vw", height: "15vh"});
-    this.timeline.to("#button-table-container", {duration: 0.5, visibility: "visible"});    
+    this.timeline.to("#drop-zone", {duration: 0.5, width: "20vw", height: "15vh"});
+    this.timeline.to(".table-container", {duration: 0.5, visibility: "visible"});    
   }
   
   /////////////////////////////////////////////////
-  // Display column name in snackbar when td cell is clicked 
+  // Display column name and measurement unit in snackbar when td cell is clicked 
   // Redundant workaround for sticky headers bug
   // If sticky headers fixed for mat table, this can be deprecated
   showColumnName(colName: string) {
-    this._snackBar.open(colName, null, {duration: 1500, panelClass: "column-snackbar"});
+    const displayedColumn = headersAll.find(col => colName === col.name)
+    const message = displayedColumn.name + " (" + displayedColumn.unit + ")";
+    this._snackBar.open(message, null, {duration: 1500, panelClass: "column-snackbar"});
+  }
+
+  // Return subsection of column headers that are not currently hidden (toggled off)
+  getDisplayedColumns(): string[] {
+    return headersAll.filter(col => !col.hide).map(col => col.name);    
+  }
+
+  setInitialToggles() {
+    if (!(this.fileCounter > 1)) {
+      this.isTimeInfoChecked = true;
+      this.isGenTempsChecked = true;
+      this.toggleColumnDisplay('timeinfo');
+      this.toggleColumnDisplay('generaltemps');
+    }
   }
     
 }

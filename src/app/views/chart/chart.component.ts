@@ -1,9 +1,14 @@
 import { Component, OnInit, QueryList, ViewChild } from '@angular/core';
-import { ChartDataSets } from 'chart.js';
-import { BaseChartDirective, Color, Label } from 'ng2-charts';
+import { ChartDataset } from 'chart.js';
+import Chart from 'chart.js/auto';
+import annotationPlugin from 'chartjs-plugin-annotation';
+import { BaseChartDirective, Label } from 'ng2-charts';
+import { Observable } from 'rxjs';
+import { MapDataService } from 'src/app/services/map-data.service';
 import { DateTimeUtility } from '../../utils/datetime-utils';
 import { ChartDataService } from './../../services/chart-data.service';
 import { DataImportService } from './../../services/data-import.service';
+import { ChartHelperService } from './chart-helper-service';
 
 @Component({
   selector: 'chart-view',
@@ -11,89 +16,115 @@ import { DataImportService } from './../../services/data-import.service';
   styleUrls: ['./chart.component.css']
 })
 export class ChartComponent implements OnInit {
-  @ViewChild(BaseChartDirective) baseChart: QueryList<BaseChartDirective>; //Used to assign chart labels
+  @ViewChild(BaseChartDirective) baseChart: QueryList<BaseChartDirective> = new QueryList<BaseChartDirective>(); //Used to assign chart labels
   
   markers: number = 100;              // number of data points for each line in chart
   flightDuration: string;             // length of flight, taken from spreadsheet local time column (HH:MM:SS format)
+  fuelUsedInGals: number;             // number of gallons of fuel used, taken from the "Fuel Remaining" column
+  milesTraveled: number;
+  fuelEconomy: number;                // milesTraveled / fuelUsedInGals
   chartLabels: Label[] = [];          // labels for CHT and EGT charts (should always be the same)
-  chtInfoArray = [];
-  egtInfoArray = [];
+  chtAvgValArray;
+  chtAbnormalTempArray;
+  egtAvgValArray;
+  egtAbnormalTempArray;
+  fileUploadCount = 0;                // Tracker for new file uploads
+  chtOpen: boolean;                   // Status of cht section toggle (open/closed)
+  egtOpen: boolean;                   // Status of egt section toggle (open/closed)
+  fuelOpen: boolean;                  // Status of fuel section toggle (open/closed)
 
   // CHT data chart props
-  CHTChartData: ChartDataSets[];
-  CHTChartOptions = {
-    responsive: true,
-  };
-  CHTChartColors: Color[] = [
-    {
-      borderColor: 'black',
-      backgroundColor: 'rgba(255,255,0,0.28)',
-    },
-  ];
-  CHTChartLegend = true;
-  CHTChartPlugins = [];
-  CHTChartType = 'line';
+  CHTChartData: ChartDataset[];
+  CHTChartOptions = this.chartHelperService.CHTChartOptions;
+  CHTChartColors = this.chartHelperService.CHTChartColors;
+  CHTChartLegend = this.chartHelperService.CHTChartLegend;
+  CHTChartPlugins = this.chartHelperService.CHTChartOptions.plugins;
+  CHTChartType = this.chartHelperService.CHTChartType;
   /////////////////////////////////////////////////////////////////
 
   // EGT data chart props
-  EGTChartData: ChartDataSets[];
-  EGTChartOptions = {
-    responsive: true,
-  };
-  EGTChartColors: Color[] = [
-    {
-      borderColor: 'black',
-      backgroundColor: 'rgba(255,255,0,0.28)',
-    },
-  ];
-  EGTChartLegend = true;
-  EGTChartPlugins = [];
-  EGTChartType = 'line';
+  EGTChartData: ChartDataset[];
+  EGTChartOptions = this.chartHelperService.EGTChartOptions;
+  EGTChartColors = this.chartHelperService.EGTChartColors;
+  EGTChartLegend = this.chartHelperService.EGTChartLegend;
+  EGTChartPlugins = this.chartHelperService.EGTChartOptions.plugins;
+  EGTChartType = this.chartHelperService.EGTChartType;
   ///////////////////////////////////////////////////////////////
   
-  constructor(private chartDataService: ChartDataService, private converter: DateTimeUtility, private importService: DataImportService) {}
+  constructor(private chartDataService: ChartDataService, private converter: DateTimeUtility, 
+    private importService: DataImportService, private chartHelperService: ChartHelperService,
+    private mapService: MapDataService) {}
 
-  ngOnInit() {   
-    this.chartDataService.initChartData();
+  ngOnInit() {
+    this.chtOpen = true;
+    this.egtOpen = true;
+    this.fuelOpen = true;
 
-    this.flightDuration = this.converter.getTimeDiff(this.importService.flightTimesArray);
+    // Chart annotation plugin needs to be registered manually
+    // see https://www.chartjs.org/chartjs-plugin-annotation/guide/integration.html#script-tag
+    Chart.register(annotationPlugin); 
+
+    //Refresh data if new file is uploaded
+    this.importService.fileCounter$.subscribe(isNewFile => {
+      if (isNewFile > this.fileUploadCount) {
+        this.chartDataService.initChartData();
+        this.refreshChartData();
+        this.fileUploadCount++;
+        
+      }
+    });
+
+    this.importService.getFuelUsed().subscribe(qtyUsed => {
+      this.fuelUsedInGals = qtyUsed;
+    });
+
+    this.mapService.flightDistance$.subscribe(distance => this.fuelEconomy = (distance / this.fuelUsedInGals));
+  }
+  
+  refreshChartData() {
+    this.chtAbnormalTempArray = [];
+    this.egtAbnormalTempArray = [];
+    this.chtAvgValArray = [];
+    this.egtAvgValArray = [];
+    this.chtAbnormalTempArray = this.chartDataService.getAbnormalTemperatures("cht");
+    this.egtAbnormalTempArray = this.chartDataService.getAbnormalTemperatures("egt");
+
     this.CHTChartData = [
-      { data: this.chartDataService.getCHTVals(this.markers)[0], label: 'CHT 1' },
-      { data: this.chartDataService.getCHTVals(this.markers)[1], label: 'CHT 2' },
-      { data: this.chartDataService.getCHTVals(this.markers)[2], label: 'CHT 3' },
-      { data: this.chartDataService.getCHTVals(this.markers)[3], label: 'CHT 4' },
-      { data: this.chartDataService.getCHTVals(this.markers)[4], label: 'CHT 5' },
-      { data: this.chartDataService.getCHTVals(this.markers)[5], label: 'CHT 6' },
+      { data: this.chartDataService.getCHTVals(this.markers)[0], label: 'CHT 1', xAxisID: 'x', yAxisID: 'y'},
+      { data: this.chartDataService.getCHTVals(this.markers)[1], label: 'CHT 2', xAxisID: 'x', yAxisID: 'y' },
+      { data: this.chartDataService.getCHTVals(this.markers)[2], label: 'CHT 3', xAxisID: 'x', yAxisID: 'y' },
+      { data: this.chartDataService.getCHTVals(this.markers)[3], label: 'CHT 4', xAxisID: 'x', yAxisID: 'y' },
+      { data: this.chartDataService.getCHTVals(this.markers)[4], label: 'CHT 5', xAxisID: 'x', yAxisID: 'y' },
+      { data: this.chartDataService.getCHTVals(this.markers)[5], label: 'CHT 6', xAxisID: 'x', yAxisID: 'y' },
     ];
     this.EGTChartData = [
-      { data: this.chartDataService.getEGTVals(this.markers)[0], label: 'EGT 1' },
-      { data: this.chartDataService.getEGTVals(this.markers)[1], label: 'EGT 2' },
-      { data: this.chartDataService.getEGTVals(this.markers)[2], label: 'EGT 3' },
-      { data: this.chartDataService.getEGTVals(this.markers)[3], label: 'EGT 4' },
-      { data: this.chartDataService.getEGTVals(this.markers)[4], label: 'EGT 5' },
-      { data: this.chartDataService.getEGTVals(this.markers)[5], label: 'EGT 6' },
+      { data: this.chartDataService.getEGTVals(this.markers)[0], label: 'EGT 1', xAxisID: 'x', yAxisID: 'y' },
+      { data: this.chartDataService.getEGTVals(this.markers)[1], label: 'EGT 2', xAxisID: 'x', yAxisID: 'y' },
+      { data: this.chartDataService.getEGTVals(this.markers)[2], label: 'EGT 3', xAxisID: 'x', yAxisID: 'y' },
+      { data: this.chartDataService.getEGTVals(this.markers)[3], label: 'EGT 4', xAxisID: 'x', yAxisID: 'y' },
+      { data: this.chartDataService.getEGTVals(this.markers)[4], label: 'EGT 5', xAxisID: 'x', yAxisID: 'y' },
+      { data: this.chartDataService.getEGTVals(this.markers)[5], label: 'EGT 6', xAxisID: 'x', yAxisID: 'y' },
     ];
 
     this.chartDataService.chtAverageArray.forEach(element => {
-      this.chtInfoArray.push(element);
+      this.chtAvgValArray.push(element);
     });
 
     this.chartDataService.egtAverageArray.forEach(element => {
-      this.egtInfoArray.push(element);
+      this.egtAvgValArray.push(element);
     });
+
+    //Regenerate labels after chart data is present
+    this.chartLabels.push(...this.getChartLabels());
   }
 
   ngAfterViewInit() {
-    //Regenerate labels after chart data is present
-    this.chartLabels.length = 0;
-    this.chartLabels.push(...this.getChartLabels());
-
     this.baseChart.changes.subscribe(() => {
       for(let child of this.baseChart) {
         child.chart.config.data.labels = this.chartLabels;
         child.chart.update();
       }
-    });
+    });  
   }
 
   /** Take length of markers array (# of plot points for each line) and assign a HH:MM:SS value to each
@@ -106,9 +137,21 @@ export class ChartComponent implements OnInit {
     const labels: string[] = [];
     for (let i = 0, j = 0; i < this.markers; i++) {
       labels.push(this.converter.toSeconds(j));
-      j += Math.floor(this.importService.originalRecordCount / this.markers);
+      j += (this.importService.originalRecordCount / this.markers);
     }
     return labels;
+  }
+
+  toggleContainer(source: string): void {
+    switch(source) {
+      case "cht": this.chtOpen = !this.chtOpen;
+        break;
+      case "egt": this.egtOpen = !this.egtOpen;
+        break;
+      case "fuel": this.fuelOpen = !this.fuelOpen;
+        break;
+      default: return;
+    }
   }
 
 }

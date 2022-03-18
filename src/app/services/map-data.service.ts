@@ -14,15 +14,18 @@ export class MapDataService {
   private minLong;
   private maxLong;
   flightPath: BehaviorSubject<{ lat: number; lng: number; }[]> = new BehaviorSubject([]);
+  private _flightDistance = new BehaviorSubject(null);
+  flightDistance$ = this._flightDistance.asObservable();
 
   constructor(private importService: DataImportService, private arrayUtility: ArrayUtility) {}
 
   /** Gets lat/long and other coordinate data from the import service. */
   initMapData() {
-    this.latitudeArray = this.arrayUtility.getNonEmptyValues(this.importService.latitudeData);
-    this.longitudeArray = this.arrayUtility.getNonEmptyValues(this.importService.longitudeData);
+    this.latitudeArray = this.arrayUtility.getValidValues(this.importService.latitudeData);
+    this.longitudeArray = this.arrayUtility.getValidValues(this.importService.longitudeData);
     this.setMapBoundCoordinates();
-    this.convertCoordinateDataType();
+    this.convertToFloatType();
+    this.convertToLatLng();
   }
 
   /** Determine center point of map display by taking AVG(SUM(min value + max value)) for latitude and longitude. */
@@ -88,7 +91,22 @@ export class MapDataService {
   }
 
   /** Convert coordinate data type from string into float (required for google.maps.polyline). */
-  convertCoordinateDataType() {
+  convertToFloatType() {
     this.flightPath.next(this.latitudeArray.map((lat, index) => ({lat: parseFloat(lat), lng: parseFloat(this.longitudeArray[index])})));
+  }
+
+  /**Convert lat and long arrays to a combined google.maps.LatLng array
+   * used for computing overall flight distance
+   */
+  convertToLatLng() {
+    const latLngArray = [];
+    for (let i = 0; i < this.latitudeArray.length; i++) {
+      latLngArray.push(new google.maps.LatLng(parseFloat(this.latitudeArray[i]), parseFloat(this.longitudeArray[i])));      
+    }
+    this.calcFlightDistance(latLngArray);
+  }
+
+  calcFlightDistance(coordArray: any[]) {
+    this._flightDistance.next(google.maps.geometry.spherical.computeLength(coordArray));
   }
 }
