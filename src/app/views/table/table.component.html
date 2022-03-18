@@ -1,14 +1,8 @@
 <div class="bg-image"></div>
       
 <body class="content-container">
-  <div class="drop-zone-container" id="drop-zone-container">
-    <div id="drop-zone" (drop)="onFileDrop($event);onDragEnd()" (dragover)="onDragOver($event)" (dragleave)="onDragEnd()">
-      <label class="file-upload"for="fileItem">
-        <fa-icon [icon]="faFileUpload" size="lg"></fa-icon>Upload File        
-      </label>
-      <input type="file" class="form-control-file" id="fileItem" accept="text/csv," (change)="onFileSelect($event)">
-      <span id="drop-zone-text">Or Drop Here</span> 
-    </div>
+  <div class="file-upload-container" id="drop-zone-container">
+    <button class="file-upload" (click)="onFileSelect()">Start Demo</button>
   </div>
   <div class="table-container">
     <div class="toggle-container">

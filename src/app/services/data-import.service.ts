@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, Subscriber, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subscriber } from 'rxjs';
 import { DateTimeUtility } from 'src/app/utils/datetime-utils';
 import * as XLSX from 'xlsx';
 import { headersAll } from '../utils/column-arrays';
@@ -39,30 +39,8 @@ export class DataImportService {
   constructor(private converter: DateTimeUtility, private fileReaderService: FileReaderService) {}
 
   //Convert file data into Observable array for table display
-  onFileChange(event: any, isFromDropZone = false): Observable<any> {
-    const target: DataTransfer = <DataTransfer>(event.target);
-    const reader: FileReader = new FileReader();
-
-    this.fileReaderService.getDemoFile()
-    // Read raw binary contents from selected file. Will fire reader.onLoad event upon completion
-    // readAsBinaryString() has two overloads used here:
-    // 1 - Using drop zone: event.dataTransfer
-    // 2 - Using file upload button: event.target
-    if (isFromDropZone) {
-      //Check for invalid drops
-      try {
-        
-        //reader.readAsBinaryString(event.dataTransfer.items[0].getAsFile());
-        //return this.readFlightDataCSV(reader);
-      }
-      catch(error) {
-        return throwError(error);
-      }
-    }
-    else {
-      //reader.readAsBinaryString(target.files[0]);
-      return this.readFlightDataCSV(reader);
-    }
+  onFileChange(): Observable<any> {
+    return this.readFlightDataCSV();    
   }
 
   get latitudeData() {
@@ -79,40 +57,6 @@ export class DataImportService {
 
   get originalRecordCount() {
     return this._originalRecordCount;
-  }
-
-  /////////////////////////////////////////////////
-  //Save currently displayed table data (with header) as .csv file
-  saveFile(table_id: string, separator = ',') {
-    // Select rows from table_id
-    const rows = document.querySelectorAll('#' + table_id + ' tr');
-    // Structure and fill out data table
-    const csv = [];
-    for (let i = 0; i < rows.length; i++) {
-      const row = [], cols = rows[i].querySelectorAll('td, th');
-      for (let j = 0; j < cols.length; j++) {
-          // Clean innertext to remove multiple spaces and jumpline (break csv)
-          let data = cols[j].textContent.replace(/(\r\n|\n|\r)/gm, '').replace(/(\s\s)/gm, ' ')
-          // Escape double-quote with double-double-quote
-          data = data.replace(/"/g, '""');
-          // Push escaped string
-          row.push('"' + data + '"');
-      }
-      csv.push(row.join(separator));
-    }
-
-    const csv_string = csv.join('\n');
-    //Create file and prompt for open/save
-    //NOTE - if there are filters applied to the table, this will only include the filtered data, not the original table data
-    const filename = 'Insert_File_Name' + new Date().toLocaleDateString() + '.csv';
-    const link = document.createElement('a');
-    link.style.display = 'none';
-    link.setAttribute('target', '_blank');
-    link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv_string));
-    link.setAttribute('download', filename);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   }
 
   /////////////////////////////////////////////////
@@ -156,33 +100,16 @@ export class DataImportService {
   get egtData() {
     return this._egtData;
   }
-/* 
-  setHeaderArray(binaryString: string) {
-    const workbook: XLSX.WorkBook = XLSX.read(binaryString, { type: 'binary', sheetRows: 3 });
-    const sheetName: string = workbook.SheetNames[0];
-    const worksheet: XLSX.WorkSheet = workbook.Sheets[sheetName];
-    const excelData: string[] = (XLSX.utils.sheet_to_json(worksheet, {range:2, header:1, raw:false, blankrows:false, dateNF:'yyyy-mm-dd'}));
 
-    excelData.forEach(obj => {
-      for (const [key, value] of Object.entries<string>(obj)) {
-        if(key.trim() !== "" && value.trim() !== "") {
-          this.columnHeaderArray.push(value.trim());
-        }
-      }
-    });
-  } */
-
-  readFlightDataCSV(reader: any) {
+  readFlightDataCSV() {
     // reader.onload has 2 functions here:
     // 1 - Parses out specific column data used for map/chart components (e.g. all CHT columns, CHT1-CHT6)
     // 2 - Parses out entire spreadsheet data for use in table component
     return new Observable((observer: Subscriber<any[]>): void => {
   
-        this.fileReaderService.getDemoFile().subscribe(res => {
-          console.log(res);
-          const binaryStr = res;
-
-          const workbook: XLSX.WorkBook = XLSX.read(binaryStr, { type: 'binary' });
+      this.fileReaderService.getDemoFile().subscribe(res => {
+        const binaryStr = res;
+        const workbook: XLSX.WorkBook = XLSX.read(binaryStr, { type: 'binary' });
         const sheetName: string = workbook.SheetNames[0];
         const worksheet: XLSX.WorkSheet = workbook.Sheets[sheetName];
 
@@ -222,12 +149,8 @@ export class DataImportService {
         this.fileCount++;
         this._fileCounter.next(this.fileCount);
 
-        observer.complete(); 
-          
-        }); // Store result of reader.readAsBinaryString
-
-        
-      
+        observer.complete();           
+        });       
     });
   }
 
@@ -265,13 +188,6 @@ export class DataImportService {
 
   getFuelUsed(): Observable<number> {
     return of(this.fuelUsed);
-  }
-
-  getDemoFile() {
-    let demoFile;
-    this.fileReaderService.getDemoFile().subscribe(res => {
-      demoFile = res;
-    });
   }
 }
 

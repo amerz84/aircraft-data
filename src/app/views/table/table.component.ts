@@ -58,33 +58,23 @@ export class TableComponent implements OnInit {
 
   /////////////////////////////////////////////////
   //Call on file upload through use of the drop area browse button
-  onFileSelect(event: any) {    
+  onFileSelect() {    
     //Listen for changes to loaded file data and populate table with data from dataSource
-    this.callFileUploader(event);  
-    this.animatePageElements(); //Start page animation 
-  }
-
-  /////////////////////////////////////////////////
-  // through use of the drop zone (drag and drop)
-  onFileDrop(event: DragEvent) {
-    //Override browser handler functionality
-    event.stopPropagation();
-    event.preventDefault();
-
-    this.animatePageElements(); //Start page animation
-    this.callFileUploader(event, true);
+    this.callFileUploader();  
+    
   }
 
   //////////////////////////////////////////////////
   // Call on data import service to convert csv file into table data
-  callFileUploader(event: DragEvent, isFromDropZone = false) {
+  callFileUploader() {
     this.fileCounter++;
 
-    this.importService.onFileChange(event, isFromDropZone).subscribe((data: String[]) => {    
+    this.importService.onFileChange().subscribe((data: String[]) => {    
       this.dataSource.data = data;
       this.tempSource.data = data;
 
       if (this.isTableLoaded$ !== true) {
+        this.animatePageElements(); //Start page animation 
         this.tableDataService.toggleIsTableLoaded(true);
         this.setInitialToggles(); // Activates "default" toggles
       } 
