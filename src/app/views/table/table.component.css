@@ -30,22 +30,6 @@ h3 {
 }
 
 /*  Filters / other buttons */
-button {
-  margin-right: 5px;
-}
-
-.button-grid {
-  clear: both;
-  display: grid;
-  grid-template-columns: auto, auto, auto;
-  grid-template-rows: auto;
-}
-
-#button-grid-filters {
-  grid-column-start: 1;
-  grid-column-end: 2;
-}
-
 mat-button-toggle-group {
   margin-right: 5px;
   box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),0px 2px 2px 0px rgba(0, 0, 0, 0.14),0px 1px 5px 0px rgba(0, 0, 0, 0.12);
@@ -66,45 +50,11 @@ mat-button-toggle {
 /* File upload / drop zone area */
 .file-upload-container {
   margin: auto;
+  display: block;
 }
 
 .file-upload {
-  width: 8em;
-}
-
-#drop-zone-text {
-  margin-left: 5%;
-}
-
-fa-icon {
-  margin-right: 10px;
-}
-
-.file-upload {
-  border: 1px solid #ccc;
-  display: inline-block;
-  padding: 6px 12px;
-  cursor: pointer;
-  border-radius: 5px;
-  color: black;
-  font-family: inherit;
-  font-weight: 500;
-  margin-right: 5%;
-}
-
-input[type="file"] {
-  display: none;
-  position: absolute;
-}
-
-label {
-  box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),0px 2px 2px 0px rgba(0, 0, 0, 0.14),0px 1px 5px 0px rgba(0, 0, 0, 0.12);
-  background-color: rgb(238,238,238);
-}
-
-label:hover {
-  background-color: rgb(210,210,210);
-  transition: all 0.25s;
+  width: 12em;
 }
 
 /* Tables */
@@ -150,6 +100,7 @@ th.mat-header-cell:first-of-type, td.mat-cell:first-of-type, td.mat-footer-cell:
 .table-container {
   display: flex;
   visibility: hidden;
+  opacity: 0;
 }
 
 .table-data-container {
@@ -182,10 +133,10 @@ mat-slide-toggle {
 
 /* Slide toggle color */
 :host ::ng-deep .mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-bar {
-  background-color: rgb(255, 221, 27);
+  background-color: var(--clr-accent-2);
 }
 
 :host ::ng-deep  .mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-thumb {
-  background-color: #336699;
+  background-color: var(--clr-accent-1);
 }
 /* ---------------------- */

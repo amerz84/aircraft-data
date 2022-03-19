@@ -3,16 +3,14 @@ import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { GoogleMapsModule } from '@angular/google-maps';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatDialogModule } from '@angular/material/dialog';
 import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouteReuseStrategy, RouterModule } from '@angular/router';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ChartsModule } from 'ng2-charts';
 import { AppComponent } from './app.component';
 import { FullTimeFormatterPipe } from './pipes/full-time-formatter.pipe';
@@ -48,18 +46,16 @@ import { TableComponent } from './views/table/table.component';
   imports: [
     BrowserModule,
     ChartsModule,
-    FontAwesomeModule,
     GoogleMapsModule,
     HttpClientModule,
     HttpClientJsonpModule,
     MatButtonModule,
     MatTableModule,
     MatPaginatorModule,
-    MatDialogModule,
     MatButtonToggleModule,
     MatSnackBarModule,
     MatSlideToggleModule,
-    MatProgressBarModule,
+    MatProgressSpinnerModule,
     BrowserAnimationsModule,
     RouterModule.forRoot([
       { path: '', redirectTo: '/table', pathMatch: 'full' },

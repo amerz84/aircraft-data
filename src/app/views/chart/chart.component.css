@@ -49,7 +49,7 @@ body {
   background: transparent;
   display: flex;
   flex-direction: column;
-  grid-row-gap: 3em;
+  grid-row-gap: 1em;
 }
 
 .grid-box {

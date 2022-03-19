@@ -2,7 +2,10 @@
       
 <body class="content-container">
   <div class="file-upload-container" id="drop-zone-container">
-    <button class="file-upload" (click)="onFileSelect()">Start Demo</button>
+    <button *ngIf="!this.isFileLoaded" class="file-upload" (click)="onFileSelect()">
+      <span *ngIf="!this.isFileLoading">Start Demo</span>
+      <span *ngIf="this.isFileLoading">Loading...</span>
+    </button>    
   </div>
   <div class="table-container">
     <div class="toggle-container">
@@ -57,14 +60,6 @@
       </div>
     </div>
     <div class="table-data-container">
-      <div class="button-grid">
-        <div id="button-grid-filters">
-          <button mat-raised-button disabled="true" (click)="applyGPSFilter()">Filter GPSfix</button>
-          <button mat-raised-button disabled="true" (click)="applyHighEgtOrChtFilter()">High CHT/EGT</button>
-          <button mat-raised-button disabled="true" (click)="clearFilter()">Clear Filters</button>
-        </div> 
-      </div>
-  
       <!--- This table is for Edge/Chrome workaround where sticky headers wasn't working as intended.
           It connects to a NULL data source (so no data displayed) and just shows a persistent header.
           When you scroll up/down on the data, it is actually the 2nd table (id="csv-table") being scrolled -->
