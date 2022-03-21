@@ -16,4 +16,5 @@
 
 .dropdown-menu {
     width: max-content;
+    z-index: 100;
 }
