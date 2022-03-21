@@ -75,7 +75,6 @@ mat-button-toggle {
 
 #table-header{
   overflow:hidden;
-  margin-top: 10px;
 }
 
 th, td {
@@ -101,6 +100,7 @@ th.mat-header-cell:first-of-type, td.mat-cell:first-of-type, td.mat-footer-cell:
   display: flex;
   visibility: hidden;
   opacity: 0;
+  margin-top: 4em;
 }
 
 .table-data-container {
